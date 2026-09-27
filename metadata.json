@@ -1,0 +1,6 @@
+{
+  "name": "منصة عِلم - رحلة معرفية موثوقة للتعريف بالإسلام",
+  "description": "منصة تعليمية ودعوية ذكية تقدم رحلات معرفية تفاعلية موثقة وفق الحزمة العلمية لتحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

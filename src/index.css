@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #FAF7F2;
+    color: #1E293B;
+    font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  html[lang="ur"] body,
+  .lang-ur,
+  .font-urdu {
+    font-family: 'Noto Nastaliq Urdu', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.85;
+  }
+}
+
+.font-quran {
+  font-family: 'Amiri', serif;
+}
+
+.font-brand {
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+}
+
+/* Safe area bottom padding for mobile navigation */
+.safe-area-pb {
+  padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Bottom clearance class to ensure content and inputs are never obscured by BottomNav on mobile */
+.mobile-bottom-clearance {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .mobile-bottom-clearance {
+    padding-bottom: 2rem;
+  }
+}
+
+/* Logo with colored Kasra under connected Arabic word */
+.logo-word {
+  position: relative;
+  display: inline-block;
+  letter-spacing: normal;
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+  line-height: 1.15;
+}
+
+.logo-word::after {
+  content: 'ِ';
+  position: absolute;
+  right: 0.18em;
+  bottom: -0.16em;
+  color: #1E3A8A; /* Luxurious deep navy */
+  font-weight: 800;
+  font-size: 1.1em;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Custom scrollbars for clean UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F4EFEA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DCD4C9;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #BFAF9D;
+}
+
+/* Smooth Fade-in & Slide Transition for Screens */
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: screenFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Professional Print Optimizations for Certificate */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  header, nav, footer, .print\:hidden {
+    display: none !important;
+  }
+  
+  .certificate-sheet {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    box-shadow: none !important;
+    border-width: 8px !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+  }
+}
