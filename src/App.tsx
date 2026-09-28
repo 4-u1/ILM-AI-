@@ -15,17 +15,19 @@ import { VerificationLab } from './components/VerificationLab';
 import { SourcesRegistryView } from './components/SourcesRegistryView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { CertificateView } from './components/CertificateView';
+import { AchievementsDashboard } from './components/AchievementsDashboard';
 import { InteractiveTutor } from './components/InteractiveTutor';
 import { ShahadaModal } from './components/ShahadaModal';
 import { BottomNav } from './components/BottomNav';
 import { Footer } from './components/Footer';
 import { Onboarding } from './components/Onboarding';
+import { WelcomeScreen } from './components/WelcomeScreen';
 import { StudyReminderNotification } from './components/StudyReminderNotification';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('ar');
   const [currentTab, setCurrentTab] = useState<
-    'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor'
+    'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements'
   >('tracks');
 
   const [selectedTrack, setSelectedTrack] = useState<TrackId | null>('new_muslim');
@@ -42,6 +44,16 @@ export default function App() {
   });
 
   const [isShahadaOpen, setIsShahadaOpen] = useState(false);
+
+  // Welcome screen shown on first entry before onboarding
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(() => {
+    try {
+      const seenWelcome = localStorage.getItem('eilm_welcome_seen');
+      return !seenWelcome;
+    } catch {
+      return true;
+    }
+  });
 
   // First-time user onboarding modal
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => {
@@ -128,6 +140,7 @@ export default function App() {
           language={language}
           setLanguage={setLanguage}
           onOpenOnboarding={() => setIsOnboardingOpen(true)}
+          onOpenWelcome={() => setIsWelcomeOpen(true)}
         />
       </div>
 
@@ -152,6 +165,8 @@ export default function App() {
                 language={language}
                 selectedTrack={selectedTrack}
                 onOpenOnboarding={() => setIsOnboardingOpen(true)}
+                onOpenAchievements={() => setCurrentTab('achievements')}
+                completedStagesCount={completedStageIds.length}
               />
             )}
 
@@ -169,6 +184,31 @@ export default function App() {
                 onCompleteAllStages={() => handleCompleteAllStages(selectedTrack)}
                 onNavigateToSources={() => setCurrentTab('sources')}
                 onCompleteStageId={handleCompleteStage}
+                onNavigateToAchievements={() => setCurrentTab('achievements')}
+              />
+            )}
+
+            {currentTab === 'achievements' && (
+              <AchievementsDashboard
+                language={language}
+                completedStageIds={completedStageIds}
+                selectedTrack={selectedTrack}
+                onNavigateToStage={(stageId) => {
+                  const targetStage = CURRICULUM_DATA.find((s) => s.id === stageId);
+                  if (targetStage) {
+                    setSelectedTrack(targetStage.trackId);
+                    setActiveStage(targetStage);
+                  }
+                }}
+                onNavigateToCertificate={() => {
+                  if (selectedTrack) setCurrentTab('certificate');
+                  else {
+                    setSelectedTrack('new_muslim');
+                    setCurrentTab('certificate');
+                  }
+                }}
+                onNavigateToSimulator={() => setCurrentTab('simulator')}
+                onBack={() => setCurrentTab(selectedTrack ? 'journey' : 'tracks')}
               />
             )}
 
@@ -213,6 +253,7 @@ export default function App() {
                 trackId={selectedTrack}
                 language={language}
                 onBack={() => setCurrentTab('journey')}
+                onNavigateToAchievements={() => setCurrentTab('achievements')}
               />
             )}
           </div>
@@ -227,9 +268,28 @@ export default function App() {
         language={language}
       />
 
-      {/* First-time User Onboarding Walkthrough */}
+      {/* Welcome Screen: Displays high-impact branding before onboarding */}
+      {isWelcomeOpen && (
+        <WelcomeScreen
+          language={language}
+          onSelectLanguage={(lang) => setLanguage(lang)}
+          onStart={() => {
+            try {
+              localStorage.setItem('eilm_welcome_seen', 'true');
+            } catch (e) {
+              console.warn(e);
+            }
+            setIsWelcomeOpen(false);
+            // Switch directly to tracks selection view
+            setActiveStage(null);
+            setCurrentTab('tracks');
+          }}
+        />
+      )}
+
+      {/* First-time User Onboarding Walkthrough (Shown after welcome screen or on demand) */}
       <Onboarding
-        isOpen={isOnboardingOpen}
+        isOpen={!isWelcomeOpen && isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
         language={language}
         onStartJourney={() => {

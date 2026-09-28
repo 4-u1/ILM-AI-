@@ -107,3 +107,40 @@ export interface BenchmarkCase {
   sampleCompliantResponse: string;
   sampleCompliantResponseEn: string;
 }
+
+export type AchievementCategory = 'milestone' | 'track' | 'mastery' | 'engagement';
+
+export interface AchievementBadge {
+  id: string;
+  code: string;
+  title: string;
+  titleEn: string;
+  titleUr: string;
+  description: string;
+  descriptionEn: string;
+  descriptionUr: string;
+  category: AchievementCategory;
+  iconName: string; // Lucide icon identifier
+  colorScheme: 'gold' | 'emerald' | 'amber' | 'blue' | 'purple' | 'rose';
+  xpPoints: number;
+  conditionDescription: string;
+  conditionDescriptionEn: string;
+  conditionDescriptionUr: string;
+  isUnlocked: (context: {
+    completedStageIds: string[];
+    selectedTrack: TrackId | null;
+    simulatorCompleted?: boolean;
+    quizPassCount?: number;
+    hasSharedCertificate?: boolean;
+    learnerName?: string;
+    streakDays?: number;
+  }) => boolean;
+  progressPercent: (context: {
+    completedStageIds: string[];
+    selectedTrack: TrackId | null;
+    simulatorCompleted?: boolean;
+    quizPassCount?: number;
+    streakDays?: number;
+  }) => number;
+}
+

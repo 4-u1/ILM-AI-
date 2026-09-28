@@ -6,12 +6,14 @@ interface CertificateViewProps {
   trackId: TrackId;
   language: Language;
   onBack: () => void;
+  onNavigateToAchievements?: () => void;
 }
 
 export const CertificateView: React.FC<CertificateViewProps> = ({
   trackId,
   language,
   onBack,
+  onNavigateToAchievements,
 }) => {
   const isAr = language === 'ar';
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
@@ -200,6 +202,16 @@ ${window.location.origin}`;
         </button>
 
         <div className="flex flex-wrap items-center gap-2">
+          {onNavigateToAchievements && (
+            <button
+              onClick={onNavigateToAchievements}
+              className="px-3.5 py-1.5 rounded-xl border border-amber-300 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            >
+              <Award className="w-3.5 h-3.5 text-amber-700" />
+              <span>{isAr ? 'لوحة الأوسمة الرقمية' : 'Achievements'}</span>
+            </button>
+          )}
+
           <button
             onClick={() => setIsShareModalOpen(true)}
             className="px-3.5 py-1.5 rounded-xl border border-amber-300 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"

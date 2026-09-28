@@ -3,8 +3,8 @@ import { TrackId, Language } from '../types';
 import { BookOpen, Layers, Bot, ShieldCheck, BarChart3, Globe, Award, Sparkles } from 'lucide-react';
 
 interface BottomNavProps {
-  currentTab: 'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor';
-  setCurrentTab: (tab: 'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor') => void;
+  currentTab: 'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements';
+  setCurrentTab: (tab: 'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements') => void;
   selectedTrack: TrackId | null;
   language: Language;
   setLanguage: (lang: Language) => void;
@@ -38,15 +38,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             icon: Sparkles,
             highlight: true,
           },
-          {
-            id: 'certificate' as const,
-            labelAr: 'الشهادة',
-            labelEn: 'Certificate',
-            labelUr: 'سند',
-            icon: Award,
-          },
         ]
       : []),
+    {
+      id: 'achievements' as const,
+      labelAr: 'الأوسمة',
+      labelEn: 'Badges',
+      labelUr: 'اعزازات',
+      icon: Award,
+    },
     {
       id: 'simulator' as const,
       labelAr: 'المحاكي',

@@ -121,6 +121,11 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
 
       const report = await response.json();
       setEvaluationReport(report);
+      try {
+        localStorage.setItem('eilm_simulator_completed', 'true');
+      } catch (e) {
+        console.warn(e);
+      }
     } catch (e) {
       console.error(e);
     } finally {

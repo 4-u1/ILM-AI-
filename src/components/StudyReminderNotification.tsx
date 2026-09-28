@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Sparkles, ArrowRight, ArrowLeft, X, Check, Clock, Volume2, ShieldCheck } from 'lucide-react';
+import { 
+  Bell, 
+  Sparkles, 
+  ArrowRight, 
+  ArrowLeft, 
+  X, 
+  Clock, 
+  ShieldCheck, 
+  Flame, 
+  Compass, 
+  BookOpen, 
+  Sun, 
+  Volume2, 
+  CheckCircle2,
+  Calendar
+} from 'lucide-react';
 import { Language, LessonStage, TrackId } from '../types';
 import { CURRICULUM_DATA } from '../data/curriculumData';
 
@@ -11,41 +26,115 @@ interface StudyReminderNotificationProps {
   onOpenReminderSettings?: () => void;
 }
 
-// Array of inspiring, authentic Islamic reminders aligned with the challenge's principles
-const INSPIRATIONAL_REMINDERS = [
-  {
-    hadithAr: 'مَن سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الجَنَّةِ',
-    hadithEn: 'Whoever travels a path in search of knowledge, Allah will make easy for him a path to Paradise.',
-    sourceAr: 'صحيح مسلم (2699)',
-    sourceEn: 'Sahih Muslim (2699)',
-    encouragementAr: 'خطوتك التالية في طلب العلم تنتظرك، ثوانٍ معدودة تصنع فرقاً عظيماً في فهم دينك.',
-    encouragementEn: 'Your next step in seeking knowledge awaits. A few moments make a lasting difference in your understanding.'
+// Track-specific tailored encouraging messages and contexts
+interface TrackEncouragement {
+  trackTitleAr: string;
+  trackTitleEn: string;
+  trackTitleUr: string;
+  headerAr: string;
+  headerEn: string;
+  headerUr: string;
+  messageAr: string;
+  messageEn: string;
+  messageUr: string;
+  hadithAr: string;
+  hadithEn: string;
+  sourceAr: string;
+  sourceEn: string;
+  actionTextAr: string;
+  actionTextEn: string;
+  actionTextUr: string;
+  accentBg: string;
+  accentText: string;
+  icon: any;
+}
+
+const TRACK_NOTIFICATIONS: Record<TrackId, TrackEncouragement> = {
+  non_muslim: {
+    trackTitleAr: 'مسار غير المسلم (الباحث عن الحقيقة)',
+    trackTitleEn: 'Inquirer Path',
+    trackTitleUr: 'متلاشی حق کا راستہ',
+    headerAr: 'أسئلتك وبحثك عن الحقيقة في انتظارك',
+    headerEn: 'Your search for truth and clarity awaits',
+    headerUr: 'حق کی تلاش اور فہم کا سفر آپ کا منتظر ہے',
+    messageAr: 'مرحباً بك مجدداً.. بيئة الحوار الهادئة ترحب بأسئلتك وتساؤلاتك الوجودية بكل حرية وموضوعية دون أي تعصب.',
+    messageEn: 'Welcome back. Our peaceful and respectful dialogue environment is always ready for your sincere inquiries without bias.',
+    messageUr: 'خوش آمدید.. پرسکون اور غیر جانبدار مکالمے کا ماحول آپ کے وجودی سوالات اور تلاشِ حق کے لیے ہمہ وقت تیار ہے۔',
+    hadithAr: 'قُلْ هَلْ يَسْتَوِي الَّذِينَ يَعْلَمُونَ وَالَّذِينَ لَا يَعْلَمُونَ',
+    hadithEn: 'Say: Are those who know equal to those who do not know?',
+    sourceAr: 'القرآن الكريم - سورة الزمر (9)',
+    sourceEn: 'The Holy Quran - Surah Az-Zumar (9)',
+    actionTextAr: 'استأنف حوارك المعرفي',
+    actionTextEn: 'Resume Dialogue',
+    actionTextUr: 'مکالمہ جاری رکھیں',
+    accentBg: 'bg-indigo-50 border-indigo-200 text-indigo-900',
+    accentText: 'text-indigo-700',
+    icon: Compass,
   },
-  {
+  new_muslim: {
+    trackTitleAr: 'مسار المسلم الجديد',
+    trackTitleEn: 'New Muslim Track',
+    trackTitleUr: 'نو مسلم کا راستہ',
+    headerAr: 'ثبّت خطوتك الأولى في رحلتك مع الله',
+    headerEn: 'Strengthen your foundational steps in Islam',
+    headerUr: 'اسلام میں اپنے ابتدائی ایمانی قدم کو پختہ کریں',
+    messageAr: 'أهلاً بك يا أخي/أختي.. المداومة اليومية على تعلم خطوة واحدة ميسرة تحفظ قلبك وتيسر لك معرفة صلاتك وطهارتك وتوحيدك.',
+    messageEn: 'Welcome! Taking one gentle step daily nurtures your heart and eases learning prayer, purification, and belief.',
+    messageUr: 'خوش آمدید! روزانہ ایک آسان سبق کا تسلسل آپ کے دل کو اطمینان بخشتا ہے اور نماز، طہارت اور توحید کو آسان بناتا ہے۔',
     hadithAr: 'أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ تَعَالَى أَدْوَمُهَا وَإِنْ قَلَّ',
-    hadithEn: 'The most beloved deed to Allah is the most regular and constant even if it were little.',
+    hadithEn: 'The most beloved deeds to Allah are those done regularly, even if small.',
     sourceAr: 'صحيح البخاري (6464)',
     sourceEn: 'Sahih al-Bukhari (6464)',
-    encouragementAr: 'المداومة على درس واحد يومياً تبني بصيرة راسخة وإيماناً واعياً.',
-    encouragementEn: 'Continuing with even one lesson a day builds grounded insight and mindful faith.'
+    actionTextAr: 'واصل تثبيت إيمانك',
+    actionTextEn: 'Continue Learning',
+    actionTextUr: 'ایمانی تعلیم جاری رکھیں',
+    accentBg: 'bg-amber-50 border-amber-200 text-amber-900',
+    accentText: 'text-amber-700',
+    icon: Sun,
   },
-  {
-    hadithAr: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',
-    hadithEn: 'The best among you are those who learn the Quran and teach it.',
-    sourceAr: 'صحيح البخاري (5027)',
-    sourceEn: 'Sahih al-Bukhari (5027)',
-    encouragementAr: 'تعلم آية وتفقه في معناها يفتح لك أبواب الخير والبركة في يومك.',
-    encouragementEn: 'Pondering over a verse and understanding its wisdom brings barakah to your day.'
+  muslim: {
+    trackTitleAr: 'مسار المسلم الأصل',
+    trackTitleEn: 'Born Muslim Deepening Track',
+    trackTitleUr: 'مسلمِ اصل کا تفصیلی راستہ',
+    headerAr: 'جدّد عهدك بالعلم وتفقه في دينك',
+    headerEn: 'Renew your journey in deep Islamic understanding',
+    headerUr: 'فہم دین اور فقہی بصیرت کی تجدید کریں',
+    messageAr: 'العلم يرسخ الإيمان ويزكي النفس.. درس قصير اليوم يضيء لك فهماً أعمق في عقيدتك وفقه عباداتك وسيرة نبيك ﷺ.',
+    messageEn: 'Knowledge strengthens faith and purifies the soul. A brief lesson today brings profound depth to your worship and creed.',
+    messageUr: 'علم ایمان کو مضبوط اور نفس کو پاک کرتا ہے.. آج کا ایک مختصر سبق آپ کے عقیدے اور عبادات میں گہری بصیرت پیدا کرے گا۔',
+    hadithAr: 'مَن يُرِدِ اللَّهُ به خَيْرًا يُفَقِّهْهُ في الدِّينِ',
+    hadithEn: 'Whomever Allah intends good for, He grants deep understanding of the religion.',
+    sourceAr: 'صحيح البخاري (71) ومسلم (1037)',
+    sourceEn: 'Sahih al-Bukhari (71) & Muslim (1037)',
+    actionTextAr: 'تفقّه في درسك اليوم',
+    actionTextEn: 'Continue Lesson',
+    actionTextUr: 'آج کا سبق جاری رکھیں',
+    accentBg: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+    accentText: 'text-emerald-700',
+    icon: BookOpen,
   },
-  {
-    hadithAr: 'إِنَّمَا العِلْمُ بِالتَّعَلُّمِ، وَإِنَّمَا الحِلْمُ بِالتَّحَلُّمِ',
-    hadithEn: 'Knowledge is acquired only through learning, and forbearance is cultivated only through practice.',
-    sourceAr: 'الدرر السنية - صحيح الجامع (2328)',
-    sourceEn: 'Dorar.net - Sahih al-Jami (2328)',
-    encouragementAr: 'أكمل رحلتك المعرفية خطوة بخطوة عبر مسارات منصة «عِلم».',
-    encouragementEn: 'Continue your verified learning journey step by step through ILM tracks.'
-  }
-];
+  daiyah: {
+    trackTitleAr: 'مسار الداعية ومحاكي الحوار',
+    trackTitleEn: 'Daiyah & Outreach Simulator Track',
+    trackTitleUr: 'داعی اور سمیلیٹر کا راستہ',
+    headerAr: 'طور مهاراتك الدعوية بالحكمة والموعظة الحسنة',
+    headerEn: 'Sharpen your dialogue skills with wisdom',
+    headerUr: 'حکمت اور موعظۂ حسنہ کے ساتھ دعوتی صلاحیتوں کو نکھاریں',
+    messageAr: 'الدعوة إلى الله شرف عظيم يحتاج تدريباً مستمراً.. محاكي السيناريوهات بانتظارك لاختبار ردودك على الشبهات وتحليل أدائك.',
+    messageEn: 'Calling to Allah is a noble honor requiring practice. The AI Simulator is ready for your scenario-based dialogue training.',
+    messageUr: 'اللہ کی طرف بلانا عظیم شرف ہے.. شبہات کے علمی جوابات کی مشق کے لیے AI سمیلیٹر آپ کا منتظر ہے۔',
+    hadithAr: 'ادْعُ إِلَىٰ سَبِيلِ رَبِّكَ بِالْحِكْمَةِ وَالْمَوْعِظَةِ الْحَسَنَةِ',
+    hadithEn: 'Invite to the way of your Lord with wisdom and good instruction.',
+    sourceAr: 'القرآن الكريم - سورة النحل (125)',
+    sourceEn: 'The Holy Quran - Surah An-Nahl (125)',
+    actionTextAr: 'ابدأ تدريب المحاكاة',
+    actionTextEn: 'Launch Simulator',
+    actionTextUr: 'سمیلیٹر مشق شروع کریں',
+    accentBg: 'bg-purple-50 border-purple-200 text-purple-900',
+    accentText: 'text-purple-700',
+    icon: Volume2,
+  },
+};
 
 const LAST_ACTIVE_KEY = 'eilm_last_learning_timestamp';
 const NOTIFICATION_DISMISSED_KEY = 'eilm_reminder_dismissed_until';
@@ -65,11 +154,13 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   const [isVisible, setIsVisible] = useState(false);
   const [hoursInactive, setHoursInactive] = useState<number>(0);
   const [nextStage, setNextStage] = useState<LessonStage | null>(null);
-  const [reminderData, setReminderData] = useState(INSPIRATIONAL_REMINDERS[0]);
-  const [isSimulatingCheck, setIsSimulatingCheck] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
 
-  // Find user's next uncompleted stage
+  const currentTrackKey: TrackId = selectedTrack || 'new_muslim';
+  const trackInfo = TRACK_NOTIFICATIONS[currentTrackKey] || TRACK_NOTIFICATIONS.new_muslim;
+  const TrackIcon = trackInfo.icon;
+
+  // Find next uncompleted stage for current track
   useEffect(() => {
     const track = selectedTrack || 'new_muslim';
     const stages = CURRICULUM_DATA.filter((s) => s.trackId === track);
@@ -77,24 +168,20 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
     setNextStage(pending);
   }, [selectedTrack, completedStageIds]);
 
-  // Check notification permission state
+  // Check Web Notification API status
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       setNotificationPermission(Notification.permission);
     }
   }, []);
 
-  // Inactivity Check Routine: If inactive > 24 hours (or simulated for test)
+  // Check 24-hour inactivity condition
   useEffect(() => {
     try {
       const now = Date.now();
       const lastActiveStr = localStorage.getItem(LAST_ACTIVE_KEY);
       const dismissedUntilStr = localStorage.getItem(NOTIFICATION_DISMISSED_KEY);
       const isEnabled = localStorage.getItem(REMINDERS_ENABLED_KEY) !== 'false';
-
-      // Pick a pseudo-random reminder per calendar day
-      const dayIndex = Math.floor(now / (1000 * 60 * 60 * 24)) % INSPIRATIONAL_REMINDERS.length;
-      setReminderData(INSPIRATIONAL_REMINDERS[dayIndex]);
 
       if (!isEnabled) {
         setIsVisible(false);
@@ -107,7 +194,7 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
       }
 
       if (!lastActiveStr) {
-        // First visit: register initial activity timestamp
+        // First entry: set baseline timestamp
         localStorage.setItem(LAST_ACTIVE_KEY, now.toString());
         return;
       }
@@ -117,19 +204,19 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
       const hours = Math.floor(diffMs / (1000 * 60 * 60));
       setHoursInactive(hours);
 
-      // Trigger if inactive for 24+ hours
+      // Trigger reminder if user has been inactive for 24+ hours
       if (hours >= 24) {
         setIsVisible(true);
       }
     } catch (e) {
       console.warn('Reminder check warning:', e);
     }
-  }, []);
+  }, [selectedTrack]);
 
   const handleDismiss = () => {
     setIsVisible(false);
     try {
-      // Snooze for 12 hours
+      // Snooze reminder for 12 hours
       const snoozeUntil = Date.now() + 12 * 60 * 60 * 1000;
       localStorage.setItem(NOTIFICATION_DISMISSED_KEY, snoozeUntil.toString());
     } catch (e) {
@@ -138,7 +225,6 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   };
 
   const handleStartNextLesson = () => {
-    // Record fresh activity
     localStorage.setItem(LAST_ACTIVE_KEY, Date.now().toString());
     setIsVisible(false);
     if (nextStage) {
@@ -146,21 +232,21 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
     }
   };
 
-  // Helper for judges/testers: simulate 24-hour inactivity test directly in UI
+  // Helper trigger for judges / testers to test 24h inactivity behavior directly
   const handleSimulate24Hours = () => {
-    setIsSimulatingCheck(true);
-    const simulatedPastTime = Date.now() - 25 * 60 * 60 * 1000; // 25 hours ago
+    const simulatedPastTime = Date.now() - 26 * 60 * 60 * 1000; // 26 hours ago
     localStorage.setItem(LAST_ACTIVE_KEY, simulatedPastTime.toString());
     localStorage.removeItem(NOTIFICATION_DISMISSED_KEY);
-    setHoursInactive(25);
+    setHoursInactive(26);
     setIsVisible(true);
-    setTimeout(() => setIsSimulatingCheck(false), 300);
 
-    // Also trigger native browser notification if granted
+    // Native browser push notification trigger if enabled
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
       try {
-        new Notification(isAr ? 'منصة عِلم | ILM - تذكير بمتابعة درسك' : 'ILM Platform - Daily Learning Reminder', {
-          body: isAr ? `${reminderData.encouragementAr} درسك القادم: ${nextStage?.title}` : `${reminderData.encouragementEn} Next lesson: ${nextStage?.titleEn}`,
+        new Notification(isAr ? `منصة عِلم | ${trackInfo.trackTitleAr}` : `ILM | ${trackInfo.trackTitleEn}`, {
+          body: isAr 
+            ? `${trackInfo.messageAr} درسك القادم: ${nextStage?.title}` 
+            : `${trackInfo.messageEn} Next: ${nextStage?.titleEn}`,
           icon: '/favicon.ico'
         });
       } catch (err) {
@@ -176,7 +262,9 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
         setNotificationPermission(perm);
         if (perm === 'granted') {
           new Notification(isAr ? 'منصة عِلم | ILM' : 'ILM Platform', {
-            body: isAr ? 'تم تفعيل التنبيهات اليومية التشجيعية بنجاح 🌿' : 'Daily learning reminders enabled successfully 🌿'
+            body: isAr 
+              ? `تم تفعيل التنبيهات الذكية لمسار (${trackInfo.trackTitleAr}) بنجاح 🌿` 
+              : `Smart reminders for (${trackInfo.trackTitleEn}) enabled successfully 🌿`
           });
         }
       } catch (e) {
@@ -188,44 +276,46 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   if (!isVisible) {
     return (
       /* Discreet test trigger badge floating at bottom right for demo & testers */
-      <div className="fixed bottom-20 right-4 sm:bottom-4 sm:right-4 z-30 print:hidden opacity-90 hover:opacity-100 transition">
+      <div className="fixed bottom-20 right-4 sm:bottom-5 sm:right-5 z-30 print:hidden opacity-90 hover:opacity-100 transition">
         <button
           onClick={handleSimulate24Hours}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 shadow-md cursor-pointer transition border border-slate-700"
-          title={isAr ? 'اختبار نظام التنبيه بعد انقطاع 24 ساعة' : isUr ? '24 گھنٹے انقطاع کی یاد دہانی کا ٹیسٹ' : 'Test 24h Inactivity Reminder'}
+          title={isAr ? 'اختبار نظام التنبيه الذكي بعد انقطاع 24 ساعة (حسب المسار)' : isUr ? 'مسار کے مطابق 24 گھنٹے انقطاع کی یاد دہانی کا ٹیسٹ' : 'Test 24h Inactivity Track Reminder'}
         >
-          <Bell className="w-3.5 h-3.5 text-amber-400 animate-swing" />
-          <span>{isAr ? 'اختبار تذكير الـ 24 ساعة' : isUr ? '24 گھنٹے یاد دہانی کا ٹیسٹ' : 'Test 24h Reminder'}</span>
+          <Bell className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
+          <span>{isAr ? 'اختبار تذكير الـ 24 ساعة (حسب المسار)' : isUr ? '24 گھنٹے یاد دہانی ٹیسٹ' : 'Test 24h Reminder'}</span>
         </button>
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 print:hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
-      <div className="bg-white/95 backdrop-blur-md border-2 border-amber-400/80 rounded-3xl p-5 shadow-2xl space-y-4 relative overflow-hidden">
+    <div 
+      className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-lg z-50 print:hidden animate-in fade-in slide-in-from-bottom-5 duration-300"
+      dir={isRtl ? 'rtl' : 'ltr'}
+    >
+      <div className="bg-white/98 backdrop-blur-md border-2 border-amber-400/90 rounded-3xl p-5 shadow-2xl space-y-4 relative overflow-hidden text-slate-900">
         
         {/* Subtle decorative background glow */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100/40 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-amber-100/50 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
         
-        {/* Top Header Row */}
+        {/* Top Header Row with Active Track Pill */}
         <div className="flex items-start justify-between gap-3 relative">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shrink-0 shadow-2xs">
-              <Bell className="w-5 h-5 animate-bounce" />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shrink-0 shadow-2xs">
+              <TrackIcon className="w-5 h-5 text-amber-700" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
-                  {isAr ? `انقطاع لأكثر من ${hoursInactive || 24} ساعة` : isUr ? `${hoursInactive || 24}+ گھنٹے سے غیر فعال` : `Inactive for ${hoursInactive || 24}+ hrs`}
+                  {isAr ? `انقطاع لأكثر من ${hoursInactive || 24} ساعة` : isUr ? `${hoursInactive || 24}+ گھنٹے سے انقطاع` : `Inactive for ${hoursInactive || 24}+ hrs`}
                 </span>
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  {isAr ? trackInfo.trackTitleAr : isUr ? trackInfo.trackTitleUr : trackInfo.trackTitleEn}
                 </span>
               </div>
-              <h4 className="text-sm font-bold text-slate-900 font-serif mt-0.5">
-                {isAr ? 'تذكير يومي لمتابعة رحلتك في طلب العلم' : isUr ? 'حصول علم کے سفر کو جاری رکھنے کی روزانہ یاد دہانی' : 'Daily Islamic Learning Reminder'}
+              <h4 className="text-sm sm:text-base font-bold text-slate-950 font-serif mt-1">
+                {isAr ? trackInfo.headerAr : isUr ? trackInfo.headerUr : trackInfo.headerEn}
               </h4>
             </div>
           </div>
@@ -239,36 +329,42 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
           </button>
         </div>
 
-        {/* Authentic Motivational Scripture Card */}
-        <div className="bg-gradient-to-br from-amber-50/90 to-amber-100/40 border border-amber-200/90 rounded-2xl p-3.5 space-y-2 relative">
-          <div className="flex items-center justify-between text-[11px] text-amber-900 font-bold">
-            <span className="flex items-center gap-1">
+        {/* Personalized Track-Tailored Message Body */}
+        <div className={`rounded-2xl p-4 border space-y-2.5 relative ${trackInfo.accentBg}`}>
+          <div className="flex items-center justify-between text-[11px] font-bold">
+            <span className="flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>{isAr ? 'حديث شريف في فضل العلم' : isUr ? 'علم کی فضیلت پر نبوی فرمان' : 'Authentic Prophetic Guidance'}</span>
+              <span>{isAr ? 'توجيه تشجيعي مخصص لمسارك' : isUr ? 'آپ کے راستے کی مناسبت سے خصوصی رہنمائی' : 'Personalized Track Encouragement'}</span>
             </span>
-            <span className="text-[10px] text-amber-800 bg-white/70 px-2 py-0.5 rounded-md border border-amber-200/60 font-mono">
-              {isAr || isUr ? reminderData.sourceAr : reminderData.sourceEn}
+            <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-md border border-slate-200/70 font-mono text-slate-700">
+              {isAr || isUr ? trackInfo.sourceAr : trackInfo.sourceEn}
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm font-serif text-slate-900 leading-relaxed font-bold">
-            «{isAr || isUr ? reminderData.hadithAr : reminderData.hadithEn}»
+          <p className="text-xs sm:text-sm text-slate-900 leading-relaxed font-medium">
+            {isAr ? trackInfo.messageAr : isUr ? trackInfo.messageUr : trackInfo.messageEn}
           </p>
 
-          <p className="text-xs text-amber-950/80 leading-normal pt-1 border-t border-amber-200/60">
-            {isAr ? reminderData.encouragementAr : isUr ? reminderData.encouragementAr : reminderData.encouragementEn}
-          </p>
+          <div className="pt-2 border-t border-black/5 flex items-center gap-2">
+            <span className="text-base select-none">📖</span>
+            <p className="text-xs font-serif font-bold text-slate-950 italic">
+              «{isAr || isUr ? trackInfo.hadithAr : trackInfo.hadithEn}»
+            </p>
+          </div>
         </div>
 
         {/* Next Lesson Preview & Action Button */}
         {nextStage && (
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between text-xs px-1 text-slate-600">
-              <span className="font-semibold">{isAr ? 'درسك القادم الموصى به:' : isUr ? 'اگلا تجویز کردہ سبق:' : 'Recommended Next Lesson:'}</span>
-              <span className="text-amber-700 font-bold text-[11px]">{nextStage.estimatedMinutes} {isAr ? 'دقائق' : isUr ? 'منٹ' : 'mins'}</span>
+              <span className="font-semibold">{isAr ? 'محطتك التعليمية القادمة:' : isUr ? 'اگلا تعلیمی مرحلہ:' : 'Your Next Learning Step:'}</span>
+              <span className="text-amber-800 font-bold text-[11px] flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>{nextStage.estimatedMinutes} {isAr ? 'دقائق فقط' : isUr ? 'منٹ' : 'mins only'}</span>
+              </span>
             </div>
 
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs font-bold text-slate-900 truncate">
                   {isAr || isUr ? nextStage.title : nextStage.titleEn}
@@ -280,22 +376,25 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
 
               <button
                 onClick={handleStartNextLesson}
-                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs group"
+                className="px-4 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-2 shrink-0 cursor-pointer shadow-sm group active:scale-95"
               >
-                <span>{isAr ? 'متابعة الدرس الآن' : isUr ? 'سبق ابھی جاری رکھیں' : 'Continue Lesson'}</span>
-                <ArrowIcon className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+                <span>{isAr ? trackInfo.actionTextAr : isUr ? trackInfo.actionTextUr : trackInfo.actionTextEn}</span>
+                <ArrowIcon className="w-3.5 h-3.5 text-amber-300 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
           </div>
         )}
 
-        {/* Notification Permission Toggle Bar */}
+        {/* Web Push Notification Browser Permission Prompt */}
         {notificationPermission !== 'granted' && (
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span>{isAr ? 'تفعيل تنبيهات المتصفح اليومية؟' : isUr ? 'براؤزر کے روزانہ نوٹیفکیشن فعال کریں؟' : 'Enable browser push alerts?'}</span>
+            <span className="flex items-center gap-1">
+              <Bell className="w-3 h-3 text-slate-400" />
+              <span>{isAr ? 'تفعيل تنبيهات المتصفح الذكية (Push Notifications)؟' : 'Enable browser smart push notifications?'}</span>
+            </span>
             <button
               onClick={handleRequestNativePermission}
-              className="text-amber-800 hover:text-amber-900 font-bold underline cursor-pointer"
+              className="text-amber-800 hover:text-amber-950 font-bold underline cursor-pointer"
             >
               {isAr ? 'تفعيل الآن' : isUr ? 'ابھی فعال کریں' : 'Enable'}
             </button>

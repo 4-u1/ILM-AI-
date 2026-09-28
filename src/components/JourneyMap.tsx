@@ -33,6 +33,7 @@ interface JourneyMapProps {
   onNavigateToSources?: () => void;
   onStartTutor?: () => void;
   onCompleteStageId?: (stageId: string) => void;
+  onNavigateToAchievements?: () => void;
   initialMode?: 'tutor' | 'map';
 }
 
@@ -49,6 +50,7 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
   onNavigateToSources,
   onStartTutor,
   onCompleteStageId,
+  onNavigateToAchievements,
   initialMode = 'tutor',
 }) => {
   const isAr = language === 'ar';
@@ -246,7 +248,7 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <span className="text-xs font-semibold text-slate-500">
                   {isAr
                     ? `${totalStages} محطات معرفية متسلسلة`
@@ -254,6 +256,16 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
                     ? `${totalStages} باہم مربوط علمی مراحل`
                     : `${totalStages} sequential knowledge milestones`}
                 </span>
+
+                {onNavigateToAchievements && (
+                  <button
+                    onClick={onNavigateToAchievements}
+                    className="px-3.5 py-1.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  >
+                    <Award className="w-3.5 h-3.5 text-amber-700" />
+                    <span>{isAr ? 'أوسمة الإنجاز' : isUr ? 'اعزازی بیجز' : 'Achievements'}</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

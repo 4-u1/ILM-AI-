@@ -21,6 +21,7 @@ export const UI_TRANSLATIONS = {
     journey: { ar: 'الرحلة', en: 'Journey', ur: 'سفر' },
     simulator: { ar: 'المحاكي', en: 'Simulator', ur: 'سمیلیٹر' },
     certificate: { ar: 'الشهادة', en: 'Certificate', ur: 'سند' },
+    achievements: { ar: 'الأوسمة', en: 'Achievements', ur: 'اعزازات' },
     lab: { ar: 'الموثوقية', en: 'Verification', ur: 'توثیق' },
     sources: { ar: 'المصادر', en: 'Sources', ur: 'مصادر' },
     dashboard: { ar: 'المؤشرات', en: 'Analytics', ur: 'اشاریے' },

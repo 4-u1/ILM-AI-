@@ -8,6 +8,8 @@ interface TrackSelectorProps {
   language: Language;
   selectedTrack: TrackId | null;
   onOpenOnboarding?: () => void;
+  onOpenAchievements?: () => void;
+  completedStagesCount?: number;
 }
 
 export const TrackSelector: React.FC<TrackSelectorProps> = ({
@@ -15,6 +17,8 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
   language,
   selectedTrack,
   onOpenOnboarding,
+  onOpenAchievements,
+  completedStagesCount = 0,
 }) => {
   const isAr = language === 'ar';
   const isUr = language === 'ur';
@@ -80,14 +84,27 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
       {/* Header section matching PDF */}
       <div className="text-center mb-8 sm:mb-12">
         {onOpenOnboarding && (
-          <div className="inline-flex mb-3">
+          <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-3">
             <button
               onClick={onOpenOnboarding}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-xs font-semibold hover:bg-amber-100 transition cursor-pointer shadow-2xs"
             >
               <HelpCircle className="w-3.5 h-3.5 text-amber-700" />
-              <span>{isAr ? 'كيف تعمل منصة عِلم؟ اضغط هنا للدليل التعريفي' : isUr ? 'پلیٹ فارم کیسے کام کرتا ہے؟ تعارفی گائیڈ دیکھیں' : 'How Eilm works? View quick guide'}</span>
+              <span>{isAr ? 'كيف تعمل منصة عِلم؟ الدليل التعريفي' : isUr ? 'پلیٹ فارم کیسے کام کرتا ہے؟ تعارفی گائیڈ' : 'How Eilm works? View guide'}</span>
             </button>
+
+            {onOpenAchievements && (
+              <button
+                onClick={onOpenAchievements}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-linear-to-r from-amber-100 to-yellow-100 text-amber-950 border border-amber-300 text-xs font-bold hover:from-amber-200 hover:to-yellow-200 transition cursor-pointer shadow-2xs"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                <span>{isAr ? 'أوسمة الإنجاز الرقمية (XP)' : isUr ? 'اعزازی بیجز اور پوائنٹس' : 'Achievements & Badges'}</span>
+                {completedStagesCount > 0 && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                )}
+              </button>
+            )}
           </div>
         )}
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-3 font-serif">
