@@ -90,9 +90,9 @@ npm run build
 ---
 
 ## 👥 فريق العمل والمساهمون (Team NEX)
-* **فيصل الأحمري:** مدير مشاريع تقنية وقائد الفريق (Agile Life-cycle & UX Journey Architecture).
-* **يزيد الحارثي:** مهندس حلول ذكاء اصطناعي (RAG Architecture, Prompt Engineering & Guardrails).
-* **نايف القحطاني:** متخصص شرعي ومعرفي (Knowledge Base Auditing, Content Verification & Fiqh Policies).
+* **فيصل احمد الأحمري:** مدير مشاريع تقنية وقائد الفريق (Agile Life-cycle & UX Journey Architecture).
+* **يزيد حمد الحارثي:** مهندس حلول ذكاء اصطناعي (RAG Architecture, Prompt Engineering & Guardrails).
+* **نايف محمد القحطاني:** متخصص شرعي ومعرفي (Knowledge Base Auditing, Content Verification & Fiqh Policies).
 
 ---
 
