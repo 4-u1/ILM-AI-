@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Language, TrackId } from '../types';
 import { parseLearnerPersona, adaptCapsuleForAge, LearnerPersona } from '../utils/tutorPersona';
+import { FormattedMessage } from './FormattedMessage';
 
 export interface InteractiveTutorProps {
   language: Language;
@@ -656,7 +657,10 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
       const unit = activeTrackMeta.units[currentUnitIndex] || activeTrackMeta.units[0];
 
       if (unitSubStep === 'explanation') {
-        const isClear = !clean.includes('لا') && !clean.includes('مش واضح') && !clean.includes('أعد');
+        // If user asked a clarifying question or expressed confusion
+        const isQuestion = userText.includes('؟') || userText.includes('?') || userText.startsWith('لماذا') || userText.startsWith('كيف') || userText.startsWith('ما هو') || userText.startsWith('ما هي') || clean.includes('مش واضح') || clean.includes('أعد') || clean.includes('توضيح');
+        const isClear = !isQuestion && !clean.includes('لا') && !clean.includes('مش واضح') && !clean.includes('أعد');
+
         if (isClear) {
           setUnitSubStep('quiz_check');
           const reply = persona.bracket === 'child'
@@ -664,7 +668,10 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
             : `ممتاز جداً ${persona.titleCall}! بناءً على ما رسخناه للتو، دعنا نتحقق بسؤال تنشيطي مباشر:\n${unit.checkQuestion}`;
           addTutorMessage(reply, unit.checkOptions, true);
         } else {
-          const reExplain = persona.bracket === 'child'
+          // Use AI generated reply if available and relevant, otherwise fall back to refined re-explanation
+          const reExplain = aiGeneratedReply && aiGeneratedReply.trim()
+            ? aiGeneratedReply.trim()
+            : persona.bracket === 'child'
             ? `أبشر ${persona.titleCall}! معناه ببساطة أن نعمل الخير ونطيع ربنا لنكون سعداء ومحبوبين.\n\nهل صارت الفكرة سهلة وجميلة الآن يا بطل؟`
             : `أبشر ${persona.titleCall}، بكل سرور! المقصود ببساطة: حين ننظر لهذا الأصل، فإن غايته صلة العبد بربه بيقين وتطبيق عملي يثمر السكينة.\n\nهل صارت الفكرة أقرب وأوضح لذهنك الآن؟`;
           addTutorMessage(reExplain, ['نعم وضحت تماماً الآن!', 'ممتاز، لنتابع']);
@@ -985,8 +992,8 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                     {isTutor ? 'المعلم الذكي' : userName || 'أنت'}
                   </div>
                   
-                  <div className="text-sm leading-relaxed whitespace-pre-line font-sans">
-                    {m.text}
+                  <div className="text-sm leading-relaxed">
+                    <FormattedMessage content={m.text} isUser={!isTutor} />
                   </div>
 
                   {/* Suggestion Options / Interactive Buttons */}

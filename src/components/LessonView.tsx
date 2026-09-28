@@ -33,6 +33,7 @@ import {
 import { parseLearnerPersona, adaptCapsuleForAge, LearnerPersona, AgeBracket } from '../utils/tutorPersona';
 import { InteractiveTutor } from './InteractiveTutor';
 import { playQuranVerse, stopQuranAudio } from '../utils/quranAudio';
+import { FormattedMessage } from './FormattedMessage';
 
 interface LessonViewProps {
   stage: LessonStage;
@@ -388,6 +389,9 @@ export const LessonView: React.FC<LessonViewProps> = ({
     setMessages(updatedHistory);
     setIsTyping(true);
 
+    let aiReplyText: string | null = null;
+    let aiSourceNote: string | undefined = undefined;
+
     try {
       // Call backend AI Agent with age and name personalization
       const res = await fetch('/api/ai/lesson-tutor-agent', {
@@ -415,13 +419,18 @@ export const LessonView: React.FC<LessonViewProps> = ({
         setIsTyping(false);
         return;
       }
+
+      if (data.reply && data.reply.trim()) {
+        aiReplyText = data.reply.trim();
+        aiSourceNote = data.sourceNote;
+      }
     } catch (e) {
       console.warn('Agent API fallback to scripted mentor flow:', e);
     }
 
     // Process Step Progression ensuring Contextual Continuity & Verification
     setTimeout(() => {
-      advanceLessonTurn(text);
+      advanceLessonTurn(text, aiReplyText, aiSourceNote);
       setIsTyping(false);
     }, 450);
   };
@@ -505,11 +514,27 @@ export const LessonView: React.FC<LessonViewProps> = ({
   };
 
   // Step-by-Step Flow adhering strictly to the user prompt & presentation slides
-  const advanceLessonTurn = (userResponse: string) => {
-    const clean = userResponse.toLowerCase().trim();
+  const advanceLessonTurn = (userResponse: string, aiReply?: string | null, sourceNote?: string) => {
+    // If user asked a question or sent a statement, and AI agent provided a rich personalized reply
+    const isQuestionOrInquiry = userResponse.includes('؟') || userResponse.includes('?') || userResponse.startsWith('لماذا') || userResponse.startsWith('كيف') || userResponse.startsWith('هل') || userResponse.startsWith('ما هو') || userResponse.startsWith('ما هي') || userResponse.length > 25;
 
     // Check answer for the active chunk question
     const isValid = verifyChunkAnswer(userResponse, currentChunkIndex);
+
+    if (aiReply && (isQuestionOrInquiry || !isValid)) {
+      // Show AI answer with source citation
+      addTutorTurn(
+        aiReply,
+        isValid ? undefined : chunks[currentChunkIndex].options,
+        undefined,
+        sourceNote || 'المعلم الذكي - مستند إلى الحزمة العلمية المعتمدة ومجمع الملك فهد'
+      );
+      if (isValid) {
+        setIsChunkVerified(true);
+        setIsAwaitingAnswer(false);
+      }
+      return;
+    }
 
     if (isValid) {
       setIsChunkVerified(true);
@@ -906,8 +931,8 @@ export const LessonView: React.FC<LessonViewProps> = ({
                     )}
                   </div>
 
-                  <div className="text-sm sm:text-base leading-relaxed whitespace-pre-line font-sans">
-                    {m.text}
+                  <div className="text-sm sm:text-base leading-relaxed">
+                    <FormattedMessage content={m.text} isUser={!isTutor} />
                   </div>
 
                   {/* Scripture Citation Card if attached */}

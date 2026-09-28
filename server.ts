@@ -17,11 +17,13 @@ const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
-// Initialize Google Gen AI client if key exists
-const apiKey = process.env.GEMINI_API_KEY;
-let aiClient: GoogleGenAI | null = null;
-if (apiKey) {
-  aiClient = new GoogleGenAI({ apiKey });
+// Initialize Google Gen AI client with runtime key checking
+function getAiClient(): GoogleGenAI | null {
+  const key = process.env.GEMINI_API_KEY;
+  if (key && key.trim()) {
+    return new GoogleGenAI({ apiKey: key });
+  }
+  return null;
 }
 
 /**
@@ -30,11 +32,12 @@ if (apiKey) {
  * and gracefully falls back to the local RAG engine if external free quotas are reached.
  */
 async function callGeminiWithFallback(prompt: string, config?: any): Promise<string | null> {
-  if (!aiClient) return null;
+  const client = getAiClient();
+  if (!client) return null;
 
   // Try primary model
   try {
-    const res = await aiClient.models.generateContent({
+    const res = await client.models.generateContent({
       model: 'gemini-3.8-flash',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config,
@@ -53,7 +56,7 @@ async function callGeminiWithFallback(prompt: string, config?: any): Promise<str
     if (isRateLimit) {
       console.warn('[Gemini Service] Model 3.8-flash quota exhausted (429). Attempting gemini-3.1-flash-lite...');
       try {
-        const resLite = await aiClient.models.generateContent({
+        const resLite = await client.models.generateContent({
           model: 'gemini-3.1-flash-lite',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           config,
@@ -544,7 +547,8 @@ app.post('/api/ai/interactive-tutor', async (req: Request, res: Response) => {
     const systemPrompt = getTrackTutorPrompt(trackId, userData.name || 'المتعلم', userData.age || '');
 
     // Check with Gemini if available
-    if (aiClient) {
+    const client = getAiClient();
+    if (client) {
       try {
         const conversationHistory = history
           .map((m: any) => `${m.role === 'user' ? 'المتعلم' : 'المعلم الذكي'}: ${m.text}`)
