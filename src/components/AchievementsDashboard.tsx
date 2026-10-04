@@ -27,7 +27,8 @@ import {
   Star,
   ExternalLink,
   ChevronRight,
-  Filter
+  Filter,
+  Send
 } from 'lucide-react';
 
 interface AchievementsDashboardProps {
@@ -125,6 +126,7 @@ export const AchievementsDashboard: React.FC<AchievementsDashboardProps> = ({
       case 'TrendingUp': return <TrendingUp className={className} />;
       case 'ShieldCheck': return <ShieldCheck className={className} />;
       case 'Flame': return <Flame className={className} />;
+      case 'Send': return <Send className={className} />;
       default: return <Award className={className} />;
     }
   };

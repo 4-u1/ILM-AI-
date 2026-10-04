@@ -53,9 +53,28 @@ export const IslamicDateDisplay: React.FC<IslamicDateDisplayProps> = ({
   };
 
   // Format dates using Intl with Um Al-Qura calendar
+  const getLocaleForLang = (withCalendar = false): string => {
+    const calSuffix = withCalendar ? '-u-ca-islamic-umalqura' : '';
+    switch (language) {
+      case 'ar':
+        return `ar-SA${calSuffix}`;
+      case 'ur':
+        return `ur-PK${calSuffix}`;
+      case 'fr':
+        return `fr-FR${calSuffix}`;
+      case 'es':
+        return `es-ES${calSuffix}`;
+      case 'id':
+        return `id-ID${calSuffix}`;
+      case 'en':
+      default:
+        return `en-US${calSuffix}`;
+    }
+  };
+
   const getHijriDate = (): string => {
     try {
-      const locale = isAr ? 'ar-SA-u-ca-islamic-umalqura' : isUr ? 'ur-PK-u-ca-islamic-umalqura' : 'en-US-u-ca-islamic-umalqura';
+      const locale = getLocaleForLang(true);
       return new Intl.DateTimeFormat(locale, {
         day: 'numeric',
         month: 'long',
@@ -68,7 +87,7 @@ export const IslamicDateDisplay: React.FC<IslamicDateDisplayProps> = ({
 
   const getWeekday = (): string => {
     try {
-      const locale = isAr ? 'ar-SA' : isUr ? 'ur-PK' : 'en-US';
+      const locale = getLocaleForLang(false);
       return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(adjustedDate);
     } catch {
       return isAr ? 'اليوم' : 'Today';
@@ -77,7 +96,7 @@ export const IslamicDateDisplay: React.FC<IslamicDateDisplayProps> = ({
 
   const getGregorianDate = (): string => {
     try {
-      const locale = isAr ? 'ar-SA' : isUr ? 'ur-PK' : 'en-US';
+      const locale = getLocaleForLang(false);
       const formatted = new Intl.DateTimeFormat(locale, {
         day: 'numeric',
         month: isAr || isUr ? 'long' : 'short',

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TrackId, Language, LessonStage } from './types';
 import { CURRICULUM_DATA } from './data/curriculumData';
 import { Navbar } from './components/Navbar';
@@ -23,11 +24,20 @@ import { Footer } from './components/Footer';
 import { Onboarding } from './components/Onboarding';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { StudyReminderNotification } from './components/StudyReminderNotification';
+import { AmbassadorsHub } from './components/AmbassadorsHub';
+import { WhisperingCopilot } from './components/WhisperingCopilot';
+import { ThirtyDayJourney } from './components/ThirtyDayJourney';
+import { OfflineManager } from './components/OfflineManager';
+import { IslamicSignLanguageHub } from './components/IslamicSignLanguageHub';
+import { IlmJuniorHub } from './components/IlmJuniorHub';
+import { CulturalEtiquetteHub } from './components/CulturalEtiquetteHub';
+import { ScholasticSearchHub } from './components/ScholasticSearchHub';
+import { FieldDaiyahHub } from './components/FieldDaiyahHub';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('ar');
   const [currentTab, setCurrentTab] = useState<
-    'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements'
+    'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements' | 'ambassadors' | 'copilot' | 'thirtyDays' | 'offlineKit' | 'signLanguage' | 'ilmJunior' | 'culturalEtiquette' | 'scholasticSearch' | 'fieldDaiyah'
   >('tracks');
 
   const [selectedTrack, setSelectedTrack] = useState<TrackId | null>('new_muslim');
@@ -65,6 +75,44 @@ export default function App() {
     }
   });
 
+  // Senior / Accessibility High-Contrast Mode & Dynamic Font Sizing
+  const [isSeniorMode, setIsSeniorMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('eilm_senior_mode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const [seniorFontSize, setSeniorFontSize] = useState<'normal' | 'large' | 'xlarge'>(() => {
+    try {
+      return (localStorage.getItem('eilm_senior_font_size') as any) || 'normal';
+    } catch {
+      return 'normal';
+    }
+  });
+
+  const handleChangeSeniorFontSize = (size: 'normal' | 'large' | 'xlarge') => {
+    setSeniorFontSize(size);
+    try {
+      localStorage.setItem('eilm_senior_font_size', size);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleToggleSeniorMode = () => {
+    setIsSeniorMode((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('eilm_senior_mode', String(next));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+  };
+
   useEffect(() => {
     try {
       localStorage.setItem('eilm_completed_stages', JSON.stringify(completedStageIds));
@@ -73,10 +121,10 @@ export default function App() {
     }
   }, [completedStageIds]);
 
-  // Sync language, text direction (RTL for Arabic and Urdu, LTR for English), and Urdu typography class
+  // Sync language, text direction (RTL for Arabic and Urdu, LTR for English, French, Spanish, Indonesian)
   useEffect(() => {
     document.documentElement.lang = language;
-    document.documentElement.dir = language === 'en' ? 'ltr' : 'rtl';
+    document.documentElement.dir = (language === 'ar' || language === 'ur') ? 'rtl' : 'ltr';
     if (language === 'ur') {
       document.body.classList.add('lang-ur');
     } else {
@@ -84,9 +132,9 @@ export default function App() {
     }
   }, [language]);
 
-  const [journeyInitialMode, setJourneyInitialMode] = useState<'tutor' | 'map'>('tutor');
+  const [journeyInitialMode, setJourneyInitialMode] = useState<'tutor' | 'map' | 'quran' | 'favorites'>('tutor');
 
-  const handleSelectTrack = (track: TrackId, initialMode: 'tutor' | 'map' = 'tutor') => {
+  const handleSelectTrack = (track: TrackId, initialMode: 'tutor' | 'map' | 'quran' | 'favorites' = 'tutor') => {
     setSelectedTrack(track);
     setActiveStage(null);
     setJourneyInitialMode(initialMode);
@@ -124,8 +172,10 @@ export default function App() {
     setCurrentTab('journey');
   };
 
+  const fontScaleClass = seniorFontSize === 'large' ? 'senior-font-large' : seniorFontSize === 'xlarge' ? 'senior-font-xlarge' : 'senior-font-normal';
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-slate-900 font-sans selection:bg-[#EAE2D5]">
+    <div className={`min-h-screen flex flex-col bg-[#FAF7F2] text-slate-900 font-sans selection:bg-[#EAE2D5] ${isSeniorMode ? `senior-mode ${fontScaleClass}` : ''}`}>
       
       {/* Top Navbar & Cultural Header */}
       <div className="flex flex-col w-full">
@@ -141,123 +191,215 @@ export default function App() {
           setLanguage={setLanguage}
           onOpenOnboarding={() => setIsOnboardingOpen(true)}
           onOpenWelcome={() => setIsWelcomeOpen(true)}
+          isSeniorMode={isSeniorMode}
+          onToggleSeniorMode={handleToggleSeniorMode}
+          seniorFontSize={seniorFontSize}
+          onChangeSeniorFontSize={handleChangeSeniorFontSize}
         />
       </div>
 
       {/* Main Content Area */}
       <main className="flex-1 mobile-bottom-clearance w-full">
-        {/* If inside an active lesson view */}
-        {activeStage ? (
-          <div key={`lesson-${activeStage.id}`} className="page-enter w-full">
-            <LessonView
-              stage={activeStage}
-              language={language}
-              onBack={() => setActiveStage(null)}
-              onCompleteStage={handleCompleteStage}
-              isAlreadyCompleted={completedStageIds.includes(activeStage.id)}
-            />
-          </div>
-        ) : (
-          <div key={currentTab} className="page-enter w-full">
-            {currentTab === 'tracks' && (
-              <TrackSelector
-                onSelectTrack={handleSelectTrack}
+        <AnimatePresence mode="wait">
+          {/* If inside an active lesson view */}
+          {activeStage ? (
+            <motion.div
+              key={`lesson-${activeStage.id}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full"
+            >
+              <LessonView
+                stage={activeStage}
                 language={language}
-                selectedTrack={selectedTrack}
-                onOpenOnboarding={() => setIsOnboardingOpen(true)}
-                onOpenAchievements={() => setCurrentTab('achievements')}
-                completedStagesCount={completedStageIds.length}
-              />
-            )}
-
-            {currentTab === 'journey' && selectedTrack && (
-              <JourneyMap
-                trackId={selectedTrack}
-                language={language}
-                completedStageIds={completedStageIds}
-                activeStageId={null}
-                initialMode={journeyInitialMode}
-                onSelectStage={handleSelectStage}
-                onOpenShahada={() => setIsShahadaOpen(true)}
-                onViewCertificate={() => setCurrentTab('certificate')}
-                onSwitchTrack={() => setCurrentTab('tracks')}
-                onCompleteAllStages={() => handleCompleteAllStages(selectedTrack)}
-                onNavigateToSources={() => setCurrentTab('sources')}
-                onCompleteStageId={handleCompleteStage}
-                onNavigateToAchievements={() => setCurrentTab('achievements')}
-              />
-            )}
-
-            {currentTab === 'achievements' && (
-              <AchievementsDashboard
-                language={language}
-                completedStageIds={completedStageIds}
-                selectedTrack={selectedTrack}
-                onNavigateToStage={(stageId) => {
-                  const targetStage = CURRICULUM_DATA.find((s) => s.id === stageId);
-                  if (targetStage) {
-                    setSelectedTrack(targetStage.trackId);
-                    setActiveStage(targetStage);
-                  }
-                }}
-                onNavigateToCertificate={() => {
-                  if (selectedTrack) setCurrentTab('certificate');
-                  else {
-                    setSelectedTrack('new_muslim');
-                    setCurrentTab('certificate');
-                  }
-                }}
-                onNavigateToSimulator={() => setCurrentTab('simulator')}
-                onBack={() => setCurrentTab(selectedTrack ? 'journey' : 'tracks')}
-              />
-            )}
-
-            {currentTab === 'tutor' && selectedTrack && (
-              <InteractiveTutor
-                language={language}
-                selectedTrack={selectedTrack}
-                onBackToMap={() => {
-                  setCurrentTab('journey');
-                }}
-                onSwitchTrack={(tr) => {
-                  setSelectedTrack(tr);
-                  setCurrentTab('journey');
+                onBack={() => setActiveStage(null)}
+                onCompleteStage={handleCompleteStage}
+                isAlreadyCompleted={completedStageIds.includes(activeStage.id)}
+                onOpenFullShareModal={() => {
+                  setActiveStage(null);
+                  setCurrentTab('achievements');
                 }}
               />
-            )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={currentTab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full"
+            >
+              {currentTab === 'tracks' && (
+                <TrackSelector
+                  onSelectTrack={handleSelectTrack}
+                  language={language}
+                  selectedTrack={selectedTrack}
+                  onOpenOnboarding={() => setIsOnboardingOpen(true)}
+                  onOpenAchievements={() => setCurrentTab('achievements')}
+                  completedStagesCount={completedStageIds.length}
+                  onNavigateToTab={(tab) => setCurrentTab(tab)}
+                />
+              )}
 
-            {currentTab === 'simulator' && (
-              <DaiyahSimulator language={language} />
-            )}
+              {currentTab === 'journey' && selectedTrack && (
+                <JourneyMap
+                  trackId={selectedTrack}
+                  language={language}
+                  completedStageIds={completedStageIds}
+                  activeStageId={null}
+                  initialMode={journeyInitialMode}
+                  onSelectStage={handleSelectStage}
+                  onOpenShahada={() => setIsShahadaOpen(true)}
+                  onViewCertificate={() => setCurrentTab('certificate')}
+                  onSwitchTrack={() => setCurrentTab('tracks')}
+                  onCompleteAllStages={() => handleCompleteAllStages(selectedTrack)}
+                  onNavigateToSources={() => setCurrentTab('sources')}
+                  onCompleteStageId={handleCompleteStage}
+                  onNavigateToAchievements={() => setCurrentTab('achievements')}
+                />
+              )}
 
-            {currentTab === 'lab' && (
-              <VerificationLab language={language} />
-            )}
+              {currentTab === 'achievements' && (
+                <AchievementsDashboard
+                  language={language}
+                  completedStageIds={completedStageIds}
+                  selectedTrack={selectedTrack}
+                  onNavigateToStage={(stageId) => {
+                    const targetStage = CURRICULUM_DATA.find((s) => s.id === stageId);
+                    if (targetStage) {
+                      setSelectedTrack(targetStage.trackId);
+                      setActiveStage(targetStage);
+                    }
+                  }}
+                  onNavigateToCertificate={() => {
+                    if (selectedTrack) setCurrentTab('certificate');
+                    else {
+                      setSelectedTrack('new_muslim');
+                      setCurrentTab('certificate');
+                    }
+                  }}
+                  onNavigateToSimulator={() => setCurrentTab('simulator')}
+                  onBack={() => setCurrentTab(selectedTrack ? 'journey' : 'tracks')}
+                />
+              )}
 
-            {currentTab === 'sources' && (
-              <SourcesRegistryView
-                language={language}
-                onBack={() => setCurrentTab('tracks')}
-              />
-            )}
+              {currentTab === 'tutor' && selectedTrack && (
+                <InteractiveTutor
+                  language={language}
+                  selectedTrack={selectedTrack}
+                  onBackToMap={() => {
+                    setCurrentTab('journey');
+                  }}
+                  onSwitchTrack={(tr) => {
+                    setSelectedTrack(tr);
+                    setCurrentTab('journey');
+                  }}
+                />
+              )}
 
-            {currentTab === 'dashboard' && (
-              <AdminDashboard
-                language={language}
-                onBack={() => setCurrentTab('tracks')}
-              />
-            )}
+              {currentTab === 'simulator' && (
+                <DaiyahSimulator language={language} />
+              )}
 
-            {currentTab === 'certificate' && selectedTrack && (
-              <CertificateView
-                trackId={selectedTrack}
-                language={language}
-                onBack={() => setCurrentTab('journey')}
-                onNavigateToAchievements={() => setCurrentTab('achievements')}
-              />
-            )}
-          </div>
-        )}
+              {currentTab === 'lab' && (
+                <VerificationLab language={language} />
+              )}
+
+              {currentTab === 'sources' && (
+                <SourcesRegistryView
+                  language={language}
+                  onBack={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'ambassadors' && (
+                <AmbassadorsHub
+                  language={language}
+                  onBack={() => setCurrentTab('tracks')}
+                  onNavigateToSimulator={() => setCurrentTab('simulator')}
+                />
+              )}
+
+              {currentTab === 'copilot' && (
+                <WhisperingCopilot
+                  language={language}
+                  onBack={() => setCurrentTab('tracks')}
+                  onNavigateToSimulator={() => setCurrentTab('simulator')}
+                />
+              )}
+
+              {currentTab === 'thirtyDays' && (
+                <ThirtyDayJourney
+                  language={language}
+                  onBack={() => setCurrentTab('tracks')}
+                  onNavigateToShahada={() => setIsShahadaOpen(true)}
+                />
+              )}
+
+              {currentTab === 'offlineKit' && (
+                <OfflineManager
+                  language={language}
+                  selectedTrack={selectedTrack}
+                  onBack={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'signLanguage' && (
+                <IslamicSignLanguageHub
+                  language={language}
+                  onBackToMain={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'ilmJunior' && (
+                <IlmJuniorHub
+                  language={language}
+                  onBackToMain={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'culturalEtiquette' && (
+                <CulturalEtiquetteHub
+                  language={language}
+                  onBackToMain={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'scholasticSearch' && (
+                <ScholasticSearchHub
+                  language={language}
+                  onBackToMain={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'fieldDaiyah' && (
+                <FieldDaiyahHub
+                  language={language}
+                  onBackToMain={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'dashboard' && (
+                <AdminDashboard
+                  language={language}
+                  onBack={() => setCurrentTab('tracks')}
+                />
+              )}
+
+              {currentTab === 'certificate' && selectedTrack && (
+                <CertificateView
+                  trackId={selectedTrack}
+                  language={language}
+                  onBack={() => setCurrentTab('journey')}
+                  onNavigateToAchievements={() => setCurrentTab('achievements')}
+                />
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Shahada Modal for non-Muslim inquirers */}
@@ -305,6 +447,8 @@ export default function App() {
         language={language}
         selectedTrack={selectedTrack}
         completedStageIds={completedStageIds}
+        userName={localStorage.getItem('eilm_user_name') || ''}
+        userAge={localStorage.getItem('eilm_user_age') || ''}
         onContinueLearning={(stage) => {
           setActiveStage(stage);
           setCurrentTab('journey');

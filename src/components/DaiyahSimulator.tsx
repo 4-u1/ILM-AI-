@@ -13,9 +13,12 @@ import {
   AlertCircle, 
   Loader2,
   BookOpen,
-  MessageSquare
+  MessageSquare,
+  Mic,
+  MicOff
 } from 'lucide-react';
 import { FormattedMessage } from './FormattedMessage';
+import { AILoadingSpinner } from './AILoadingSpinner';
 
 interface DaiyahSimulatorProps {
   language: Language;
@@ -35,6 +38,71 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
   const [isLoadingReply, setIsLoadingReply] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationReport, setEvaluationReport] = useState<SimulationEvaluation | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [interimSimulatorText, setInterimSimulatorText] = useState('');
+
+  // Initialize Speech Recognition for Daiyah Simulator
+  const toggleListening = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(isAr ? 'عذراً، متصفحك لا يدعم الإدخال الصوتي المباشر.' : 'Speech recognition is not supported in this browser.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      setInterimSimulatorText('');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = isAr ? 'ar-SA' : 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setInterimSimulatorText('');
+      };
+
+      recognition.onresult = (event: any) => {
+        let interim = '';
+        let finalStr = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalStr += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        if (interim) {
+          setInterimSimulatorText(interim);
+        }
+        if (finalStr) {
+          setInputText(finalStr);
+          setInterimSimulatorText('');
+          setIsListening(false);
+        }
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        setInterimSimulatorText('');
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.warn(err);
+      setIsListening(false);
+      setInterimSimulatorText('');
+    }
+  };
 
   const handleSelectScenario = (sc: SimulatorScenario) => {
     setSelectedScenario(sc);
@@ -180,24 +248,24 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
       </div>
 
       {/* Scenario Selector */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         {SIMULATION_SCENARIOS.map((sc) => {
           const isSelected = sc.id === selectedScenario.id;
           return (
             <button
               key={sc.id}
               onClick={() => handleSelectScenario(sc)}
-              className={`p-4 rounded-2xl border text-start transition cursor-pointer flex flex-col justify-between ${
+              className={`p-5 rounded-3xl border text-start transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-white border-slate-900 ring-2 ring-slate-900/10 shadow-sm'
-                  : 'bg-slate-50/70 border-slate-200 hover:bg-white hover:border-slate-300'
+                  ? 'bg-white border-amber-600/80 ring-2 ring-amber-600/15 shadow-md bg-amber-50/20'
+                  : 'bg-white border-[#EAE3D6] hover:border-amber-300 hover:shadow-xs'
               }`}
             >
               <div>
-                <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md inline-block mb-2">
+                <span className="text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-md inline-block mb-2.5">
                   {sc.inquirerPersona.name}
                 </span>
-                <h3 className="text-sm font-bold text-slate-900 mb-1.5">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 mb-1.5 font-serif">
                   {isAr ? sc.title : sc.titleEn}
                 </h3>
                 <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
@@ -205,9 +273,9 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
                 </p>
               </div>
 
-              <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <div className="mt-4 pt-2.5 border-t border-[#EAE3D6]/70 flex items-center justify-between text-[11px] text-slate-500 font-medium">
                 <span>{isAr ? 'سيناريو تدريبي' : 'Training Scenario'}</span>
-                {isSelected && <span className="text-emerald-600 font-bold">● {isAr ? 'نشط' : 'Active'}</span>}
+                {isSelected && <span className="text-emerald-700 font-bold">● {isAr ? 'نشط' : 'Active'}</span>}
               </div>
             </button>
           );
@@ -215,7 +283,25 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
       </div>
 
       {/* Main Simulation Window */}
-      <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+      <div className="relative bg-white rounded-3xl border border-[#EAE3D6] overflow-hidden shadow-xs">
+        {/* Center Overlay Spinner during AI Inquirer Reply Generation or Evaluation */}
+        {isLoadingReply && (
+          <AILoadingSpinner
+            language={language}
+            title={isAr ? 'المحاور الذكي يحلل الرد ويصيغ تعقيبه...' : 'AI Inquirer is analyzing and formulating response...'}
+            subtitle={isAr ? 'محاكاة ردود الشخصيات الواقعية وفق سياق المحادثة' : 'Simulating realistic persona responses based on conversation history'}
+            variant="overlay"
+          />
+        )}
+
+        {isEvaluating && (
+          <AILoadingSpinner
+            language={language}
+            title={isAr ? 'جارٍ تحليل أداء الداعية واستخراج بطاقة التقييم...' : 'Evaluating Da\'iyah performance metrics...'}
+            subtitle={isAr ? 'فحص محاور الحوار الثمانية وتفنيد الشبهات والأدلة بالذكاء الاصطناعي' : 'Scoring across 8 communication, empathy, and evidence dimensions'}
+            variant="overlay"
+          />
+        )}
         
         {/* Scenario Persona Top Bar */}
         <div className="p-4 sm:p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
@@ -300,12 +386,41 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
           ))}
 
           {isLoadingReply && (
-            <div className="flex items-center gap-2 text-xs text-slate-500 p-3 bg-slate-50 rounded-xl w-fit">
-              <Loader2 className="w-4 h-4 animate-spin text-slate-700" />
-              <span>{isAr ? 'يكتب المحاور رده الآن...' : 'Inquirer is replying...'}</span>
+            <div className="flex items-center gap-2.5 text-xs text-slate-700 p-3.5 bg-amber-50/70 border border-amber-200/90 rounded-2xl w-fit shadow-2xs animate-in fade-in duration-200">
+              <div className="w-4 h-4 border-2 border-amber-700 border-t-transparent rounded-full animate-spin shrink-0"></div>
+              <span className="font-medium text-slate-800">
+                {isAr ? 'المحاور الذكي يحلل الرد ويصيغ رده الآن...' : 'AI Inquirer is analyzing and replying...'}
+              </span>
             </div>
           )}
         </div>
+
+        {/* Live Voice Speech-to-Text Transcription Banner */}
+        {isListening && (
+          <div className="px-4 py-2 bg-rose-50 border-t border-rose-200 text-rose-900 text-xs flex items-center justify-between animate-in fade-in duration-200">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
+              </span>
+              <span className="font-bold">
+                {isAr ? 'جارٍ الاستماع لصوتك عبر Web Speech API...' : 'Listening via Web Speech API...'}
+              </span>
+              {interimSimulatorText && (
+                <span className="italic text-rose-700 bg-white/70 px-2 py-0.5 rounded-lg border border-rose-200">
+                  «{interimSimulatorText}»
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={toggleListening}
+              className="px-2 py-0.5 rounded-md bg-rose-200 hover:bg-rose-300 text-rose-950 text-[11px] font-bold transition cursor-pointer"
+            >
+              {isAr ? 'إيقاف' : 'Stop'}
+            </button>
+          </div>
+        )}
 
         {/* Input Bar */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center gap-2">
@@ -315,19 +430,42 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder={
-              isAr
+              isListening
+                ? (isAr ? 'تحدث الآن، جاري تحويل صوتك لنص...' : 'Speak now, converting voice to text...')
+                : isAr
                 ? 'اكتب ردك كداعية بالحكمة والموعظة الحسنة والاستدلال...'
                 : 'Type your response as a Da\'iyah with wisdom and citations...'
             }
             className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 text-xs sm:text-sm bg-white"
           />
           <button
+            type="button"
+            onClick={toggleListening}
+            className={`p-2.5 rounded-xl border transition cursor-pointer flex items-center justify-center shrink-0 ${
+              isListening
+                ? 'bg-rose-600 text-white animate-pulse ring-2 ring-rose-300'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
+            }`}
+            title={isListening ? 'جارٍ الاستماع... اضغط للإيقاف' : 'تحدث بالصوت مباشرة (Web Speech API)'}
+          >
+            {isListening ? <Mic className="w-4 h-4 text-white animate-bounce" /> : <Mic className="w-4 h-4" />}
+          </button>
+          <button
             onClick={handleSendMessage}
             disabled={isLoadingReply || !inputText.trim()}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 disabled:opacity-40 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs sm:text-sm hover:bg-slate-800 disabled:opacity-40 transition cursor-pointer flex items-center gap-2 shadow-xs shrink-0"
           >
-            <Send className="w-3.5 h-3.5" />
-            <span>{isAr ? 'رد' : 'Reply'}</span>
+            {isLoadingReply ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                <span>{isAr ? 'جارٍ الرد...' : 'Replying...'}</span>
+              </>
+            ) : (
+              <>
+                <Send className="w-3.5 h-3.5" />
+                <span>{isAr ? 'رد' : 'Reply'}</span>
+              </>
+            )}
           </button>
         </div>
 

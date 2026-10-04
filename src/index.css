@@ -39,7 +39,145 @@
   }
 }
 
-/* Logo with colored Kasra under connected Arabic word */
+/* Senior & High-Contrast Accessibility Mode */
+.senior-mode {
+  --senior-contrast-bg: #FFFFFF;
+  --senior-contrast-card: #FFFFFF;
+  --senior-contrast-border: #0F172A;
+  --senior-contrast-text: #020617;
+  --senior-contrast-muted: #1E293B;
+  background-color: #F8FAFC !important;
+  color: #020617 !important;
+  font-weight: 500;
+}
+
+/* Dynamic Font Scaling Steps */
+.senior-font-normal {
+  --senior-scale: 1;
+}
+
+.senior-font-large {
+  --senior-scale: 1.15;
+}
+
+.senior-font-xlarge {
+  --senior-scale: 1.30;
+}
+
+.senior-mode {
+  font-size: calc(1.15rem * var(--senior-scale, 1)) !important;
+  line-height: 1.95 !important;
+}
+
+.senior-mode p,
+.senior-mode span,
+.senior-mode button,
+.senior-mode input,
+.senior-mode label {
+  letter-spacing: 0.025em;
+  color: #090D16 !important;
+}
+
+.senior-mode .text-slate-500,
+.senior-mode .text-slate-600,
+.senior-mode .text-slate-700 {
+  color: #1E293B !important;
+  font-weight: 600;
+}
+
+.senior-mode .text-xs {
+  font-size: calc(1rem * var(--senior-scale, 1)) !important;
+  line-height: 1.65 !important;
+}
+
+.senior-mode .text-sm {
+  font-size: calc(1.12rem * var(--senior-scale, 1)) !important;
+  line-height: 1.8 !important;
+}
+
+.senior-mode .text-base {
+  font-size: calc(1.3rem * var(--senior-scale, 1)) !important;
+  line-height: 1.9 !important;
+}
+
+.senior-mode .text-lg,
+.senior-mode .text-xl {
+  font-size: calc(1.5rem * var(--senior-scale, 1)) !important;
+  line-height: 1.95 !important;
+  font-weight: 700;
+}
+
+.senior-mode .text-2xl,
+.senior-mode .text-3xl {
+  font-size: calc(1.85rem * var(--senior-scale, 1)) !important;
+  line-height: 2 !important;
+  font-weight: 800;
+}
+
+.senior-mode button {
+  min-height: 52px !important;
+  font-weight: 700 !important;
+  border-width: 2px !important;
+}
+
+.senior-mode .border-slate-100,
+.senior-mode .border-slate-200 {
+  border-color: #334155 !important;
+  border-width: 2px !important;
+}
+
+.senior-mode .bg-white {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.senior-mode .bg-slate-50,
+.senior-mode .bg-[#FAF7F2] {
+  background-color: #F8FAFC !important;
+}
+
+/* Higher contrast buttons in senior-mode */
+.senior-mode button.bg-amber-700,
+.senior-mode button.bg-amber-600,
+.senior-mode button.bg-amber-800 {
+  background-color: #78350F !important;
+  color: #FFFFFF !important;
+  border-color: #451A03 !important;
+}
+
+.senior-mode button.bg-slate-900 {
+  background-color: #020617 !important;
+  border-color: #334155 !important;
+}
+
+.senior-mode button.bg-slate-100,
+.senior-mode button.bg-white {
+  background-color: #FFFFFF !important;
+  color: #020617 !important;
+  border-color: #0F172A !important;
+}
+
+.senior-mode .border-amber-200,
+.senior-mode .border-amber-300 {
+  border-color: #B45309 !important;
+  border-width: 2px !important;
+}
+
+.senior-mode blockquote {
+  font-size: calc(1.7rem * var(--senior-scale, 1)) !important;
+  line-height: 2.2 !important;
+  color: #020617 !important;
+}
+
+.senior-mode input,
+.senior-mode textarea {
+  border-color: #0F172A !important;
+  border-width: 2px !important;
+  font-size: calc(1.15rem * var(--senior-scale, 1)) !important;
+  background-color: #FFFFFF !important;
+  color: #020617 !important;
+}
+
 .logo-word {
   position: relative;
   display: inline-block;
@@ -77,6 +215,34 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #BFAF9D;
+}
+
+/* Multi-Device & Mobile Responsiveness Optimizations */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch targets optimization for mobile */
+@media (max-width: 768px) {
+  button, a, input, select {
+    min-height: 38px;
+  }
+  
+  .max-w-6xl, .max-w-5xl, .max-w-4xl {
+    width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* Tablet & iPad Specific Optimization */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .max-w-6xl, .max-w-5xl, .max-w-4xl {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 /* Smooth Fade-in & Slide Transition for Screens */

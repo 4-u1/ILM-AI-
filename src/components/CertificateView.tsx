@@ -104,6 +104,140 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
     window.print();
   };
 
+  const handleDownloadDedicatedPdf = () => {
+    // Generate clean standalone print-ready HTML file with automatic print prompt
+    const title = isAr ? 'شهادة إتمام معتمدة - منصة عِلم' : 'Verified Certificate - ILM Platform';
+    const htmlContent = `<!DOCTYPE html>
+<html lang="${language}" dir="${isAr ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="utf-8" />
+  <title>${title} - ${certificateNumber}</title>
+  <style>
+    @page { size: landscape; margin: 12mm; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif;
+      background-color: #FAF9F5;
+      margin: 0;
+      padding: 24px;
+      color: #0F172A;
+      direction: ${isAr ? 'rtl' : 'ltr'};
+    }
+    .cert-frame {
+      border: 12px double #1E293B;
+      border-radius: 20px;
+      background: #FFFFFF;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .cert-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: #B45309;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .cert-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: #0F172A;
+      margin: 0 0 20px 0;
+    }
+    .cert-recipient-pre {
+      font-size: 15px;
+      color: #64748B;
+      margin-bottom: 8px;
+    }
+    .cert-name {
+      font-size: 36px;
+      font-weight: 900;
+      color: #92400E;
+      border-bottom: 2px solid #E2E8F0;
+      display: inline-block;
+      padding: 0 30px 10px 30px;
+      margin-bottom: 24px;
+    }
+    .cert-desc {
+      font-size: 16px;
+      line-height: 1.8;
+      max-width: 680px;
+      margin: 0 auto 30px auto;
+      color: #334155;
+    }
+    .cert-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #E2E8F0;
+    }
+    .badge {
+      padding: 6px 14px;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .id-box {
+      font-family: monospace;
+      font-size: 12px;
+      color: #475569;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="cert-frame">
+    <div class="cert-header">${isAr ? 'المملكة العربية السعودية • تحدي المحتوى الإسلامي 2026' : 'AI Islamic Content Challenge 2026'}</div>
+    <h1 class="cert-title">${isAr ? 'شهادة إتمام واعتماد معرفي' : 'Certificate of Completion'}</h1>
+    <div class="cert-recipient-pre">${isAr ? 'تُشهد منصة «عِلم | ILM» بأن الدارس(ة):' : 'This is to officially certify that:'}</div>
+    <div class="cert-name">${studentName}</div>
+    <p class="cert-desc">
+      ${isAr
+        ? `قد أتم(ت) بنجاح واجتياز تام لكافة المحطات المعرفية لـ «${currentTrackTitle}» والمبنية والموثقة وفق الحزمة العلمية لتحدي الذكاء الاصطناعي (مجمع الملك فهد وموسوعات الدرر السنية).`
+        : `Has successfully completed all educational milestones for the "${currentTrackTitle}", grounded in accredited Islamic repositories.`}
+    </p>
+    <div class="cert-grid">
+      <div style="text-align: ${isAr ? 'right' : 'left'};">
+        <div style="font-size: 12px; color: #64748B;">${isAr ? 'تاريخ الإنجاز:' : 'Completion Date:'}</div>
+        <div style="font-weight: 800; font-size: 14px;">${formattedDate}</div>
+      </div>
+      <div>
+        <span class="badge">🛡️ ${isAr ? 'معتمد رسمياً' : 'Verified Record'}</span>
+        <div class="id-box" style="margin-top: 6px;">${certificateNumber}</div>
+      </div>
+      <div style="text-align: ${isAr ? 'left' : 'right'};">
+        <div style="font-size: 12px; color: #64748B;">${isAr ? 'هيئة الرقابة والتوثيق:' : 'Verification Board:'}</div>
+        <div style="font-weight: 800; font-size: 14px;">منصة عِلم | ILM</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 400);
+    };
+  </script>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `EILM-Certificate-${studentName.replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const currentTrackTitle = isAr ? trackNames[trackId]?.ar : trackNames[trackId]?.en;
 
   // Prestigious, inspiring sharing announcement text
@@ -230,6 +364,15 @@ ${window.location.origin}`;
           >
             <Edit3 className="w-3.5 h-3.5 text-slate-500" />
             <span>{isAr ? 'تعديل اسمك على الشهادة' : 'Edit Certificate Name'}</span>
+          </button>
+
+          <button
+            onClick={handleDownloadDedicatedPdf}
+            className="px-3.5 py-1.5 rounded-xl border border-emerald-300 text-xs font-bold text-emerald-950 bg-emerald-50 hover:bg-emerald-100 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            title={isAr ? 'تنزيل ملف الشهادة المعتمد مباشرة' : 'Direct Download Certificate Document'}
+          >
+            <Download className="w-3.5 h-3.5 text-emerald-700" />
+            <span>{isAr ? 'تحميل كملف جاهز' : 'Download File'}</span>
           </button>
 
           <button

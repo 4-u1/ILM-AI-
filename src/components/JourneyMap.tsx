@@ -4,6 +4,7 @@ import { CURRICULUM_DATA } from '../data/curriculumData';
 import { ProgressBar } from './ProgressBar';
 import { SearchBar } from './SearchBar';
 import { InteractiveTutor } from './InteractiveTutor';
+import { QuranBrowser } from './QuranBrowser';
 import { 
   CheckCircle2, 
   Circle, 
@@ -17,7 +18,9 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
-  CheckCheck
+  CheckCheck,
+  ShieldCheck,
+  Heart
 } from 'lucide-react';
 
 interface JourneyMapProps {
@@ -34,7 +37,7 @@ interface JourneyMapProps {
   onStartTutor?: () => void;
   onCompleteStageId?: (stageId: string) => void;
   onNavigateToAchievements?: () => void;
-  initialMode?: 'tutor' | 'map';
+  initialMode?: 'tutor' | 'map' | 'quran' | 'favorites';
 }
 
 export const JourneyMap: React.FC<JourneyMapProps> = ({
@@ -59,8 +62,8 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight;
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
-  // Default to interactive tutor automatically inside the track
-  const [trackMode, setTrackMode] = useState<'tutor' | 'map'>(() => initialMode);
+  // Mode inside track: 'tutor' | 'map' | 'quran' | 'favorites'
+  const [trackMode, setTrackMode] = useState<'tutor' | 'map' | 'quran' | 'favorites'>(() => initialMode);
 
   const trackStages = CURRICULUM_DATA.filter((s) => s.trackId === trackId);
   const totalStages = trackStages.length;
@@ -167,36 +170,75 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
         </div>
       </div>
 
-      {/* Track View Mode Switcher: Interactive Tutor (Auto) vs Milestones Map */}
-      <div className="flex items-center justify-center p-1 bg-[#F5EFE6] rounded-2xl border border-[#EAE3D6] max-w-md mx-auto mb-6 shadow-2xs">
+      {/* Track View Mode Switcher: Interactive Tutor (Auto) vs Milestones Map vs Quran Browser */}
+      <div className="flex items-center justify-center p-1 bg-[#F5EFE6] rounded-2xl border border-[#EAE3D6] max-w-xl mx-auto mb-6 shadow-2xs">
         <button
           onClick={() => setTrackMode('tutor')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
+          className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
             trackMode === 'tutor'
               ? 'bg-amber-800 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Sparkles className="w-4 h-4 text-amber-300" />
-          <span>{isAr ? 'المعلم التفاعلي للمسار' : isUr ? 'مسار کا ذہین استاد' : 'Interactive AI Tutor'}</span>
-          <span className="text-[10px] bg-amber-900/60 text-amber-200 px-1.5 py-0.2 rounded-full font-bold">
+          <span>{isAr ? 'المعلم التفاعلي' : isUr ? 'ذہین استاد' : 'AI Tutor'}</span>
+          <span className="hidden sm:inline-block text-[10px] bg-amber-900/60 text-amber-200 px-1.5 py-0.2 rounded-full font-bold">
             {isAr ? 'تلقائي' : 'Auto'}
           </span>
         </button>
         <button
           onClick={() => setTrackMode('map')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
+          className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
             trackMode === 'map'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <BookOpen className="w-4 h-4" />
-          <span>{isAr ? 'خريطة المحطات والدروس' : isUr ? 'نصاب کے مراحل' : 'Curriculum Milestones'}</span>
+          <span>{isAr ? 'المحطات والدروس' : isUr ? 'نصاب کے مراحل' : 'Curriculum'}</span>
+        </button>
+        {/* Quran Browser Tab (Dedicated King Fahd Complex Verified Mushaf) */}
+        <button
+          onClick={() => setTrackMode('quran')}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+            trackMode === 'quran'
+              ? 'bg-emerald-800 text-white shadow-xs'
+              : 'text-emerald-800 hover:text-emerald-950 hover:bg-emerald-100/50'
+          }`}
+        >
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <span>{isAr ? 'القرآن الكريم' : isUr ? 'قرآن مجید' : 'Holy Quran'}</span>
+          <span className="hidden sm:inline-block text-[10px] bg-emerald-900/60 text-emerald-200 px-1.5 py-0.2 rounded-full font-bold">
+            114
+          </span>
+        </button>
+
+        {/* Favorite Verses Tab (المفضلة القرآنية للدارس) */}
+        <button
+          onClick={() => setTrackMode('favorites')}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+            trackMode === 'favorites'
+              ? 'bg-rose-700 text-white shadow-xs'
+              : 'text-rose-700 hover:text-rose-950 hover:bg-rose-100/50'
+          }`}
+        >
+          <Heart className={`w-4 h-4 ${trackMode === 'favorites' ? 'fill-white text-white' : 'fill-rose-500 text-rose-500'}`} />
+          <span>{isAr ? 'المفضلة' : isUr ? 'پسندیدہ' : 'Favorites'}</span>
         </button>
       </div>
 
-      {trackMode === 'tutor' ? (
+      {trackMode === 'quran' || trackMode === 'favorites' ? (
+        <div className="animate-in fade-in duration-300 mb-8">
+          <QuranBrowser
+            language={language}
+            initialTab={trackMode === 'favorites' ? 'favorites' : 'surahs'}
+            onSelectSurahForStudy={(surahNum) => {
+              // When user wants to study surah in curriculum, jump to map
+              setTrackMode('map');
+            }}
+          />
+        </div>
+      ) : trackMode === 'tutor' ? (
         <div className="animate-in fade-in duration-300 mb-8">
           <InteractiveTutor
             language={language}

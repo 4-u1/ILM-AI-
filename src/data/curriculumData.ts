@@ -338,6 +338,183 @@ export const CURRICULUM_DATA: LessonStage[] = [
     reflectionPromptEn: 'Salah is an oasis of calm, pausing worldly rush five times daily to converse directly with your Merciful Lord.'
   },
 
+  {
+    id: 'nm-05',
+    trackId: 'new_muslim',
+    stageNumber: 5,
+    title: 'القرآن الكريم وأعظم سورة: الفاتحة (أم الكتاب)',
+    titleEn: 'The Holy Quran & Surah Al-Fatihah (The Mother of the Book)',
+    subtitle: 'نص مجمع الملك فهد لطباعة المصحف الشريف بالرسم العثماني المعتمد 100% مع التلاوة المرتلة وتفسير المعاني',
+    subtitleEn: 'Authentic 100% King Fahd Complex text with verified audio recitation and verse-by-verse Tafseer',
+    estimatedMinutes: 20,
+    contentLevel: 'A',
+    scriptures: [
+      {
+        type: 'quran',
+        arabicText: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ',
+        translationEn: 'In the name of Allah, the Entirely Merciful, the Especially Merciful. [All] praise is [due] to Allah, Lord of the worlds. The Entirely Merciful, the Especially Merciful, Sovereign of the Day of Recompense. It is You we worship and You we ask for help. Guide us to the straight path, The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray.',
+        reference: 'سورة الفاتحة: الآيات 1-7',
+        referenceEn: 'Surah Al-Fatihah (1:1-7)',
+        source: APPROVED_SOURCES_REGISTRY.quran_mushaf
+      },
+      {
+        type: 'hadith',
+        arabicText: 'قَالَ رَسُولُ اللَّهِ ﷺ: «لاَ صَلاَةَ لِمَنْ لَمْ يَقْرَأْ بِفَاتِحَةِ الكِتَابِ»',
+        translationEn: 'The Messenger of Allah ﷺ said: "There is no prayer for the one who does not recite the Opening of the Book (Surah Al-Fatihah)."',
+        reference: 'صحيح البخاري: رقم 756، صحيح مسلم: رقم 394',
+        referenceEn: 'Sahih Al-Bukhari 756, Sahih Muslim 394',
+        grade: 'حديث صحيح متفق عليه',
+        source: APPROVED_SOURCES_REGISTRY.dorar_hadith
+      }
+    ],
+    conceptExplanation: `القرآن الكريم هو كلام الله تعالى المعجز، المنزل على نبيه محمد ﷺ بلسان عربي مبين، المنقول بالتواتر، المتعبد بتلاوته:
+1. منزلة سورة الفاتحة (أم القرآن والسبع المثاني):
+   - هي أعظم سورة في كتاب الله بإجماع المسلمين.
+   - ركن من أركان الصلاة لا تصح الصلاة بدونها.
+   - تشتمل على مجمل معاني القرآن كله: الثناء على الله، وإثبات صفات الرحمة، والإقرار بيوم الحساب، وإخلاص العبادة والاستعانة، وسؤال الهداية للصراط المستقيم.
+2. التلاوة الصحيحة والاستماع المعتمد:
+   - استمع لتلاوة الشيخ علي الحذيفي (مقرئ مجمع الملك فهد) أو الشيخ محمود خليل الحصري المتاحة في المشغل الصوتي لضبط مخارج الحروف.
+   - التدرج والتيسير: إن لم تحفظها كاملة في أول إسلامك، اقرأ ما تيسر منها وكرر ذكر الله حتى يسهل عليك حفظها برفق وطمأنينة.`,
+    conceptExplanationEn: `The Holy Quran is the literal divine word of Allah revealed to Prophet Muhammad ﷺ:
+1. Status of Surah Al-Fatihah (The Opening):
+   - It is the greatest Surah in the Quran and an essential pillar of prayer.
+   - It encompasses all foundational truths: Praise of Allah, His infinite mercy, sovereignty on Judgment Day, pure worship, and praying for guidance along the Straight Path.
+2. Authentic Recitation from King Fahd Complex:
+   - Listen to the verified audio recitation by Sheikh Ali Al-Hudhaify or Sheikh Al-Husary above to practice correct pronunciation.
+   - Gradual learning: If you are beginning your journey, practice verse by verse with patience; Allah rewards every sincere effort.`,
+    keyTerms: [
+      {
+        ar: 'القرآن الكريم',
+        en: 'The Holy Quran',
+        approvedStandard: 'كلام الله المنزل بالرسم العثماني المعتمد من مجمع الملك فهد (قاموس التحدي ص 3)'
+      },
+      {
+        ar: 'الفاتحة',
+        en: 'Al-Fatihah',
+        approvedStandard: 'فاتحة الكتاب وأم القرآن المشتملة على أصول التوحيد والدعاء'
+      }
+    ],
+    sources: [
+      APPROVED_SOURCES_REGISTRY.quran_mushaf,
+      APPROVED_SOURCES_REGISTRY.dorar_tafseer,
+      APPROVED_SOURCES_REGISTRY.dorar_hadith,
+      APPROVED_SOURCES_REGISTRY.dawa_center
+    ],
+    quiz: [
+      {
+        id: 'q1-nm5',
+        question: 'ما حكم قراءة سورة الفاتحة في الصلاة لمن قدر عليها؟',
+        questionEn: 'What is the ruling on reciting Surah Al-Fatihah in obligatory prayer for one who is able?',
+        options: [
+          'ركن أساسي لا تصح الصلاة بدونه للمستطيع',
+          'مستحب فقط ولا يؤثر تركه',
+          'تقرأ في صلاة الجمعة فقط',
+          'اختيارية بحسب رغبة المصلي'
+        ],
+        optionsEn: [
+          'An essential pillar without which prayer is invalid for one who can recite it',
+          'Only recommended and does not affect validity',
+          'Recited only in Friday prayer',
+          'Optional based on preference'
+        ],
+        correctIndex: 0,
+        explanation: 'لقوله ﷺ في الصحيحين: «لا صلاة لمن لم يقرأ بفاتحة الكتاب».',
+        source: APPROVED_SOURCES_REGISTRY.dorar_hadith
+      }
+    ],
+    reflectionPrompt: 'الفاتحة مناجاة خاصة بينك وبين الله، حيث يُجيبك الله تعالى في كل آية تقرؤها كما ثبت في الحديث القدسي.',
+    reflectionPromptEn: 'Reciting Al-Fatihah is an intimate dialogue: Allah responds directly to you with every single verse you utter.'
+  },
+  {
+    id: 'nm-06',
+    trackId: 'new_muslim',
+    stageNumber: 6,
+    title: 'الأخلاق الإسلامية والحياة اليومية للمهتدي',
+    titleEn: 'Islamic Character, Compassion, and Daily Living',
+    subtitle: 'إنما بُعثت لأتمم صالح الأخلاق: كيف يعيش المسلم الجديد دينه برحمة وبر بأهله ومجتمعه',
+    subtitleEn: 'Living your faith with wisdom, kindness to parents, and exemplary moral character',
+    estimatedMinutes: 15,
+    contentLevel: 'A',
+    scriptures: [
+      {
+        type: 'hadith',
+        arabicText: 'قَالَ رَسُولُ اللَّهِ ﷺ: «إِنَّمَا بُعِثْتُ لِأُتَمِّمَ صَالِحَ الأَخْلاَقِ»',
+        translationEn: 'The Messenger of Allah ﷺ said: "I was only sent to perfect good character."',
+        reference: 'مسند أحمد: رقم 8952، وموطأ مالك',
+        referenceEn: 'Musnad Ahmad 8952, Muwatta Malik',
+        grade: 'حديث صحيح صححه الألباني والأرناؤوط في الدرر السنية',
+        source: APPROVED_SOURCES_REGISTRY.dorar_hadith
+      },
+      {
+        type: 'quran',
+        arabicText: 'وَوَصَّيْنَا الْإِنسَانَ بِوَالِدَيْهِ حُسْنًا',
+        translationEn: 'And We have enjoined upon man goodness to parents.',
+        reference: 'سورة العنكبوت: الآية 8',
+        referenceEn: 'Surah Al-Ankabut (29:8)',
+        source: APPROVED_SOURCES_REGISTRY.quran_mushaf
+      }
+    ],
+    conceptExplanation: `الإسلام ليس طقوساً مجردة، بل هو سلوك حي ومعاملة حسنة تزين حياة الإنسان:
+1. بر الوالدين وحسن صلتهما:
+   - الإسلام يوصي بأعظم درجات الإحسان للوالدين وإن كانا على غير الإسلام.
+   - إظهار التغير الإيجابي في حياتك: بر، حنان، بر بالأسرة، ونزاهة في القول والعمل.
+2. التدرج والتيسير في العادات:
+   - الشريعة مبنية على التيسير والرفق: (إِنَّ الدِّينَ يُسْرٌ، وَلَنْ يُشَادَّ الدِّينَ أَحَدٌ إِلاَّ غَلَبَهُ).
+   - لا تثقل على نفسك في البداية؛ ركز على الأصول العظيمة (التوحيد، الصلوات المفروضة، الأخلاق الصادقة)، ودع الفروع تنمو برفق.
+3. التفاعل مع الأصحاب والمجتمع:
+   - كن سفيراً مشرقاً للقيم الإسلامية بالصدق، الأمانة، كف الأذى، والابتسامة في وجه الآخرين.`,
+    conceptExplanationEn: `Islam is not abstract rites; it is a holistic ethic of mercy and upright character:
+1. Devotion to Parents & Family:
+   - Islam commands the utmost kindness and respect toward parents, even if they adhere to another faith.
+   - Let your family witness the positive transformation in your gentleness, patience, and love.
+2. The Principle of Ease (Yusr):
+   - The Prophet ﷺ said: "Indeed, this religion is easy, and whoever overburdens themselves will be overcome by it."
+   - Focus solidly on foundational pillars first (Tawhid, regular prayer, truthfulness) and embrace knowledge steadily.
+3. Engaging Society with Grace:
+   - Exhibit truthfulness, honesty, charity, and a pleasant demeanor to all human beings around you.`,
+    keyTerms: [
+      {
+        ar: 'الخلق الحسن',
+        en: 'Good Character (Akhlaq)',
+        approvedStandard: 'بذل الندى وكف الأذى وطلاقة الوجه وصدق اللسان'
+      },
+      {
+        ar: 'بر الوالدين',
+        en: 'Filial Piety (Birr al-Walidayn)',
+        approvedStandard: 'الإحسان إلى الأبوين بالقول والفعل وخفض جناح الرحمة لهما'
+      }
+    ],
+    sources: [
+      APPROVED_SOURCES_REGISTRY.dorar_hadith,
+      APPROVED_SOURCES_REGISTRY.dorar_history,
+      APPROVED_SOURCES_REGISTRY.dawa_center
+    ],
+    quiz: [
+      {
+        id: 'q1-nm6',
+        question: 'ما هو موقف المسلم الجديد من والديه غير المسلمين؟',
+        questionEn: 'What is the required conduct of a new Muslim toward non-Muslim parents?',
+        options: [
+          'الإحسان والبر التام وحسن معاملتهما بالمعروف',
+          'مقاطعتهما وهجرهما فوراً',
+          'معاملتهما بغلظة وشِدة',
+          'التجاهل التام لمشاعرهما'
+        ],
+        optionsEn: [
+          'Utmost kindness, love, and respectful conduct in all honorable matters',
+          'Immediate severance and abandonment',
+          'Harsh and argumentative treatment',
+          'Complete neglect of their feelings'
+        ],
+        correctIndex: 0,
+        explanation: 'أمر الله تعالى بالإحسان للوالدين وصحبتهما في الدنيا معروفاً حتى وإن كانا غير مسلمين.',
+        source: APPROVED_SOURCES_REGISTRY.dawa_center
+      }
+    ],
+    reflectionPrompt: 'أعظم دعوة تقدمها لمن حولك هي أن يروا حُسن خُلقك ورحمتك بعد اعتناقك للإسلام.',
+    reflectionPromptEn: 'The most inspiring invitation you can offer to others is the beauty of your character, humility, and compassion.'
+  },
+
   // ==========================================
   // مسار غير المسلم (NON-MUSLIM TRACK)
   // ==========================================

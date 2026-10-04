@@ -54,14 +54,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       featureTitleEn: 'What does Eilm offer?',
       highlights: isAr
         ? [
-            '4 مسارات متخصصة (المسلم الأصل، المسلم الجديد، غير المسلم، والداعية)',
-            'خارطة تعلم تفاعلية متدرجة خطوة بخطوة',
-            'مساعد ذكي مدعوم بمصادر معتمدة دون فتاوى تلقائية',
+            'مسارا التحدي الأساسيان: مسار غير المسلم ومسار المسلم الجديد',
+            'مسارات إثرائية داعمة: مسار المسلم الأصل ومحاكي تأهيل الداعية الميداني',
+            'خارطة تعلم تفاعلية متدرجة خطوة بخطوة مع شهادة إتمام موثقة',
+            'سياج حماية شرعية صارم يمنع الفتوى الآلية ويحيل للمرجعيات الرسمية',
           ]
         : [
-            '4 specialized pathways (Born Muslim, New Muslim, Inquirer, Da\'iyah)',
-            'Step-by-step interactive knowledge journey map',
-            'Smart assistant grounded in verified sources (zero unvetted fatwas)',
+            'Core Challenge Paths: Non-Muslim (Inquirer) & New Muslim Foundations',
+            'Enriching Paths: Born Muslim Deepening & Da\'iyah Simulator',
+            'Progressive Interactive Journey Map with verifiable certificates',
+            'Strict zero-fatwa guardrails with certified institutional escalation',
           ],
     },
     {

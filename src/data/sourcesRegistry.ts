@@ -9,6 +9,14 @@ export const APPROVED_SOURCES_REGISTRY: Record<string, SourceReference> = {
     url: 'https://quranpedia.net',
     reliabilityNote: 'مصدر معتمد ملزم للنص القرآني والترجمات الرسمية المعتمدة'
   },
+  quranpedia_api: {
+    domain: 'quranpedia.net',
+    title: 'موسوعة وواجهة برمجة تطبيقات قرآن بيديا (Quranpedia API v1)',
+    category: 'تفسير',
+    referenceDetail: 'واجهة برمجية حرة توفر 12 خدمة معرفية: تفاسير معتمدة (الميسر، السعدي، ابن كثير)، ترجمات عالمية، غريب القرآن، وقفات تدبرية، أسباب النزول، والموضوعات.',
+    url: 'https://api.quranpedia.net',
+    reliabilityNote: 'واجهة برمجية JSON مفتوحة معتمدة لبيانات المصحف والتفسير والترجمات'
+  },
   dorar_tafseer: {
     domain: 'dorar.net',
     title: 'موسوعة التفسير - مؤسسة الدرر السنية',
@@ -123,13 +131,19 @@ export const APPROVED_TERMS_DICTIONARY = [
   {
     term: 'الحديث',
     termEn: 'Hadith',
-    standardRule: 'ما نُقل عن النبي ﷺ من قول أو فعل أو تقرير، مع اشتراط بيان درجة الثبوت عند الاستدلال.',
+    standardRule: 'ما نُقل عن النبي ﷺ من قول أو فعل أو تقرير ونحو ذلك، مع بيان درجة الثبوت عند الاستدلال.',
     standardRuleEn: 'Recorded sayings, actions, or tacit approvals of Prophet Muhammad ﷺ, requiring status verification when citing.'
+  },
+  {
+    term: 'السنة',
+    termEn: 'Sunnah',
+    standardRule: 'هدي النبي ﷺ وطريقته، ويحدد المقصود بحسب السياق العلمي.',
+    standardRuleEn: "The guidance and manner of the Prophet ﷺ, determined according to the academic context."
   },
   {
     term: 'الفتوى',
     termEn: 'Fatwa',
-    standardRule: 'جواب شرعي يصدره مؤهل في واقعة أو سؤال لشخص بعينه؛ ولا تُساوى بالمعلومة التثقيفية العامة، ويمتنع النظام عن استقلالها.',
+    standardRule: 'جواب شرعي يصدره مؤهل في واقعة أو سؤال؛ ولا يساوى بالمعلومة العامة، ويمتنع النظام عن استقلالها.',
     standardRuleEn: 'A specific legal ruling given by a qualified scholar on a personal case; not equated with general knowledge.'
   },
   {

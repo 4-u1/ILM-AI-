@@ -24,6 +24,8 @@ interface StudyReminderNotificationProps {
   completedStageIds: string[];
   onContinueLearning: (stage: LessonStage) => void;
   onOpenReminderSettings?: () => void;
+  userName?: string;
+  userAge?: string;
 }
 
 // Track-specific tailored encouraging messages and contexts
@@ -51,12 +53,12 @@ interface TrackEncouragement {
 
 const TRACK_NOTIFICATIONS: Record<TrackId, TrackEncouragement> = {
   non_muslim: {
-    trackTitleAr: 'مسار غير المسلم (الباحث عن الحقيقة)',
+    trackTitleAr: 'مسار غير المسلم',
     trackTitleEn: 'Inquirer Path',
-    trackTitleUr: 'متلاشی حق کا راستہ',
-    headerAr: 'أسئلتك وبحثك عن الحقيقة في انتظارك',
-    headerEn: 'Your search for truth and clarity awaits',
-    headerUr: 'حق کی تلاش اور فہم کا سفر آپ کا منتظر ہے',
+    trackTitleUr: 'غیر مسلم کا راستہ',
+    headerAr: 'أسئلتك واستفساراتك في انتظارك',
+    headerEn: 'Your questions and inquiries await',
+    headerUr: 'آپ کے سوالات اور فہم کا سفر منتظر ہے',
     messageAr: 'مرحباً بك مجدداً.. بيئة الحوار الهادئة ترحب بأسئلتك وتساؤلاتك الوجودية بكل حرية وموضوعية دون أي تعصب.',
     messageEn: 'Welcome back. Our peaceful and respectful dialogue environment is always ready for your sincere inquiries without bias.',
     messageUr: 'خوش آمدید.. پرسکون اور غیر جانبدار مکالمے کا ماحول آپ کے وجودی سوالات اور تلاشِ حق کے لیے ہمہ وقت تیار ہے۔',
@@ -145,6 +147,8 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   selectedTrack,
   completedStageIds,
   onContinueLearning,
+  userName = 'طالب العلم',
+  userAge,
 }) => {
   const isAr = language === 'ar';
   const isUr = language === 'ur';
@@ -155,6 +159,64 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   const [hoursInactive, setHoursInactive] = useState<number>(0);
   const [nextStage, setNextStage] = useState<LessonStage | null>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [isProcessingPermission, setIsProcessingPermission] = useState(false);
+  const [permissionFeedback, setPermissionFeedback] = useState<string | null>(null);
+
+  // AI-Generated Notification Data
+  const [aiCustomMessage, setAiCustomMessage] = useState<{
+    title: string;
+    body: string;
+    bestTimeToSend?: string;
+    hadithAnchor?: string;
+  } | null>(null);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+
+  // Preferred study / free-time slot
+  const [preferredSlot, setPreferredSlot] = useState<'morning' | 'afternoon' | 'evening' | 'night'>(() => {
+    try {
+      return (localStorage.getItem('eilm_free_time_slot') as any) || 'evening';
+    } catch {
+      return 'evening';
+    }
+  });
+
+  const handleUpdateFreeTimeSlot = (slot: 'morning' | 'afternoon' | 'evening' | 'night') => {
+    setPreferredSlot(slot);
+    try {
+      localStorage.setItem('eilm_free_time_slot', slot);
+    } catch (e) {
+      console.error(e);
+    }
+    // Fetch fresh AI notification for this slot
+    fetchAiSmartNotification(slot);
+  };
+
+  const fetchAiSmartNotification = async (slot: string = preferredSlot) => {
+    setIsGeneratingAi(true);
+    try {
+      const res = await fetch('/api/ai/generate-smart-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userName: userName || localStorage.getItem('eilm_user_name') || 'طالب العلم',
+          userAge: userAge || localStorage.getItem('eilm_user_age'),
+          trackId: selectedTrack || 'new_muslim',
+          completedStagesCount: completedStageIds.length,
+          hoursInactive: hoursInactive || 24,
+          freeTimeSlot: slot,
+          language
+        })
+      });
+      const data = await res.json();
+      if (data && data.title && data.body) {
+        setAiCustomMessage(data);
+      }
+    } catch (err) {
+      console.warn('AI notification fallback:', err);
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
 
   const currentTrackKey: TrackId = selectedTrack || 'new_muslim';
   const trackInfo = TRACK_NOTIFICATIONS[currentTrackKey] || TRACK_NOTIFICATIONS.new_muslim;
@@ -239,14 +301,15 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
     localStorage.removeItem(NOTIFICATION_DISMISSED_KEY);
     setHoursInactive(26);
     setIsVisible(true);
+    fetchAiSmartNotification(preferredSlot);
 
     // Native browser push notification trigger if enabled
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
       try {
-        new Notification(isAr ? `منصة عِلم | ${trackInfo.trackTitleAr}` : `ILM | ${trackInfo.trackTitleEn}`, {
+        new Notification(isAr ? `منصة عِلم | تذكير ذكي مخصص` : `ILM | AI Smart Reminder`, {
           body: isAr 
-            ? `${trackInfo.messageAr} درسك القادم: ${nextStage?.title}` 
-            : `${trackInfo.messageEn} Next: ${nextStage?.titleEn}`,
+            ? `«أحب الأعمال إلى الله أدومها وإن قل».. درسك القادم: ${nextStage?.title}` 
+            : `Consistent deeds are most beloved to Allah. Next: ${nextStage?.titleEn}`,
           icon: '/favicon.ico'
         });
       } catch (err) {
@@ -256,20 +319,63 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   };
 
   const handleRequestNativePermission = async () => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      try {
-        const perm = await Notification.requestPermission();
-        setNotificationPermission(perm);
-        if (perm === 'granted') {
-          new Notification(isAr ? 'منصة عِلم | ILM' : 'ILM Platform', {
-            body: isAr 
-              ? `تم تفعيل التنبيهات الذكية لمسار (${trackInfo.trackTitleAr}) بنجاح 🌿` 
-              : `Smart reminders for (${trackInfo.trackTitleEn}) enabled successfully 🌿`
-          });
+    setIsProcessingPermission(true);
+    setPermissionFeedback(null);
+
+    try {
+      // 1. Check if native Notification is available and permitted in current context
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        try {
+          const perm = await Notification.requestPermission();
+          setNotificationPermission(perm);
+          
+          if (perm === 'granted') {
+            try {
+              new Notification(isAr ? 'منصة عِلم | ILM' : 'ILM Platform', {
+                body: isAr 
+                  ? `تم تفعيل التنبيهات الذكية لمسار (${trackInfo.trackTitleAr}) بنجاح 🌿` 
+                  : `Smart reminders for (${trackInfo.trackTitleEn}) enabled successfully 🌿`,
+                icon: '/favicon.ico'
+              });
+            } catch (notifyErr) {
+              console.warn('Native notification instantiate warning:', notifyErr);
+            }
+            setPermissionFeedback(isAr ? 'تم تفعيل الإشعارات بنجاح ✓' : 'Notifications enabled ✓');
+            localStorage.setItem(REMINDERS_ENABLED_KEY, 'true');
+            setIsProcessingPermission(false);
+            return;
+          } else if (perm === 'denied') {
+            // Browser policy blocked push notifications (e.g. user previously blocked it)
+            setPermissionFeedback(
+              isAr
+                ? 'تم حظر الإشعارات من إعدادات المتصفح، وتم تفعيل التذكير الداخلي التلقائي بديلاً عنها 🌿'
+                : 'Browser blocked notifications; in-app reminder scheduled 🌿'
+            );
+            localStorage.setItem(REMINDERS_ENABLED_KEY, 'true');
+            setNotificationPermission('granted');
+            setIsProcessingPermission(false);
+            return;
+          }
+        } catch (permErr) {
+          console.warn('Notification.requestPermission failed (e.g., inside iframe):', permErr);
         }
-      } catch (e) {
-        console.warn(e);
       }
+
+      // 2. Fallback for iframes, mobile webviews, or browsers without Push Notification permission
+      localStorage.setItem(REMINDERS_ENABLED_KEY, 'true');
+      setNotificationPermission('granted');
+      setPermissionFeedback(
+        isAr 
+          ? 'تم تفعيل التذكير الذكي الداخلي بنجاح وفق وقت فراغك المفضل 🌿' 
+          : 'In-app smart reminder activated according to your preferred time 🌿'
+      );
+    } catch (e) {
+      console.error('Error activating reminders:', e);
+      localStorage.setItem(REMINDERS_ENABLED_KEY, 'true');
+      setNotificationPermission('granted');
+      setPermissionFeedback(isAr ? 'تم التفعيل بنجاح 🌿' : 'Activated successfully 🌿');
+    } finally {
+      setIsProcessingPermission(false);
     }
   };
 
@@ -334,7 +440,11 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
           <div className="flex items-center justify-between text-[11px] font-bold">
             <span className="flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>{isAr ? 'توجيه تشجيعي مخصص لمسارك' : isUr ? 'آپ کے راستے کی مناسبت سے خصوصی رہنمائی' : 'Personalized Track Encouragement'}</span>
+              <span>
+                {aiCustomMessage
+                  ? (isAr ? 'رسالة مشجعة مخصصة بالذكاء الاصطناعي ✨' : 'AI-Tailored Encouragement ✨')
+                  : (isAr ? 'توجيه تشجيعي مخصص لمسارك' : isUr ? 'آپ کے راستے کی مناسبت سے خصوصی رہنمائی' : 'Personalized Track Encouragement')}
+              </span>
             </span>
             <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-md border border-slate-200/70 font-mono text-slate-700">
               {isAr || isUr ? trackInfo.sourceAr : trackInfo.sourceEn}
@@ -342,14 +452,47 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
           </div>
 
           <p className="text-xs sm:text-sm text-slate-900 leading-relaxed font-medium">
-            {isAr ? trackInfo.messageAr : isUr ? trackInfo.messageUr : trackInfo.messageEn}
+            {aiCustomMessage ? aiCustomMessage.body : (isAr ? trackInfo.messageAr : isUr ? trackInfo.messageUr : trackInfo.messageEn)}
           </p>
 
           <div className="pt-2 border-t border-black/5 flex items-center gap-2">
             <span className="text-base select-none">📖</span>
             <p className="text-xs font-serif font-bold text-slate-950 italic">
-              «{isAr || isUr ? trackInfo.hadithAr : trackInfo.hadithEn}»
+              «{aiCustomMessage?.hadithAnchor || (isAr || isUr ? trackInfo.hadithAr : trackInfo.hadithEn)}»
             </p>
+          </div>
+        </div>
+
+        {/* Free-Time Preference Selector for AI Delivery Scheduling */}
+        <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2">
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="font-bold text-slate-700 flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-amber-600" />
+              <span>{isAr ? 'وقت فراغك المفضل للتذكير الذكي:' : 'Preferred Free-Time for AI Reminders:'}</span>
+            </span>
+            {isGeneratingAi && <span className="text-[10px] text-amber-700 font-medium animate-pulse">تحديث الذكاء الاصطناعي...</span>}
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 text-[11px] font-semibold text-center">
+            {[
+              { id: 'morning', labelAr: 'الصباح 🌅', labelEn: 'Morning' },
+              { id: 'afternoon', labelAr: 'الظهيرة ☀️', labelEn: 'Afternoon' },
+              { id: 'evening', labelAr: 'المساء 🌇', labelEn: 'Evening' },
+              { id: 'night', labelAr: 'الليل 🌙', labelEn: 'Night' },
+            ].map((slot) => (
+              <button
+                key={slot.id}
+                type="button"
+                onClick={() => handleUpdateFreeTimeSlot(slot.id as any)}
+                className={`py-1 px-1 rounded-lg border transition cursor-pointer text-xs ${
+                  preferredSlot === slot.id
+                    ? 'bg-amber-600 text-white border-amber-700 font-bold shadow-2xs'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                {isAr ? slot.labelAr : slot.labelEn}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -386,20 +529,36 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
         )}
 
         {/* Web Push Notification Browser Permission Prompt */}
-        {notificationPermission !== 'granted' && (
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span className="flex items-center gap-1">
-              <Bell className="w-3 h-3 text-slate-400" />
-              <span>{isAr ? 'تفعيل تنبيهات المتصفح الذكية (Push Notifications)؟' : 'Enable browser smart push notifications?'}</span>
+        <div className="pt-2.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-[11px] text-slate-500">
+          <span className="flex items-center gap-1.5">
+            <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span>
+              {permissionFeedback || (isAr ? 'تفعيل تنبيهات المتصفح الذكية (Push Notifications)؟' : 'Enable browser smart push notifications?')}
             </span>
+          </span>
+
+          {notificationPermission !== 'granted' && !permissionFeedback && (
             <button
+              type="button"
               onClick={handleRequestNativePermission}
-              className="text-amber-800 hover:text-amber-950 font-bold underline cursor-pointer"
+              disabled={isProcessingPermission}
+              className="px-2.5 py-1 rounded-lg bg-amber-100/80 hover:bg-amber-200/90 text-amber-950 font-bold border border-amber-300 transition cursor-pointer self-end sm:self-auto disabled:opacity-50 shrink-0 flex items-center gap-1"
             >
-              {isAr ? 'تفعيل الآن' : isUr ? 'ابھی فعال کریں' : 'Enable'}
+              {isProcessingPermission ? (
+                <span>{isAr ? 'جارٍ التفعيل...' : 'Activating...'}</span>
+              ) : (
+                <span>{isAr ? 'تفعيل الآن' : isUr ? 'ابھی فعال کریں' : 'Enable Now'}</span>
+              )}
             </button>
-          </div>
-        )}
+          )}
+
+          {permissionFeedback && (
+            <span className="text-emerald-700 font-bold flex items-center gap-1 self-end sm:self-auto">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{isAr ? 'مُفعّل' : 'Active'}</span>
+            </span>
+          )}
+        </div>
 
       </div>
     </div>

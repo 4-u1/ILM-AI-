@@ -237,4 +237,32 @@ export const ACHIEVEMENTS_REGISTRY: AchievementBadge[] = [
     isUnlocked: (ctx) => (ctx.streakDays || 1) >= 3,
     progressPercent: (ctx) => Math.min(100, Math.round(((ctx.streakDays || 1) / 3) * 100)),
   },
+
+  // 12. Dawah Ambassador Badge
+  {
+    id: 'dawah-ambassador-badge',
+    code: 'BADGE_AMBASSADOR',
+    title: 'سفير الدعوة الرقمية (بلّغوا عني)',
+    titleEn: 'Digital Dawah Ambassador',
+    titleUr: 'سفیرِ دعوت',
+    description: 'مشاركة رابط الدعوة التتبعي والمساهمة في إيصال نور الإسلام لغير المسلمين.',
+    descriptionEn: 'Shared the smart dawah referral link to introduce truth and clarity to global seekers.',
+    descriptionUr: 'دعوتی لنک شیئر کر کے حق کی روشنی پھیلانے میں فعال کردار ادا کیا۔',
+    category: 'engagement',
+    iconName: 'Send',
+    colorScheme: 'emerald',
+    xpPoints: 150,
+    conditionDescription: 'المشاركة في برنامج سفراء عِلم ومشاركة رابط الدعوة',
+    conditionDescriptionEn: 'Participate in the Ambassadors program and share link',
+    conditionDescriptionUr: 'دعوتی لنک شیئر کریں اور سفیر بنیں',
+    isUnlocked: () => {
+      try {
+        const stats = localStorage.getItem('eilm_ambassador_stats');
+        return !!stats;
+      } catch {
+        return false;
+      }
+    },
+    progressPercent: () => 100,
+  },
 ];

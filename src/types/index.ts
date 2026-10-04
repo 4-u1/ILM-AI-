@@ -1,6 +1,6 @@
 export type TrackId = 'muslim' | 'new_muslim' | 'non_muslim' | 'daiyah';
 
-export type Language = 'ar' | 'en' | 'ur';
+export type Language = 'ar' | 'en' | 'ur' | 'fr' | 'es' | 'id';
 
 export type ContentLevel = 
   | 'A' // المستوى (أ): معلومات أصلية مستقرة (قرآن، أحاديث صحيحة، أركان) -> إجابة مباشرة موثقة
@@ -142,5 +142,104 @@ export interface AchievementBadge {
     quizPassCount?: number;
     streakDays?: number;
   }) => number;
+}
+
+// ==========================================
+// سفراء عِلم وروابط الإحالة الدعوية الذكية
+// ==========================================
+export type AmbassadorRankId = 'conveyer' | 'guide' | 'impact_builder' | 'key_of_goodness' | 'digital_center';
+
+export interface AmbassadorRank {
+  id: AmbassadorRankId;
+  titleAr: string;
+  titleEn: string;
+  titleUr: string;
+  requiredInvites: number;
+  requiredCompletions: number;
+  badgeCode: string;
+  descAr: string;
+  descEn: string;
+  iconName: string;
+  colorScheme: string;
+}
+
+export interface AmbassadorStats {
+  referralCode: string;
+  totalVisits: number;
+  totalQuestionsAsked: number;
+  totalCapsulesRead: number;
+  totalShahadasWitnessed: number;
+  sharedKitsCount: number;
+  currentRankId: AmbassadorRankId;
+}
+
+// ==========================================
+// حقيبة الأيام الـ 30 الأولى للمسلم الجديد
+// ==========================================
+export interface DailyJourneyStep {
+  dayNumber: number;
+  titleAr: string;
+  titleEn: string;
+  titleUr: string;
+  conceptShortAr: string;
+  conceptShortEn: string;
+  practicalActionAr: string;
+  practicalActionEn: string;
+  dailySupplicationAr: string;
+  dailySupplicationEn: string;
+  category: 'aqidah' | 'taharah' | 'salah' | 'akhlaq' | 'daily_life';
+  sourceReference: SourceReference;
+}
+
+// ==========================================
+// المساعد الدعوي الميداني الفوري (Co-Pilot)
+// ==========================================
+export interface WhisperingPrompt {
+  id: string;
+  scenarioTitleAr: string;
+  scenarioTitleEn: string;
+  category: 'existence_of_god' | 'prophethood' | 'quran_authenticity' | 'human_rights_women' | 'scientific_facts';
+  commonDoubtAr: string;
+  commonDoubtEn: string;
+  rapidAnswerAr: string;
+  rapidAnswerEn: string;
+  scriptureProofAr: string;
+  scriptureProofEn: string;
+  sourceReference: SourceReference;
+  wisdomAdviceAr: string;
+  wisdomAdviceEn: string;
+}
+
+// ==========================================
+// بطاقة إحالة الفتوى الرسمية (Level D)
+// ==========================================
+export interface OfficialFatwaTicket {
+  ticketNumber: string;
+  inquirySummary: string;
+  detectedSensitiveTopics: string[];
+  timestamp: string;
+  recommendedOfficialBodyAr: string;
+  recommendedOfficialBodyEn: string;
+  portalUrl: string;
+  tollFreeNumber: string;
+  status: 'referred_for_scholarly_review';
+}
+
+// ==========================================
+// تفضيلات الحوار الذكي وموجهات النظام (Gemini System Instruction Preferences)
+// ==========================================
+export type ResponseLengthPreference = 'concise' | 'balanced' | 'detailed';
+
+export type SourceTypePreference = 'all' | 'quran_tafsir' | 'hadith_sunnah' | 'fiqh_madhahib' | 'dawah_dialogue';
+
+export type DialogueTonePreference = 'interactive' | 'direct' | 'simplified';
+
+export interface DialoguePreferences {
+  responseLength: ResponseLengthPreference; // 'concise' (30-50 words), 'balanced' (60-100 words), 'detailed' (120-200 words)
+  sourceType: SourceTypePreference; // 'all' | 'quran_tafsir' | 'hadith_sunnah' | 'fiqh_madhahib' | 'dawah_dialogue'
+  dialogueTone: DialogueTonePreference; // 'interactive' | 'direct' | 'simplified'
+  includeQuranicDiacritics: boolean; // تشكيل وضبط الآيات
+  showSourceCitations: boolean; // إبراز المصادر وتوثيقها
+  autoLanguageMatch: boolean; // مطابقة لغة السائل
 }
 

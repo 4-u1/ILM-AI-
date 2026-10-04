@@ -15,11 +15,16 @@ import {
   Printer, 
   Compass,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Mic,
+  MicOff,
+  Sliders
 } from 'lucide-react';
-import { Language, TrackId } from '../types';
+import { Language, TrackId, DialoguePreferences } from '../types';
 import { parseLearnerPersona, adaptCapsuleForAge, LearnerPersona } from '../utils/tutorPersona';
+import { loadDialoguePreferences } from '../utils/dialoguePreferences';
 import { FormattedMessage } from './FormattedMessage';
+import { DialoguePreferencesModal } from './DialoguePreferencesModal';
 
 export interface InteractiveTutorProps {
   language: Language;
@@ -382,11 +387,35 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   });
 
   const [userName, setUserName] = useState<string>(() => {
-    return learnerName || localStorage.getItem('eilm_user_name') || '';
+    const raw = learnerName || localStorage.getItem('eilm_user_name') || '';
+    if (raw.includes('ماحكم') || raw.includes('ما حكم') || raw.includes('حكم') || raw.length > 20) {
+      localStorage.removeItem('eilm_user_name');
+      return '';
+    }
+    return raw;
   });
   const [userAge, setUserAge] = useState<string>(() => {
     return learnerAge || localStorage.getItem('eilm_user_age') || '';
   });
+
+  const handleResetTutorSession = () => {
+    localStorage.removeItem('eilm_user_name');
+    localStorage.removeItem('eilm_user_age');
+    setUserName('');
+    setUserAge('');
+    setCurrentStage(1);
+    setConfirmedTrack(false);
+    setStageProgress(15);
+    setMessages([
+      {
+        id: `m-welcome-${Date.now()}`,
+        role: 'tutor',
+        text: activeTrackMeta.welcomeMsg,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        options: ['أنا اسمي محمد', 'أنا عبد الله', 'اسمي سارة', 'اسمي خالد']
+      }
+    ]);
+  };
 
   // Keep state in sync if prop changes dynamically
   useEffect(() => {
@@ -400,6 +429,11 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
       setUserAge(learnerAge);
     }
   }, [learnerAge]);
+
+  const [dialoguePreferences, setDialoguePreferences] = useState<DialoguePreferences>(() => {
+    return loadDialoguePreferences();
+  });
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState<boolean>(false);
 
   const [confirmedTrack, setConfirmedTrack] = useState<boolean>(false);
   const [userGoals, setUserGoals] = useState<string>('');
@@ -448,6 +482,95 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
+  const [speechError, setSpeechError] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
+
+  // Initialize Web Speech API Speech-to-Text Recognition for Interactive Tutor
+  useEffect(() => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = language === 'ar' ? 'ar-SA' : language === 'ur' ? 'ur-PK' : 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setSpeechError(null);
+        setInterimTranscript('');
+      };
+
+      recognition.onresult = (event: any) => {
+        let currentInterim = '';
+        let finalTrans = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTrans += event.results[i][0].transcript;
+          } else {
+            currentInterim += event.results[i][0].transcript;
+          }
+        }
+
+        if (currentInterim) {
+          setInterimTranscript(currentInterim);
+        }
+
+        if (finalTrans) {
+          setInputVal(finalTrans);
+          setInterimTranscript('');
+          setIsListening(false);
+          // Auto send after brief verification moment
+          setTimeout(() => {
+            handleSendMessage(finalTrans);
+          }, 350);
+        }
+      };
+
+      recognition.onerror = (err: any) => {
+        console.warn('Speech recognition error:', err);
+        setIsListening(false);
+        setInterimTranscript('');
+        if (err.error === 'not-allowed') {
+          setSpeechError(language === 'ar' ? 'يرجى السماح بصلاحية الميكروفون في المتصفح' : 'Please allow microphone access');
+          setTimeout(() => setSpeechError(null), 4000);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, [language]);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert(language === 'ar' ? 'عذراً، متصفحك لا يدعم الإدخال الصوتي المباشر.' : 'Speech recognition is not supported in this browser.');
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -542,12 +665,13 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
             age: userAge,
             confirmed: confirmedTrack,
             stage: currentStage === 1 ? 'onboarding' : currentStage === 2 ? 'curriculum_overview' : currentStage === 3 ? 'teaching' : 'assessment'
-          }
+          },
+          preferences: dialoguePreferences
         })
       });
 
       const data = await response.json();
-      processTutorStep(text, data.reply);
+      processTutorStep(text, data.reply, data.detectedName, data.detectedAge);
     } catch (e) {
       console.warn('Backend tutor fallback:', e);
       processTutorStep(text);
@@ -557,36 +681,73 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   };
 
   // Deterministic Step-by-Step Flow complying strictly with QA requirements
-  const processTutorStep = (userText: string, aiGeneratedReply?: string) => {
+  const processTutorStep = (
+    userText: string, 
+    aiGeneratedReply?: string, 
+    detectedName?: string, 
+    detectedAge?: string
+  ) => {
     const clean = userText.toLowerCase().trim();
+
+    const inquiryKeywords = [
+      'ما حكم', 'ماحكم', 'حكم', 'هل يجوز', 'هل حرام', 'حلال', 'حرام', 'ما هو', 'ما هي', 'كيف', 'لماذا', 
+      'اقتبس', 'سورة', 'آية', 'حديث', 'معنى', 'تفسير', 'أين', 'متى', 'من هو', 'أريد أن أسأل', 
+      'سؤال', 'استفسار', 'موسيقى', 'الموسيقى', 'الغناء', 'الصلاة', 'الوضوء', 'الصيام', 'التوحيد', 'الشرك',
+      'هجوم', 'سب', 'طعن', 'ديانة', 'أديان'
+    ];
+    const isUserAskingQuestion = userText.includes('؟') || userText.includes('?') || inquiryKeywords.some(kw => clean.includes(kw)) || userText.length > 25;
 
     // -------------------------------------------------------------
     // STAGE 1: Onboarding (One Question Rule)
     // -------------------------------------------------------------
     if (currentStage === 1) {
-      // Step 1: Extract Name
+      // If user asked a question instead of introducing their name
+      if (!userName && isUserAskingQuestion) {
+        const qReply = aiGeneratedReply && aiGeneratedReply.trim()
+          ? aiGeneratedReply.trim()
+          : clean.includes('موسيق') || clean.includes('غناء')
+          ? 'وعليكم السلام ورحمة الله! حكم المعازف والموسيقى: ذهب جمهور أئمة المذاهب الأربعة إلى تحريم المعازف استناداً لحديث البخاري: «ليكونن من أمتي أقوام يستحلون الحر والحرير والخمر والمعازف»، مع رخصة بعضهم في الدف في الأعراس. وصيانة القلب بالقرآن أولى. وبالمناسبة، ما هو اسمك الكريم حتى أتشرف بمعرفتك؟'
+          : 'أهلاً بك وسعدت بتساؤلك المبارك! في ديننا الحنيف نجد لكل مسألة بياناً شافياً بالحكمة والدليل الصحيح من مجمع الملك فهد والدرر السنية. ما اسمك الكريم حتى نناديك به ونكمل مدارستنا؟';
+        addTutorMessage(qReply, ['أنا اسمي يزيد', 'أنا محمد', 'أنا عبد الله', 'اسمي سارة']);
+        return;
+      }
+
+      // Step 1: Extract Name (when userName is empty)
       if (!userName) {
-        const cleanName = userText
-          .replace(/^(السلام عليكم|أنا اسمي|اسمي هو|اسمي|معك|حياك الله|أنا)/gi, '')
+        const cleanName = detectedName || userText
+          .replace(/^(السلام عليكم|أنا اسمي|اسمي هو|اسمي|معك|حياك الله|أنا|انا)/gi, '')
           .trim()
           .split(' ')[0] || userText;
-        setUserName(cleanName);
-        localStorage.setItem('eilm_user_name', cleanName);
+
+        const isPureDigit = /^\d+$/.test(cleanName);
+        const validName = isPureDigit ? 'أخي الفاضل' : cleanName;
+
+        setUserName(validName);
+        if (!isPureDigit) {
+          localStorage.setItem('eilm_user_name', validName);
+        }
         setStageProgress(25);
 
-        const reply = `حياك الله يا ${cleanName}، كم عمرك لكي أضبط لك أسلوب الشرح والأمثلة المناسبة لك تماماً؟`;
+        const reply = aiGeneratedReply && (aiGeneratedReply.includes('عمر') || aiGeneratedReply.includes('سنة'))
+          ? aiGeneratedReply.trim()
+          : `أهلاً بك أخي الفاضل ${validName}، شرفنا حضورك! كم يبلغ عمرك الكريم لنخصص لك أسلوب الشرح والأمثلة المناسبة؟`;
+
         addTutorMessage(reply, ['أقل من 15 سنة (يا بطل)', '15 - 25 سنة (شاب)', '26 - 40 سنة (راشد)', 'أكثر من 40 سنة']);
         return;
       }
 
       // Step 2: Extract Age -> Ask Track Confirmation Question
       if (!userAge) {
-        setUserAge(userText);
-        localStorage.setItem('eilm_user_age', userText);
+        const validAge = detectedAge || userText.trim();
+        setUserAge(validAge);
+        localStorage.setItem('eilm_user_age', validAge);
         setStageProgress(35);
 
-        const currentPersona = parseLearnerPersona(userText, userName);
-        const reply = `${currentPersona.titleCall}، ${activeTrackMeta.verifyQ}`;
+        const currentPersona = parseLearnerPersona(validAge, userName);
+        const reply = aiGeneratedReply && (aiGeneratedReply.includes('مسار') || aiGeneratedReply.includes('ولدت') || aiGeneratedReply.includes('حقيقة'))
+          ? aiGeneratedReply.trim()
+          : `${currentPersona.titleCall}، ${activeTrackMeta.verifyQ}`;
+
         addTutorMessage(reply, activeTrackMeta.verifyOptions);
         return;
       }
@@ -613,7 +774,10 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
 
         // Single Question for Motivations (NOT double)
         const p = parseLearnerPersona(userAge, userName);
-        const reply = `ممتاز جداً ${p.titleCall}. ما هو هدفك الأساسي الذي تطمح لتعلمه والتركيز عليه في هذا المسار؟`;
+        const reply = aiGeneratedReply && (aiGeneratedReply.includes('هدف') || aiGeneratedReply.includes('طموح'))
+          ? aiGeneratedReply.trim()
+          : `ممتاز جداً ${p.titleCall}. ما هو هدفك الأساسي الذي تطمح لتعلمه والتركيز عليه في هذا المسار؟`;
+
         addTutorMessage(reply, [
           'ترسيخ اليقين وفهم أسباب ومقاصد الأحكام والعبادة',
           'تصحيح المفاهيم وتعميق العلم الشرعي الموثوق',
@@ -933,6 +1097,31 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                 راشد
               </button>
             </div>
+
+            {/* Dialogue Preferences Modal Trigger Button */}
+            <button
+              type="button"
+              onClick={() => setIsPreferencesOpen(true)}
+              className="p-1.5 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border border-amber-300 shadow-2xs"
+              title="تخصيص طول الإجابات ومصادر الاستدلال في Gemini System Instruction"
+            >
+              <Sliders className="w-3.5 h-3.5 text-amber-700" />
+              <span className="hidden sm:inline">تفضيلات الحوار</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-amber-200/80 rounded-md font-bold text-amber-900">
+                {dialoguePreferences.responseLength === 'concise' ? 'موجزة ⚡' : dialoguePreferences.responseLength === 'balanced' ? 'متوازنة ⚖️' : 'مفصلة 📚'}
+              </span>
+            </button>
+
+            {/* Reset Session & Name Button */}
+            <button
+              type="button"
+              onClick={handleResetTutorSession}
+              className="p-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border border-slate-200"
+              title="إعادة بدء الحوار وضبط الاسم"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+              <span>إعادة ضبط</span>
+            </button>
           </div>
         </div>
 
@@ -1089,8 +1278,42 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
           </div>
         )}
 
-        {/* Input Bar */}
-        <div className="p-3 sm:p-4 bg-white border-t border-[#EAE3D6]">
+        {/* Input Bar with Speech-to-Text Recognition Indicator */}
+        <div className="p-3 sm:p-4 bg-white border-t border-[#EAE3D6] space-y-2">
+          
+          {/* Live Voice Speech-to-Text Transcription Banner */}
+          {isListening && (
+            <div className="p-2.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center justify-between animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2.5 w-2.5 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
+                </span>
+                <span className="font-bold">
+                  {language === 'ar' ? 'جارٍ الاستماع لصوتك عبر Web Speech API...' : 'Listening via Web Speech API...'}
+                </span>
+                {interimTranscript && (
+                  <span className="italic text-rose-700 bg-white/70 px-2 py-0.5 rounded-lg border border-rose-200">
+                    «{interimTranscript}»
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={toggleListening}
+                className="px-2 py-0.5 rounded-md bg-rose-200 hover:bg-rose-300 text-rose-950 text-[11px] font-bold transition cursor-pointer"
+              >
+                {language === 'ar' ? 'إيقاف' : 'Stop'}
+              </button>
+            </div>
+          )}
+
+          {speechError && (
+            <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium">
+              ⚠️ {speechError}
+            </div>
+          )}
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -1103,32 +1326,57 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder={
-                !userName
+                isListening
+                  ? (language === 'ar' ? 'تحدث الآن، جاري تحويل صوتك لنص تلقائياً...' : 'Speak now, converting voice to text...')
+                  : !userName
                   ? 'اكتب اسمك الكريم هنا...'
                   : !userAge
                   ? 'اكتب عمرك هنا...'
                   : isCertified
                   ? 'اكتب رسالتك أو استفسارك للمعلم...'
-                  : 'اكتب إجابتك أو سؤالك للمعلم...'
+                  : 'اكتب إجابتك أو تحدث بالصوت عبر الميكروفون...'
               }
               className="flex-1 bg-[#FAF7F2] border border-[#EAE3D6] rounded-2xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-amber-600 focus:bg-white transition"
             />
             <button
+              type="button"
+              onClick={toggleListening}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center transition cursor-pointer shrink-0 shadow-xs ${
+                isListening
+                  ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-200'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
+              }`}
+              title={isListening ? 'جارٍ الاستماع لصوتك... اضغط للإيقاف' : 'اضغط للتحدث بالصوت مباشرة (Web Speech API)'}
+            >
+              {isListening ? <Mic className="w-5 h-5 text-white animate-bounce" /> : <Mic className="w-5 h-5" />}
+            </button>
+            <button
               type="submit"
               disabled={!inputVal.trim() || isTyping}
-              className="w-12 h-12 rounded-2xl bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-white flex items-center justify-center transition cursor-pointer shadow-xs"
+              className="w-12 h-12 rounded-2xl bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-white flex items-center justify-center transition cursor-pointer shadow-xs shrink-0"
               title="إرسال"
             >
               <Send className="w-5 h-5 rtl:rotate-180" />
             </button>
           </form>
-          <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-1">
-            <span>مبني على أسلوب التعلم الحواري المتدرج (تأكيد الفهم قبل الانتقال)</span>
+          <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 px-1">
+            <span>مدعوم بالتعرف الصوتي المباشر Web Speech API • تأكيد الفهم قبل الانتقال</span>
             <span>الدرر السنية ومجمع الملك فهد</span>
           </div>
         </div>
 
       </div>
+
+      {/* Dialogue Preferences Configuration Modal */}
+      <DialoguePreferencesModal
+        isOpen={isPreferencesOpen}
+        onClose={() => setIsPreferencesOpen(false)}
+        currentPreferences={dialoguePreferences}
+        onSavePreferences={(newPrefs) => setDialoguePreferences(newPrefs)}
+        learnerName={userName}
+        learnerAge={userAge}
+        trackTitle={activeTrackMeta.titleAr}
+      />
 
     </div>
   );

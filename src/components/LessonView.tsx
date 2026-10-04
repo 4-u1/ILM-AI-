@@ -4,7 +4,8 @@ import {
   Language, 
   SourceReference, 
   ScriptureCitation, 
-  TrackId 
+  TrackId,
+  DialoguePreferences 
 } from '../types';
 import { 
   ArrowLeft, 
@@ -28,12 +29,24 @@ import {
   GraduationCap,
   Briefcase,
   Bot,
-  MessageSquare
+  MessageSquare,
+  Share2,
+  Mic,
+  MicOff,
+  Heart,
+  Sliders,
+  Lightbulb
 } from 'lucide-react';
 import { parseLearnerPersona, adaptCapsuleForAge, LearnerPersona, AgeBracket } from '../utils/tutorPersona';
+import { loadDialoguePreferences } from '../utils/dialoguePreferences';
 import { InteractiveTutor } from './InteractiveTutor';
-import { playQuranVerse, stopQuranAudio } from '../utils/quranAudio';
+import { playQuranVerse, stopQuranAudio, QURAN_RECITERS, QuranReciterId, getSavedReciter, saveReciter } from '../utils/quranAudio';
 import { FormattedMessage } from './FormattedMessage';
+import { StageCongratulationModal } from './StageCongratulationModal';
+import { StageSelfAssessmentModal } from './StageSelfAssessmentModal';
+import { DialoguePreferencesModal } from './DialoguePreferencesModal';
+import { getFavoriteAyahs, saveFavoriteAyahs, FavoriteAyahItem } from '../data/quranData';
+import { AILoadingSpinner } from './AILoadingSpinner';
 
 interface LessonViewProps {
   stage: LessonStage;
@@ -41,6 +54,7 @@ interface LessonViewProps {
   onBack: () => void;
   onCompleteStage: (stageId: string) => void;
   isAlreadyCompleted: boolean;
+  onOpenFullShareModal?: () => void;
 }
 
 interface MessageItem {
@@ -63,6 +77,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
   onBack,
   onCompleteStage,
   isAlreadyCompleted,
+  onOpenFullShareModal,
 }) => {
   const isAr = language === 'ar';
   const isUr = language === 'ur';
@@ -71,6 +86,11 @@ export const LessonView: React.FC<LessonViewProps> = ({
 
   // Mode: 'micro' (Micro-Capsule Stream) or 'tutor' (Full Interactive AI Mentor Session)
   const [learningMode, setLearningMode] = useState<'micro' | 'tutor'>('micro');
+
+  // Congratulation & Share Modal state
+  const [isCongratulationOpen, setIsCongratulationOpen] = useState(false);
+  // Self-Assessment Checkpoint Modal state
+  const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
 
   // Track-specific verified sources information from Presentation Slide 7
   const TRACK_SOURCES_INFO: Record<TrackId, {
@@ -124,6 +144,12 @@ export const LessonView: React.FC<LessonViewProps> = ({
   // Calculate dynamic adaptive persona based on age and name
   const persona = parseLearnerPersona(userAge, userName);
 
+  // Dialogue Preferences (Gemini System Instruction Controls)
+  const [dialoguePreferences, setDialoguePreferences] = useState<DialoguePreferences>(() => {
+    return loadDialoguePreferences();
+  });
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState<boolean>(false);
+
   // Stage learning state persistence key
   const storageKey = `eilm_conversational_stage_${stage.id}`;
 
@@ -162,8 +188,116 @@ export const LessonView: React.FC<LessonViewProps> = ({
 
   const [isStageCompleted, setIsStageCompleted] = useState<boolean>(() => isAlreadyCompleted);
 
-  // Active audio recitation playback state for Quranic verses
+  // Active audio recitation playback state for Quranic verses & Reciter Selection
   const [playingVerseKey, setPlayingVerseKey] = useState<string | null>(null);
+  const [selectedReciter, setSelectedReciter] = useState<QuranReciterId>(() => getSavedReciter());
+
+  // Favorite Ayahs state
+  const [favoriteAyahs, setFavoriteAyahs] = useState<FavoriteAyahItem[]>(() => getFavoriteAyahs());
+
+  const handleToggleFavoriteVerse = (arabicText: string, reference: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const id = reference.replace(/\s+/g, '_');
+    const exists = favoriteAyahs.some((f) => f.id === id || f.arabicText === arabicText);
+
+    let updated: FavoriteAyahItem[];
+    if (exists) {
+      updated = favoriteAyahs.filter((f) => f.id !== id && f.arabicText !== arabicText);
+    } else {
+      const newFav: FavoriteAyahItem = {
+        id,
+        surahNumber: stage.stageNumber,
+        surahNameAr: reference,
+        surahNameEn: stage.titleEn,
+        ayahNumber: 1,
+        arabicText,
+        translationEn: stage.subtitleEn,
+        tafseerAr: `مقتبسة من درس: ${stage.title}`,
+        savedAt: new Date().toISOString().split('T')[0],
+      };
+      updated = [newFav, ...favoriteAyahs];
+    }
+    setFavoriteAyahs(updated);
+    saveFavoriteAyahs(updated);
+  };
+
+  const isVerseFavorited = (arabicText: string, reference: string): boolean => {
+    const id = reference.replace(/\s+/g, '_');
+    return favoriteAyahs.some((f) => f.id === id || f.arabicText === arabicText);
+  };
+
+  const handleSelectReciter = (reciterId: QuranReciterId) => {
+    stopQuranAudio();
+    setPlayingVerseKey(null);
+    setSelectedReciter(reciterId);
+    saveReciter(reciterId);
+  };
+
+  // Speech Recognition (Voice Input) state
+  const [isListening, setIsListening] = useState(false);
+  const [interimVoiceText, setInterimVoiceText] = useState('');
+
+  const toggleListening = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(isAr ? 'عذراً، متصفحك لا يدعم الإدخال الصوتي المباشر.' : 'Speech recognition is not supported in this browser.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      setInterimVoiceText('');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = isAr ? 'ar-SA' : isUr ? 'ur-PK' : 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setInterimVoiceText('');
+      };
+
+      recognition.onresult = (event: any) => {
+        let interim = '';
+        let finalStr = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalStr += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        if (interim) {
+          setInterimVoiceText(interim);
+        }
+        if (finalStr) {
+          setInputVal(finalStr);
+          setInterimVoiceText('');
+          setIsListening(false);
+        }
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        setInterimVoiceText('');
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (e) {
+      console.warn('Speech recognition error:', e);
+      setIsListening(false);
+      setInterimVoiceText('');
+    }
+  };
 
   // Stop Quran audio on unmount or stage change
   useEffect(() => {
@@ -178,11 +312,16 @@ export const LessonView: React.FC<LessonViewProps> = ({
       setPlayingVerseKey(null);
     } else {
       setPlayingVerseKey(verseKey);
-      playQuranVerse(arabicText, reference, {
-        onStart: () => setPlayingVerseKey(verseKey),
-        onEnd: () => setPlayingVerseKey(null),
-        onError: () => setPlayingVerseKey(null),
-      });
+      playQuranVerse(
+        arabicText,
+        reference,
+        {
+          onStart: () => setPlayingVerseKey(verseKey),
+          onEnd: () => setPlayingVerseKey(null),
+          onError: () => setPlayingVerseKey(null),
+        },
+        selectedReciter
+      );
     }
   };
 
@@ -393,7 +532,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
     let aiSourceNote: string | undefined = undefined;
 
     try {
-      // Call backend AI Agent with age and name personalization
+      // Call backend AI Agent with age, name, and dialogue preferences
       const res = await fetch('/api/ai/lesson-tutor-agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -407,7 +546,8 @@ export const LessonView: React.FC<LessonViewProps> = ({
           stageTitle: stage.title,
           stageConcept: stage.conceptExplanation,
           scriptures: stage.scriptures,
-          conversationHistory: updatedHistory.slice(-6)
+          conversationHistory: updatedHistory.slice(-6),
+          preferences: dialoguePreferences
         })
       });
 
@@ -501,28 +641,26 @@ export const LessonView: React.FC<LessonViewProps> = ({
       setCurrentStep(5);
       setIsStageCompleted(true);
       onCompleteStage(stage.id);
+      setIsAssessmentOpen(true);
 
       const completionCelebration = persona.bracket === 'child'
-        ? `ألف مبارك ${persona.titleCall}! 🌟🏆 لقد اجتزت جميع أجزاء محطة «${stage.title}» وأجبت عن الأسئلة التنشيطية بتفوق!\n\nتم توثيق إنجازك بنجاح في خريطة الرحلة التعليمية، ويمكنك الانتقال للمحطة التالية!`
-        : `مبارك ${persona.titleCall}! لقد أتممت دراسة المحطة (${stage.stageNumber}): «${stage.title}» بجميع أجزائها (Chunks) بنجاح وتفوق 🎉🎓\n\nأثبت فهمك لكل فقرة وتأكدنا من صحة إجاباتك قبل كل انتقال.\n\nتم حفظ تقدمك واجتيازك رسمياً في خريطة الرحلة المعتمدة!`;
+        ? `ألف مبارك ${persona.titleCall}! 🌟🏆 لقد اجتزت جميع أجزاء محطة «${stage.title}» وأجبت عن الأسئلة التنشيطية بتفوق!\n\nتم فتح «التقييم الذاتي لقياس الاستيعاب» للتأكد من رسوخ المفاهيم ونيل أوسمة الإنجاز!`
+        : `مبارك ${persona.titleCall}! لقد أتممت دراسة المحطة (${stage.stageNumber}): «${stage.title}» بجميع أجزائها (Chunks) بنجاح وتفوق 🎉🎓\n\nتفضل الآن بخوض «التقييم الذاتي لقياس الاستيعاب» للتأكد من ثبات المعلومات وتلقي التوجيهات الإضافية.`;
 
       addTutorTurn(
         completionCelebration,
-        ['العودة لخريطة الرحلة 🗺️', 'عرض بطاقة المصادر المعتمدة 📜']
+        ['بدء التقييم الذاتي 💡', 'العودة لخريطة الرحلة 🗺️', 'مشاركة إنجاز المحطة 🏆']
       );
     }
   };
 
   // Step-by-Step Flow adhering strictly to the user prompt & presentation slides
   const advanceLessonTurn = (userResponse: string, aiReply?: string | null, sourceNote?: string) => {
-    // If user asked a question or sent a statement, and AI agent provided a rich personalized reply
-    const isQuestionOrInquiry = userResponse.includes('؟') || userResponse.includes('?') || userResponse.startsWith('لماذا') || userResponse.startsWith('كيف') || userResponse.startsWith('هل') || userResponse.startsWith('ما هو') || userResponse.startsWith('ما هي') || userResponse.length > 25;
-
     // Check answer for the active chunk question
     const isValid = verifyChunkAnswer(userResponse, currentChunkIndex);
 
-    if (aiReply && (isQuestionOrInquiry || !isValid)) {
-      // Show AI answer with source citation
+    // If AI agent provided a dynamic reply to the user's inquiry or prompt
+    if (aiReply && aiReply.trim()) {
       addTutorTurn(
         aiReply,
         isValid ? undefined : chunks[currentChunkIndex].options,
@@ -614,6 +752,42 @@ export const LessonView: React.FC<LessonViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Dialogue Preferences Modal Trigger */}
+          <button
+            onClick={() => setIsPreferencesOpen(true)}
+            className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            title="تفضيلات الحوار وطول الإجابة والمصادر"
+          >
+            <Sliders className="w-3.5 h-3.5 text-amber-700" />
+            <span className="hidden sm:inline">تفضيلات الحوار</span>
+            <span className="text-[10px] px-1.5 py-0.2 bg-amber-200/80 rounded-md font-bold text-amber-900">
+              {dialoguePreferences.responseLength === 'concise' ? 'موجزة ⚡' : dialoguePreferences.responseLength === 'balanced' ? 'متوازنة ⚖️' : 'مفصلة 📚'}
+            </span>
+          </button>
+
+          {/* Self-Assessment Checkpoint Trigger */}
+          <button
+            onClick={() => setIsAssessmentOpen(true)}
+            className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            title="خوض التقييم الذاتي لقياس استيعاب الدرس"
+          >
+            <Lightbulb className="w-3.5 h-3.5 text-emerald-700" />
+            <span className="hidden sm:inline">التقييم الذاتي</span>
+            <span className="text-[10px] px-1.5 py-0.2 bg-emerald-200/80 rounded-md font-bold text-emerald-900">
+              {stage.quiz?.length || 1} أسئلة
+            </span>
+          </button>
+
+          {/* Share Milestone / Congratulation Trigger */}
+          <button
+            onClick={() => setIsCongratulationOpen(true)}
+            className="px-2.5 py-1.5 rounded-xl bg-amber-100/80 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            title={isAr ? 'مشاركة إنجاز المحطة' : 'Share Milestone'}
+          >
+            <Share2 className="w-3.5 h-3.5 text-amber-700" />
+            <span className="hidden sm:inline">{isAr ? 'مشاركة الإنجاز' : 'Share'}</span>
+          </button>
+
           {/* Track Sources Info Button (Slide 7) */}
           <button
             onClick={() => setShowSourceInfo(!showSourceInfo)}
@@ -827,10 +1001,57 @@ export const LessonView: React.FC<LessonViewProps> = ({
                     </span>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-700" />
-                    <span>مصحف مجمع الملك فهد</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleFavoriteVerse(qScripture.arabicText, qScripture.reference, e)}
+                      className={`px-2 py-0.5 rounded-md text-[11px] font-bold border transition cursor-pointer flex items-center gap-1 ${
+                        isVerseFavorited(qScripture.arabicText, qScripture.reference)
+                          ? 'bg-rose-100 text-rose-800 border-rose-300 shadow-2xs'
+                          : 'bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-700 border-slate-200'
+                      }`}
+                      title={isVerseFavorited(qScripture.arabicText, qScripture.reference) ? 'إزالة من المفضلة' : 'حفظ في المفضلة'}
+                    >
+                      <Heart className={`w-3.5 h-3.5 ${isVerseFavorited(qScripture.arabicText, qScripture.reference) ? 'fill-rose-600 text-rose-600' : ''}`} />
+                      <span>{isVerseFavorited(qScripture.arabicText, qScripture.reference) ? 'محفوظة' : 'إضافة للمفضلة'}</span>
+                    </button>
+
+                    <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-700" />
+                      <span>مصحف مجمع الملك فهد</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Reciter Selector Switcher (الشيخ علي الحذيفي أو الشيخ محمود خليل الحصري) */}
+                <div className="flex items-center justify-between bg-amber-100/60 p-1.5 rounded-xl border border-amber-200 text-xs">
+                  <span className="text-[11px] font-bold text-amber-950 flex items-center gap-1">
+                    <Volume2 className="w-3.5 h-3.5 text-amber-700" />
+                    <span>القارئ المعتمد:</span>
                   </span>
+                  <div className="flex items-center gap-1">
+                    {(Object.values(QURAN_RECITERS) as Array<typeof QURAN_RECITERS.hudhaify>).map((reciter) => {
+                      const isSelected = selectedReciter === reciter.id;
+                      return (
+                        <button
+                          key={reciter.id}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectReciter(reciter.id);
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-700 text-white shadow-2xs'
+                              : 'bg-white/80 hover:bg-white text-slate-700 border border-amber-200'
+                          }`}
+                          title={reciter.titleAr}
+                        >
+                          <span>{reciter.id === 'hudhaify' ? 'الشيخ الحذيفي (مجمع الملك فهد)' : 'الشيخ الحصري (المصحف المعلم)'}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Clickable Quranic Ayah Card with Audio Waveform */}
@@ -876,7 +1097,16 @@ export const LessonView: React.FC<LessonViewProps> = ({
       )}
 
       {/* CONVERSATIONAL STREAM CONTAINER (المعلم الحواري المتدرج) */}
-      <div className="bg-white rounded-3xl border border-[#EAE3D6] shadow-sm overflow-hidden flex flex-col min-h-[580px]">
+      <div className="relative bg-white rounded-3xl border border-[#EAE3D6] shadow-sm overflow-hidden flex flex-col min-h-[580px]">
+        {/* Central Overlay Spinner during AI Gemini & RAG Processing */}
+        {isTyping && (
+          <AILoadingSpinner
+            language={language}
+            title={language === 'ar' ? 'المعلم الحواري يستحضر الدليل المعتمد...' : 'AI Mentor is formulating a verified response...'}
+            subtitle={language === 'ar' ? 'يتم مطابقة الإجابة مع مجمع الملك فهد والدرر السنية وسياج الحماية' : 'Verifying citations with King Fahd Quran Complex, Dorar, and ethical guardrails'}
+            variant="overlay"
+          />
+        )}
         
         {/* Mentor Persona Header */}
         <div className="p-3.5 sm:p-4 bg-[#FAF7F2] border-b border-[#EAE3D6] flex items-center justify-between">
@@ -944,10 +1174,25 @@ export const LessonView: React.FC<LessonViewProps> = ({
                             {m.scripture.type === 'quran' ? '📖 آية قرآنية كريمة' : '📜 حديث نبوي شريف'}
                           </span>
                           {m.scripture.type === 'quran' && (
-                            <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80 flex items-center gap-1">
-                              <Volume2 className="w-3 h-3 text-emerald-600" />
-                              <span>انقر للاستماع للنطق</span>
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={(e) => handleToggleFavoriteVerse(m.scripture!.arabicText, m.scripture!.reference, e)}
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition cursor-pointer flex items-center gap-1 ${
+                                  isVerseFavorited(m.scripture.arabicText, m.scripture.reference)
+                                    ? 'bg-rose-100 text-rose-800 border-rose-300'
+                                    : 'bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-700 border-slate-200'
+                                }`}
+                                title={isVerseFavorited(m.scripture.arabicText, m.scripture.reference) ? 'إزالة من المفضلة' : 'حفظ في المفضلة'}
+                              >
+                                <Heart className={`w-3 h-3 ${isVerseFavorited(m.scripture.arabicText, m.scripture.reference) ? 'fill-rose-600 text-rose-600' : ''}`} />
+                                <span>{isVerseFavorited(m.scripture.arabicText, m.scripture.reference) ? 'محفوظة' : 'مفضلة'}</span>
+                              </button>
+                              <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80 flex items-center gap-1">
+                                <Volume2 className="w-3 h-3 text-emerald-600" />
+                                <span>انقر للاستماع للنطق</span>
+                              </span>
+                            </div>
                           )}
                         </div>
 
@@ -1024,6 +1269,8 @@ export const LessonView: React.FC<LessonViewProps> = ({
                               onBack();
                             } else if (opt.includes('عرض بطاقة المصادر')) {
                               setShowSourceInfo(true);
+                            } else if (opt.includes('مشاركة إنجاز المحطة')) {
+                              setIsCongratulationOpen(true);
                             } else {
                               handleUserSend(opt);
                             }
@@ -1045,15 +1292,15 @@ export const LessonView: React.FC<LessonViewProps> = ({
           })}
 
           {isTyping && (
-            <div className="flex gap-3 items-center text-slate-400 text-xs">
-              <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs">
+            <div className="flex gap-3 items-center text-slate-600 text-xs animate-in fade-in duration-200">
+              <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 م
               </div>
-              <div className="bg-white border border-[#EAE3D6] px-4 py-2 rounded-full flex items-center gap-1.5 shadow-2xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-bounce"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-bounce [animation-delay:0.4s]"></span>
-                <span className="mr-1 text-slate-500 font-medium">المعلم يكتب...</span>
+              <div className="bg-white border border-amber-200/80 px-4 py-2.5 rounded-2xl flex items-center gap-2.5 shadow-2xs">
+                <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                <span className="text-slate-700 font-medium text-xs">
+                  {language === 'ar' ? 'المعلم الحواري يستحضر الدليل وصياغة الرد...' : 'AI Mentor is formulating a verified response...'}
+                </span>
               </div>
             </div>
           )}
@@ -1090,7 +1337,34 @@ export const LessonView: React.FC<LessonViewProps> = ({
         )}
 
         {/* Input Bar (Dialogue & Question Input) */}
-        <div className="p-3 sm:p-4 bg-white border-t border-[#EAE3D6]">
+        <div className="p-3 sm:p-4 bg-white border-t border-[#EAE3D6] space-y-2">
+          {/* Live Voice Speech-to-Text Transcription Banner */}
+          {isListening && (
+            <div className="p-2.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center justify-between animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2.5 w-2.5 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600"></span>
+                </span>
+                <span className="font-bold">
+                  {language === 'ar' ? 'جارٍ الاستماع لصوتك عبر Web Speech API...' : 'Listening via Web Speech API...'}
+                </span>
+                {interimVoiceText && (
+                  <span className="italic text-rose-700 bg-white/70 px-2 py-0.5 rounded-lg border border-rose-200">
+                    «{interimVoiceText}»
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={toggleListening}
+                className="px-2 py-0.5 rounded-md bg-rose-200 hover:bg-rose-300 text-rose-950 text-[11px] font-bold transition cursor-pointer"
+              >
+                {language === 'ar' ? 'إيقاف' : 'Stop'}
+              </button>
+            </div>
+          )}
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -1102,21 +1376,41 @@ export const LessonView: React.FC<LessonViewProps> = ({
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              placeholder={`اطرح سؤالك على المعلم ${persona.titleCall}...`}
+              placeholder={
+                isListening
+                  ? (language === 'ar' ? 'تحدث الآن، جاري تحويل صوتك لنص...' : 'Speak now, converting speech to text...')
+                  : `اطرح سؤالك على المعلم ${persona.titleCall}...`
+              }
               className="flex-1 bg-[#FAF7F2] border border-[#EAE3D6] rounded-2xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-amber-600 focus:bg-white transition"
             />
             <button
+              type="button"
+              onClick={toggleListening}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center transition cursor-pointer shrink-0 shadow-xs ${
+                isListening
+                  ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-200'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
+              }`}
+              title={isListening ? 'جارٍ الاستماع لصوتك... اضغط للإيقاف' : 'تحدث صوتياً مع المعلم (Web Speech API)'}
+            >
+              {isListening ? <Mic className="w-5 h-5 text-white animate-bounce" /> : <Mic className="w-5 h-5" />}
+            </button>
+            <button
               type="submit"
               disabled={!inputVal.trim() || isTyping}
-              className="w-12 h-12 rounded-2xl bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-white flex items-center justify-center transition cursor-pointer shadow-xs"
+              className="w-12 h-12 rounded-2xl bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-white flex items-center justify-center transition cursor-pointer shadow-xs shrink-0"
               title="إرسال"
             >
-              <Send className="w-5 h-5 rtl:rotate-180" />
+              {isTyping ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Send className="w-5 h-5 rtl:rotate-180" />
+              )}
             </button>
           </form>
 
-          <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-1">
-            <span>تفاعل فردي (سؤال واحد) • لا إسهاب • أمثلة مناسبة لسنك</span>
+          <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 px-1">
+            <span>تفاعل فردي (سؤال واحد) • مدعوم بالتعرف الصوتي Web Speech API</span>
             <span>{trackSourceData.primarySourceTitle.split(' ')[0]} ومجمع الملك فهد</span>
           </div>
         </div>
@@ -1124,6 +1418,43 @@ export const LessonView: React.FC<LessonViewProps> = ({
       </div>
       </>
       )}
+
+      {/* Dynamic Personalized Stage Congratulation & Social Share Modal */}
+      <StageCongratulationModal
+        isOpen={isCongratulationOpen}
+        onClose={() => setIsCongratulationOpen(false)}
+        stageTitle={stage.title}
+        stageNumber={stage.stageNumber}
+        trackId={stage.trackId}
+        userName={userName}
+        userAge={userAge}
+        language={language}
+        onOpenFullShareModal={onOpenFullShareModal}
+      />
+
+      {/* Dialogue Preferences Configuration Modal */}
+      <DialoguePreferencesModal
+        isOpen={isPreferencesOpen}
+        onClose={() => setIsPreferencesOpen(false)}
+        currentPreferences={dialoguePreferences}
+        onSavePreferences={(newPrefs) => setDialoguePreferences(newPrefs)}
+        learnerName={userName}
+        learnerAge={userAge}
+        trackTitle={stage.title}
+      />
+
+      {/* Stage Self-Assessment Checkpoint Modal */}
+      <StageSelfAssessmentModal
+        isOpen={isAssessmentOpen}
+        onClose={() => setIsAssessmentOpen(false)}
+        stage={stage}
+        language={language}
+        onCompleteAndProceed={() => {
+          setIsStageCompleted(true);
+          onCompleteStage(stage.id);
+          setIsCongratulationOpen(true);
+        }}
+      />
 
     </div>
   );
