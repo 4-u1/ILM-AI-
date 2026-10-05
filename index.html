@@ -9,6 +9,12 @@
     <meta property="og:description" content="منصة عِلم | ILM - رحلة معرفية موثوقة تفاعلية للتعريف بالإسلام وتعليم العلوم الشرعية وفق الحزمة العلمية المعتمدة لتحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#78350F" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Aref+Ruqaa:wght@400;700&family=Noto+Naskh+Arabic:wght@500;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Reem+Kufi:wght@500;600;700&display=swap" rel="stylesheet">
@@ -16,6 +22,15 @@
   <body class="bg-[#FAF7F2] text-[#1E293B] antialiased selection:bg-[#EAE2D5]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.warn('Service Worker registration failed:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
 

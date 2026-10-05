@@ -5,6 +5,7 @@ import {
   QuranpediaServiceId, 
   fetchQuranpediaAyahService, 
   getQuranpediaEmbedUrl,
+  getLocalFallbackForService,
   QURANPEDIA_WEB_BASE
 } from '../services/quranpediaApi';
 import { 
@@ -223,12 +224,12 @@ export const QuranpediaModal: React.FC<QuranpediaModalProps> = ({
                 onClick={() => setShowEmbedWidget(!showEmbedWidget)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                   showEmbedWidget
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-500/20 hover:bg-teal-100'
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-500/20 hover:bg-amber-100'
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" />
-                <span>{showEmbedWidget ? (isAr ? 'البيانات المباشرة' : 'Raw Data') : (isAr ? 'الموسوعة التفاعلية (Widget)' : 'Embed Widget')}</span>
+                <span>{showEmbedWidget ? (isAr ? 'عرض الواجهة المنسقة' : 'Show Formatted UI') : (isAr ? 'استجابة الـ API المباشرة (JSON)' : 'Live API Response (JSON)')}</span>
               </button>
             </div>
 
@@ -266,37 +267,51 @@ export const QuranpediaModal: React.FC<QuranpediaModalProps> = ({
         <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
           
           {showEmbedWidget ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                <span>الموسوعة التفاعلية الشاملة من قرآن بيديا:</span>
-                <span className="font-mono text-[10px]">{getQuranpediaEmbedUrl(surahNumber, ayahNumber)}</span>
+            <div className="space-y-3 animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 pb-2">
+                <span className="font-semibold">{isAr ? 'بيانات الاستجابة المباشرة المستلمة من خادم الموسوعة:' : 'Live response payload fetched from encyclopedia server:'}</span>
+                <span className="font-mono text-[10px] bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded text-amber-900 dark:text-amber-300 border border-amber-300/40">
+                  GET /v1/ayah/{surahNumber}/{ayahNumber}/{encodeURIComponent(currentServiceMeta.endpointParam)}
+                </span>
               </div>
-              <div className="w-full h-[460px] rounded-2xl overflow-hidden border border-emerald-500/20 shadow-inner bg-slate-50 dark:bg-slate-950">
-                <iframe
-                  src={getQuranpediaEmbedUrl(surahNumber, ayahNumber)}
-                  title={`Quranpedia Ayah ${surahNumber}:${ayahNumber}`}
-                  className="w-full h-full border-0"
-                  loading="lazy"
-                />
+              
+              <div className="w-full rounded-2xl border border-amber-300/30 overflow-hidden bg-slate-950 shadow-inner">
+                {/* JSON Code Header */}
+                <div className="bg-slate-900 px-4 py-2 text-[10px] font-mono text-slate-400 border-b border-slate-800 flex items-center justify-between" dir="ltr">
+                  <span>RESPONSE PAYLOAD (JSON)</span>
+                  <span className="text-emerald-500 flex items-center gap-1 font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    200 OK
+                  </span>
+                </div>
+                
+                {/* Code pre block */}
+                <div className="p-4 max-h-[380px] overflow-auto text-emerald-400 font-mono text-xs leading-relaxed text-left" dir="ltr">
+                  <pre>{JSON.stringify(serviceData || { 
+                    status: "offline_fallback", 
+                    message: "No live internet connection or server unreachable. Loaded offline backup payload.",
+                    data: getLocalFallbackForService(surahNumber, ayahNumber, activeServiceId) 
+                  }, null, 2)}</pre>
+                </div>
               </div>
             </div>
           ) : (
             <>
               {/* Active Service Description */}
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200">
-                <div className="flex items-center gap-2 font-medium">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EAE3D6] text-xs text-slate-700">
+                <div className="flex items-center gap-2 font-bold text-emerald-950">
                   {getServiceIcon(currentServiceMeta.id)}
                   <span>{isAr ? currentServiceMeta.descriptionAr : currentServiceMeta.descriptionEn}</span>
                 </div>
-                <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400">
-                  /v1/ayah/{surahNumber}/{ayahNumber}/{encodeURIComponent(currentServiceMeta.endpointParam)}
+                <span className="font-mono text-[10px] text-amber-900 bg-amber-100/50 px-2.5 py-0.5 rounded border border-amber-200/50 break-all shrink-0">
+                  /v1/ayah/{surahNumber}/{ayahNumber}/{currentServiceMeta.endpointParam}
                 </span>
               </div>
 
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-16 space-y-3 text-slate-400">
-                  <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
-                  <p className="text-xs font-medium">
+                  <Loader2 className="w-8 h-8 text-amber-600 animate-spin" />
+                  <p className="text-xs font-semibold">
                     {isAr ? 'جاري الاتصال بموسوعة قرآن بيديا وتحديث البيانات...' : 'Connecting to Quranpedia API v1...'}
                   </p>
                 </div>
@@ -307,26 +322,26 @@ export const QuranpediaModal: React.FC<QuranpediaModalProps> = ({
                     <div className="grid grid-cols-1 gap-4">
                       {Array.isArray(serviceData) ? (
                         serviceData.map((item: any, idx: number) => (
-                          <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-sm font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
-                                <BookOpen className="w-4 h-4" />
+                          <div key={idx} className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE3D6] space-y-2 hover:shadow-xs transition">
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              <h4 className="text-xs sm:text-sm font-bold text-emerald-900 flex items-center gap-2">
+                                <BookOpen className="w-4 h-4 text-emerald-700" />
                                 <span>{item.book || item.name || 'كتاب التفسير'}</span>
                               </h4>
                               {item.author && (
-                                <span className="text-[11px] px-2 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200">
+                                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
                                   {item.author}
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-amiri text-base">
+                            <p className="text-sm text-slate-800 leading-relaxed font-serif text-right font-medium">
                               {item.text || item.content || item.tafseer || JSON.stringify(item)}
                             </p>
                           </div>
                         ))
                       ) : (
-                        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                          <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-amiri text-base">
+                        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE3D6] space-y-2">
+                          <p className="text-sm text-slate-800 leading-relaxed font-serif text-right font-medium">
                             {typeof serviceData === 'string' ? serviceData : (serviceData?.text || serviceData?.summary || JSON.stringify(serviceData, null, 2))}
                           </p>
                         </div>
@@ -338,26 +353,26 @@ export const QuranpediaModal: React.FC<QuranpediaModalProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {Array.isArray(serviceData) ? (
                         serviceData.map((tr: any, idx: number) => (
-                          <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-teal-700 dark:text-teal-300 flex items-center gap-1.5">
-                                <Globe2 className="w-3.5 h-3.5" />
+                          <div key={idx} className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE3D6] space-y-2 hover:shadow-xs transition">
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                                <Globe2 className="w-3.5 h-3.5 text-emerald-700" />
                                 {tr.language || tr.name}
                               </span>
                               {tr.translator && (
-                                <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                                <span className="text-[10px] text-slate-500 font-semibold">
                                   {tr.translator}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed text-left font-sans">
                               {tr.text || tr.translation}
                             </p>
                           </div>
                         ))
                       ) : (
-                        <div className="p-4 col-span-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                          <p className="text-sm text-slate-700 dark:text-slate-200">
+                        <div className="p-4 col-span-2 rounded-2xl bg-[#FAF7F2] border border-[#EAE3D6]">
+                          <p className="text-sm text-slate-800 leading-relaxed font-sans">
                             {typeof serviceData === 'string' ? serviceData : JSON.stringify(serviceData, null, 2)}
                           </p>
                         </div>
@@ -366,12 +381,12 @@ export const QuranpediaModal: React.FC<QuranpediaModalProps> = ({
                   )}
 
                   {activeServiceId === 'tadabbur' && (
-                    <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/20 dark:to-slate-800 border border-amber-500/20 space-y-3">
-                      <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-sm">
-                        <Sparkles className="w-4 h-4 text-amber-500" />
+                    <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-[#FAF7F2]/30 border border-amber-200 space-y-3">
+                      <div className="flex items-center gap-2 text-amber-950 font-bold text-sm">
+                        <Sparkles className="w-4 h-4 text-amber-600 animate-pulse" />
                         <span>لطائف ووقفات تدبرية</span>
                       </div>
-                      <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-amiri text-base">
+                      <p className="text-sm text-slate-800 leading-relaxed font-serif text-right font-medium">
                         {typeof serviceData === 'object' 
                           ? (serviceData[0]?.insight || serviceData?.insight || serviceData?.summary || JSON.stringify(serviceData))
                           : serviceData}
@@ -380,12 +395,12 @@ export const QuranpediaModal: React.FC<QuranpediaModalProps> = ({
                   )}
 
                   {activeServiceId !== 'tafsir' && activeServiceId !== 'translations' && activeServiceId !== 'tadabbur' && (
-                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
-                      <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                    <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE3D6] space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-bold text-emerald-900 border-b border-[#EAE3D6] pb-2">
                         {getServiceIcon(currentServiceMeta.id)}
                         <span>{currentServiceMeta.nameAr}</span>
                       </div>
-                      <div className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-amiri text-base whitespace-pre-wrap">
+                      <div className="text-sm text-slate-800 leading-relaxed font-serif text-right font-medium whitespace-pre-wrap">
                         {typeof serviceData === 'object' 
                           ? (serviceData?.summary || serviceData?.text || JSON.stringify(serviceData, null, 2))
                           : serviceData}

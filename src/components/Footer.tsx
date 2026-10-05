@@ -1,5 +1,6 @@
 import React from 'react';
 import { Language } from '../types';
+import { IlmBrandLogo } from './IlmBrandLogo';
 
 interface FooterProps {
   language: Language;
@@ -12,15 +13,9 @@ export const Footer: React.FC<FooterProps> = ({ language }) => {
     <footer className="mt-20 border-t border-[#EAE3D6] bg-[#FAF7F2]/80 py-12 px-4 text-center">
       <div className="max-w-4xl mx-auto space-y-4">
         
-        {/* Brand Signoff matching refined logo */}
-        <div className="flex items-baseline justify-center gap-2">
-          <span className="font-brand text-3xl font-bold tracking-normal text-slate-900 select-none">
-            <span className="logo-word text-slate-950">علم</span>
-          </span>
-          <span className="text-slate-300 font-light text-xl select-none">|</span>
-          <span className="font-bold text-lg tracking-wider text-slate-700 select-none font-sans uppercase">
-            ILM
-          </span>
+        {/* Brand Signoff with IlmBrandLogo */}
+        <div className="flex items-center justify-center">
+          <IlmBrandLogo size="md" showSubtitle={true} withAura={true} />
         </div>
 
         <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-md mx-auto leading-relaxed">

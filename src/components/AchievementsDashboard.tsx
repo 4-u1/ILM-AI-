@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TrackId, Language, AchievementBadge, AchievementCategory } from '../types';
 import { ACHIEVEMENTS_REGISTRY } from '../data/achievementsData';
+import { getStoredXP } from '../utils/xpManager';
 import { DailyStreakCounter } from './DailyStreakCounter';
 import { LearningAnalytics } from './LearningAnalytics';
 import { ShareAchievementModal } from './ShareAchievementModal';
@@ -104,8 +105,8 @@ export const AchievementsDashboard: React.FC<AchievementsDashboardProps> = ({
   const unlockedCount = unlockedBadges.length;
   const overallPercent = Math.round((unlockedCount / totalBadges) * 100);
 
-  const totalPossibleXp = ACHIEVEMENTS_REGISTRY.reduce((acc, b) => acc + b.xpPoints, 0);
-  const earnedXp = unlockedBadges.reduce((acc, b) => acc + b.xpPoints, 0);
+  const totalPossibleXp = ACHIEVEMENTS_REGISTRY.reduce((acc, b) => acc + b.xpPoints, 0) + (completedStageIds.length * 50);
+  const earnedXp = Math.max(getStoredXP(), unlockedBadges.reduce((acc, b) => acc + b.xpPoints, 0));
 
   // Filtered badges
   const filteredBadges = activeCategory === 'all'

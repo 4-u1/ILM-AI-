@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { FormattedMessage } from './FormattedMessage';
 import { AILoadingSpinner } from './AILoadingSpinner';
+import { IlmBrandLogo } from './IlmBrandLogo';
 
 interface DaiyahSimulatorProps {
   language: Language;
@@ -217,12 +218,10 @@ export const DaiyahSimulator: React.FC<DaiyahSimulatorProps> = ({ language }) =>
       
       {/* Mobile Top Brand Header */}
       <div className="md:hidden flex items-center justify-between pb-4 border-b border-slate-200">
-        <div className="flex items-baseline gap-1.5">
-          <span className="font-brand text-3xl font-bold tracking-normal text-slate-900 select-none">
-            <span className="logo-word text-slate-950">علم</span>
-          </span>
-          <span className="text-slate-300 font-light text-lg select-none">|</span>
-          <span className="font-bold text-base tracking-wider text-slate-700 select-none font-sans uppercase">
+        <div className="flex items-center gap-2">
+          <IlmBrandLogo size="xs" showSubtitle={false} withAura={true} />
+          <span className="text-slate-300 font-light text-base select-none">|</span>
+          <span className="font-bold text-xs tracking-wider text-slate-700 select-none font-sans uppercase">
             ILM
           </span>
         </div>

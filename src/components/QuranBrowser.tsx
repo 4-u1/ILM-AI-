@@ -7,6 +7,7 @@ import {
   QuranAyah,
   FavoriteAyah 
 } from '../data/quranData';
+import { loadSurahAyahs, FullSurahData } from '../utils/quranLoader';
 import { 
   playQuranVerse, 
   stopQuranAudio, 
@@ -64,10 +65,27 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'meccan' | 'medinan'>('all');
   const [selectedSurahNumber, setSelectedSurahNumber] = useState<number>(1);
+  const [currentSurahData, setCurrentSurahData] = useState<FullSurahData | null>(null);
+  const [isLoadingSurah, setIsLoadingSurah] = useState<boolean>(false);
   
   // Audio state
   const [playingAyahKey, setPlayingAyahKey] = useState<string | null>(null);
   const [selectedReciter, setSelectedReciter] = useState<QuranReciterId>(() => getSavedReciter());
+
+  // Load dynamic surah ayahs whenever selectedSurahNumber changes
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingSurah(true);
+    loadSurahAyahs(selectedSurahNumber).then((data) => {
+      if (!cancelled) {
+        setCurrentSurahData(data);
+        setIsLoadingSurah(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedSurahNumber]);
 
   // Bookmarking in localStorage for Offline reading continuity
   const [bookmarkedSurah, setBookmarkedSurah] = useState<number>(() => {
@@ -619,9 +637,16 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
             </div>
 
             {/* Authentic Surah Content (King Fahd Complex text) */}
-            {activeSurahText ? (
+            {isLoadingSurah ? (
+              <div className="py-16 text-center space-y-3">
+                <div className="w-9 h-9 border-3 border-amber-300 border-t-amber-700 rounded-full animate-spin mx-auto" />
+                <p className="text-xs text-amber-950 font-bold font-sans">
+                  {isAr ? 'جاري استحضار النص القرآني والتلاوة المعتمدة...' : 'Loading verified Uthmani text...'}
+                </p>
+              </div>
+            ) : currentSurahData ? (
               <div className="space-y-4">
-                {activeSurahText.bismillah && (
+                {currentSurahData.bismillah && (
                   <div className="text-center py-4 select-none">
                     <span className="font-serif text-2xl font-bold text-slate-900 leading-relaxed block">
                       بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -630,7 +655,7 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
                 )}
 
                 <div className="space-y-4">
-                  {activeSurahText.ayahs.map((ayah) => {
+                  {currentSurahData.ayahs.map((ayah) => {
                     const ayahKey = `${activeSurahMeta.number}:${ayah.numberInSurah}`;
                     const isPlaying = playingAyahKey === ayahKey;
                     const isFav = favorites.some((f) => f.id === ayahKey);
@@ -734,45 +759,7 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
                   })}
                 </div>
               </div>
-            ) : (
-              /* For other surahs across the 114: provide direct connection to King Fahd Complex Mushaf reader */
-              <div className="p-8 text-center space-y-4 rounded-3xl bg-slate-50 border border-slate-200">
-                <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto text-2xl">
-                  📖
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-base font-serif">
-                    سورة {activeSurahMeta.nameAr} ({activeSurahMeta.ayahCount} آية)
-                  </h4>
-                  <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
-                    {isAr
-                      ? 'فهرس الآيات ومعلومات الرسم العثماني محفوظة ومتاحة بالكامل. يمكنك الاستماع لتلاوة الآية الأولى مباشرة أو تصفح كامل المصحف من منصة مجمع الملك فهد الرقمية.'
-                      : 'The complete index and Uthmani metadata are fully loaded. You can listen to the first verse or browse via King Fahd Digital Mushaf.'}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => handlePlayAyah(`سورة ${activeSurahMeta.nameAr}`, activeSurahMeta.number, 1)}
-                    className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-xs"
-                  >
-                    <Volume2 className="w-4 h-4 text-amber-300" />
-                    <span>{isAr ? 'استماع لمطلع السورة' : 'Listen to Surah Opening'}</span>
-                  </button>
-
-                  <a
-                    href={`https://quranpedia.net/surah/${activeSurahMeta.number}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                  >
-                    <span>{isAr ? 'فتح بمصحف مجمع الملك فهد' : 'King Fahd Complex Mushaf'}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                  </a>
-                </div>
-              </div>
-            )}
+            ) : null}
 
             {/* Reference Notice */}
             <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">

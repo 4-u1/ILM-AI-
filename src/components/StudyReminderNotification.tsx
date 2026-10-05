@@ -24,6 +24,9 @@ interface StudyReminderNotificationProps {
   completedStageIds: string[];
   onContinueLearning: (stage: LessonStage) => void;
   onOpenReminderSettings?: () => void;
+  onOpenFeature?: () => void;
+  onOpenTutor?: () => void;
+  onOpenGuide?: () => void;
   userName?: string;
   userAge?: string;
 }
@@ -147,6 +150,8 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
   selectedTrack,
   completedStageIds,
   onContinueLearning,
+  onOpenTutor,
+  onOpenGuide,
   userName = 'طالب العلم',
   userAge,
 }) => {
@@ -381,15 +386,27 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
 
   if (!isVisible) {
     return (
-      /* Discreet test trigger badge floating at bottom right for demo & testers */
-      <div className="fixed bottom-20 right-4 sm:bottom-5 sm:right-5 z-30 print:hidden opacity-90 hover:opacity-100 transition">
+      <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-30 print:hidden transition-all duration-300">
         <button
-          onClick={handleSimulate24Hours}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 shadow-md cursor-pointer transition border border-slate-700"
-          title={isAr ? 'اختبار نظام التنبيه الذكي بعد انقطاع 24 ساعة (حسب المسار)' : isUr ? 'مسار کے مطابق 24 گھنٹے انقطاع کی یاد دہانی کا ٹیسٹ' : 'Test 24h Inactivity Track Reminder'}
+          onClick={() => {
+            if (onOpenGuide) {
+              onOpenGuide();
+            } else if (onOpenTutor) {
+              onOpenTutor();
+            } else if (nextStage) {
+              onContinueLearning(nextStage);
+            }
+          }}
+          className="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-gradient-to-r from-white via-[#FCFAF5] to-[#F7F2E6] text-slate-950 text-xs sm:text-sm font-black hover:from-amber-50 hover:to-white shadow-xl shadow-amber-900/10 hover:shadow-2xl hover:scale-105 active:scale-95 cursor-pointer transition-all border-2 border-[#D4AF37]/70 hover:border-[#D4AF37] ring-4 ring-amber-500/15"
+          title={isAr ? 'مُرشِد عِلم الذكي | دليلك وموجهك التفاعلي في المنصة' : 'ILM Intelligent Guide'}
         >
-          <Bell className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
-          <span>{isAr ? 'اختبار تذكير الـ 24 ساعة (حسب المسار)' : isUr ? '24 گھنٹے یاد دہانی ٹیسٹ' : 'Test 24h Reminder'}</span>
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-100 to-emerald-100 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs group-hover:rotate-12 transition-transform">
+            <Compass className="w-3.5 h-3.5 text-amber-800" />
+          </div>
+          <span className="tracking-wide font-serif text-slate-900">
+            {isAr ? 'مُرشِد عِلم الذكي' : isUr ? 'مرشد عِلم' : language === 'fr' ? 'Guide ILM' : language === 'es' ? 'Guía ILM' : language === 'id' ? 'Panduan ILM' : 'ILM Guide'}
+          </span>
+          <div className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-200 animate-pulse shrink-0" />
         </button>
       </div>
     );

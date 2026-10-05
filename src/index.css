@@ -183,6 +183,7 @@
   display: inline-block;
   letter-spacing: normal;
   font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+  font-weight: 500;
   line-height: 1.15;
 }
 
@@ -191,8 +192,8 @@
   position: absolute;
   right: 0.18em;
   bottom: -0.16em;
-  color: #1E3A8A; /* Luxurious deep navy */
-  font-weight: 800;
+  color: #0F2B5C; /* Deep navy */
+  font-weight: 600;
   font-size: 1.1em;
   pointer-events: none;
   user-select: none;
@@ -262,27 +263,217 @@ html, body {
   will-change: opacity, transform;
 }
 
-/* Professional Print Optimizations for Certificate */
+/* =========================================================================
+   🖨️ Comprehensive Professional Print Styles & Landscape Certificate Engine
+   ========================================================================= */
+@page {
+  size: landscape;
+  margin: 6mm 8mm;
+}
+
 @media print {
-  body {
+  /* Hide all non-printable UI chrome & interactive controls */
+  header, 
+  nav, 
+  footer, 
+  .print\:hidden, 
+  [role="navigation"], 
+  .bottom-nav, 
+  #mobile-more-sheet, 
+  .fixed,
+  button:not(.printable-content button),
+  .mobile-bottom-clearance::after {
+    display: none !important;
+  }
+
+  /* Reset body and html for high-fidelity print */
+  html, body {
     background: #ffffff !important;
-    color: #000000 !important;
+    color: #0f172a !important;
     padding: 0 !important;
     margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  
-  header, nav, footer, .print\:hidden {
-    display: none !important;
-  }
-  
-  .certificate-sheet {
-    page-break-inside: avoid;
-    break-inside: avoid;
-    box-shadow: none !important;
-    border-width: 8px !important;
-    margin: 0 auto !important;
+
+  #root, main, .page-enter, .mobile-bottom-clearance {
+    padding: 0 !important;
+    margin: 0 !important;
     max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* 📜 High-Precision Landscape Single-Page Certificate Sheet */
+  .certificate-sheet {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+    box-shadow: none !important;
+    border: 8px double #1e293b !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 94vh !important;
+    padding: 14px 24px !important;
+    background-color: #FAF9F5 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    border-radius: 18px !important;
+  }
+
+  .certificate-sheet .border-2 {
+    padding: 8px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .certificate-sheet .border {
+    padding: 8px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Proportional typography scaling so certificate never overflows 1 landscape page */
+  .certificate-sheet h1 {
+    font-size: 18pt !important;
+    line-height: 1.15 !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .certificate-sheet .text-3xl, 
+  .certificate-sheet .text-4xl, 
+  .certificate-sheet .text-5xl {
+    font-size: 22pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .certificate-sheet .mb-8,
+  .certificate-sheet .mb-10 {
+    margin-bottom: 6px !important;
+  }
+
+  .certificate-sheet .py-4,
+  .certificate-sheet .py-6,
+  .certificate-sheet .py-8 {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .certificate-sheet .grid {
+    padding-top: 6px !important;
+    margin-top: 6px !important;
+  }
+
+  /* 📑 Printable Cards for Field Da'iyah & Guides */
+  .printable-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-width: 2px !important;
+    box-shadow: none !important;
   }
 }
+
+/* 🌟 Royal Islamic Gold & Emerald Card Hover Glow System (تأثير التوهج المحيطي الفاخر) */
+.luxury-card-glow {
+  position: relative;
+  transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card-glow:hover {
+  border-color: #D4AF37 !important;
+  box-shadow: 
+    0 0 0 1px rgba(212, 175, 55, 0.6),
+    0 0 28px 6px rgba(212, 175, 55, 0.38),
+    0 20px 45px -10px rgba(180, 130, 20, 0.28) !important;
+  transform: translateY(-3px);
+}
+
+/* 💚 Emerald Variant for community & outreach cards */
+.luxury-card-glow-emerald {
+  position: relative;
+  transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card-glow-emerald:hover {
+  border-color: #10B981 !important;
+  box-shadow: 
+    0 0 0 1px rgba(16, 185, 129, 0.6),
+    0 0 28px 6px rgba(16, 185, 129, 0.38),
+    0 20px 45px -10px rgba(5, 150, 105, 0.28) !important;
+  transform: translateY(-3px);
+}
+
+/* 🌹 Warm Amber/Rose Variant for Dhikr & Heart Sanctuary cards */
+.luxury-card-glow-rose {
+  position: relative;
+  transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card-glow-rose:hover {
+  border-color: #D4AF37 !important;
+  box-shadow: 
+    0 0 0 1px rgba(212, 175, 55, 0.55),
+    0 0 30px 6px rgba(225, 140, 40, 0.35),
+    0 20px 45px -10px rgba(180, 100, 20, 0.25) !important;
+  transform: translateY(-3px);
+}
+
+/* 📱 High-Performance Mobile Ergonomics & Touch Optimizations */
+html, body {
+  overflow-x: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+.mobile-scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.mobile-scroll-touch::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-snap-child {
+  scroll-snap-align: start;
+}
+
+/* Dynamic bottom sheet overlay animation */
+@keyframes sheetSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-sheet-up {
+  animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

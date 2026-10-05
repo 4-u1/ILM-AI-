@@ -25,6 +25,8 @@ import { parseLearnerPersona, adaptCapsuleForAge, LearnerPersona } from '../util
 import { loadDialoguePreferences } from '../utils/dialoguePreferences';
 import { FormattedMessage } from './FormattedMessage';
 import { DialoguePreferencesModal } from './DialoguePreferencesModal';
+import { getTutorTrackMeta } from '../data/tutorContent';
+import { UI_TRANSLATIONS } from '../data/translations';
 
 export interface InteractiveTutorProps {
   language: Language;
@@ -72,307 +74,8 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   const isRtl = isAr || isUr;
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
-  // Track Metadata Definition
-  const TRACK_META: Record<TrackId, {
-    titleAr: string;
-    titleEn: string;
-    welcomeMsg: string;
-    verifyQ: string;
-    verifyOptions: string[];
-    curriculumOverview: string;
-    units: Array<{
-      title: string;
-      part1: string;
-      clarityQuestion: (name: string) => string;
-      checkQuestion: string;
-      checkOptions: string[];
-      correctOptionIndex: number;
-      correctionExplanation: (name: string) => string;
-    }>;
-    quizQuestions: Array<{
-      q: string;
-      options: string[];
-      correct: number;
-    }>;
-    certSubtitleAr: string;
-    certSubtitleEn: string;
-  }> = {
-    muslim: {
-      titleAr: 'مسار المسلم الأصل',
-      titleEn: 'Born Muslim Path',
-      welcomeMsg: 'السلام عليكم ورحمة الله وبركاته. حياك الله في مسار المسلم الأصل. يسعدني أن أكون معلمك اليوم. من أنت وما اسمك الكريم؟',
-      verifyQ: 'بما أنك اخترت مسار (المسلم الأصل)، هل أنت فعلاً ولدت مسلماً؟',
-      verifyOptions: ['نعم، ولدت مسلماً والحمد لله', 'نعم، نشأت في أسرة مسلمة', 'لا، دخلت الإسلام حديثاً'],
-      curriculumOverview: `بناءً على هدفك المبارك، مسار المسلم الأصل عندنا مصمم خصيصاً لك، وسيمر بالمراحل التالية:
-• بناء العقيدة (فهم التوحيد بأنواعه).
-• الفقه (أحكام العبادات والخشوع التي تهمك في يومك).
-• تصحيح المفاهيم والشبهات المعاصرة.
-• بناء القيم والأخلاق الإسلامية في تعاملاتك.
-
-هل أنت مستعد لنبدأ معاً في الدرس الأول (العقيدة)؟`,
-      units: [
-        {
-          title: 'بناء العقيدة: مفهوم التوحيد وأساسه',
-          part1: 'التوحيد في لغتنا هو إفراد الشيء، وشرعاً هو: إفراد الله تعالى بما يختص به من الربوبية والألوهية والأسماء والصفات. أي أن نعتقد بقلوبنا وجوارحنا أنه لا خالق ولا رازق ولا معبود بحق إلا الله وحده لا شريك له.',
-          clarityQuestion: (name: string) => `واضح يا ${name} حتى الآن؟ أو تحب أعيد لك نقطة معينة؟`,
-          checkQuestion: 'لو سألك شخص: ما معنى التوحيد بكلمات بسيطة ومباشرة؟ ماذا سترد عليه؟',
-          checkOptions: [
-            'هو إفراد الله وحده بالعبادة والخلق دون شريك',
-            'هو مجرد الاعتراف بوجود خالق دون عبادته',
-            'هو التواكل وتمني الأماني'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، لكن الأصح هو: التوحيد لا يكفي فيه مجرد الإقرار بوجود الله، بل لابد من إفراده بالعبادة والخلق ونفي أي شريك عنه.`
-        },
-        {
-          title: 'أقسام التوحيد الثلاثة',
-          part1: 'ينقسم التوحيد إلى ثلاثة أقسام متكاملة: توحيد الربوبية (أفعال الله كالخلق والرزق)، وتوحيد الألوهية (أفعال العباد كالصلاة والدعاء لله وحده)، وتوحيد الأسماء والصفات (إثبات ما أثبته الله لنفسه بلا تمثيل ولا تعطيل).',
-          clarityQuestion: (name: string) => `ما شاء الله يا ${name}، هل هذا التقسيم واضح لك وميسر؟`,
-          checkQuestion: 'لو أن شخصاً أقر بأن الله هو الخالق الرازق وحده، لكنه دعا غير الله أو استغاث بميت، هل يكون قد حقق توحيد الألوهية؟',
-          checkOptions: [
-            'لا، لأن الدعاء عبادة وصرفها لغير الله شرك يناقض الألوهية',
-            'نعم، يكفيه الإقرار بأن الله هو الخالق',
-            'نعم، ولا حرج في ذلك'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، لكن الأصح هو: الدعاء هو العبادة كما قال النبي ﷺ، فصرفه لغير الله يناقض توحيد الألوهية حتى لو كان مقراً بأن الله هو الخالق.`
-        },
-        {
-          title: 'الفقه: إتقان العبادة ومقاصد الصلاة',
-          part1: 'الصلاة ليست مجرد حركات، بل هي صلة العبد بربه، وميزان يومه. مفتاحها الطهارة الباطنة بالإخلاص، والطهارة الظاهرة بإسباغ الوضوء، وروحها الخشوع واستحضار عظمة الله.',
-          clarityQuestion: (name: string) => `واضح لك يا ${name} هذا المقصد العظيم من الصلاة؟`,
-          checkQuestion: 'ما هما الشرطان الأساسيان لصحة وقبول أي عبادة في الإسلام؟',
-          checkOptions: [
-            'الإخلاص لله وحده وموافقة سنة رسول الله ﷺ',
-            'كثرة المظاهر والتباهي أمام الناس',
-            'أداؤها بسرعة وبأي كيفية'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة حسنة يا ${name}، لكن الأصح هو: العمل لا يُقبل عند الله إلا بشرطين متلازمين: الإخلاص لله وحده، وموافقة هدي النبي ﷺ.`
-        },
-        {
-          title: 'بناء القيم والأخلاق وتصحيح المفاهيم',
-          part1: 'المسلم الحق لا تنفصل عبادته عن أخلاقه في عمله وتعامله اليومي. قال النبي ﷺ: «إنما بعثت لأتمم صالح الأخلاق». فالدين المعاملة والصدق والأمانة وبر الوالدين وحفظ الألسن.',
-          clarityQuestion: (name: string) => `كيف ترى أثر هذه القيم في واقعك اليومي يا ${name}؟ هل الفكرة واضحة؟`,
-          checkQuestion: 'إذا تعارض كسب المال بالغش أو الحرام مع الأمانة، فما هو الموقف الإيماني الراسخ للمسلم الأصل؟',
-          checkOptions: [
-            'ترك الحرام ابتغاء مرضاة الله، واليقين بأن الرزاق هو الله وحده',
-            'أخذ الحرام بدعوى صعوبة المعيشة',
-            'الغش ما دام لا يراه أحد'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، لكن الأصح هو: من ترك شيئاً لله عوضه الله خيراً منه، والتوكل الحق يقتضي طلب الرزق بالحلال الطيب.`
-        }
-      ],
-      quizQuestions: [
-        {
-          q: 'ما هو التوحيد الذي أنكره مشركو قريش وامتنعوا عنه رغم اعترافهم بأن الله هو الخالق؟',
-          options: ['توحيد الألوهية (إفراد الله بالعبادة وحده)', 'توحيد الربوبية (الاعتراف بالخلق)', 'معرفة اللغة'],
-          correct: 0
-        },
-        {
-          q: 'ما هو مفهوم التوكل الحق على الله في أمور حياتك وسعيك؟',
-          options: ['صدق اعتماد القلب على الله مع بذل الأسباب المشروعة بكامل الهمة', 'ترك العمل والدراسة والقعود', 'الاعتماد على المخلوقين ونسيان الخالق'],
-          correct: 0
-        },
-        {
-          q: 'كيف يتعامل المسلم الراسخ مع الشبهات المعاصرة وتحديات الفكر؟',
-          options: ['بالرجوع للعلماء والمصادر المعتمدة الموثوقة مع الحكمة', 'بالاندفاع والتعصب دون علم', 'بالتخلي عن ثوابت الدين'],
-          correct: 0
-        }
-      ],
-      certSubtitleAr: 'مسار المسلم الأصل: ترسيخ وتعميق العقيدة والعبادة ومقاصد الشريعة',
-      certSubtitleEn: 'Born Muslim Path: Deepening Creed, Worship Wisdom & Islamic Ethics'
-    },
-    new_muslim: {
-      titleAr: 'مسار المسلم الجديد',
-      titleEn: 'New Muslim Path',
-      welcomeMsg: 'السلام عليكم ورحمة الله وبركاته. مبارك عليك نعمة الإسلام، وأهلاً بك في مسار المسلم الجديد. يسعدني أن أكون رفيقك ومعلمك. من أنت وما اسمك الكريم؟',
-      verifyQ: 'هل دخلت في الإسلام حديثاً أو تبدأ خطواتك الأولى في تعلمه؟',
-      verifyOptions: ['نعم، أسلمت حديثاً والحمد لله', 'نعم، في خطواتي الأولى', 'أنا مسلم منذ الولادة'],
-      curriculumOverview: `هنيئاً لك هذه البداية المباركة! مسارنا مصمم ليتدرج معك بيسر وسماحة:
-• أركان الإسلام الخمسة وأركان الإيمان بمعانٍ بسيطة ومطمئنة.
-• مفتاح العبادة: الطهارة وتعلم الصلاة خطوة بخطوة.
-• الحياة اليومية للمسلم: الطعام الحلال والتعامل مع الأهل والمجتمع.
-• بناء الطمأنينة القلبية وتجاوز التحديات الأولى.
-
-هل أنت مستعد لنبدأ معاً في الخطوة الأولى؟`,
-      units: [
-        {
-          title: 'الشهادتان: معنى لا إله إلا الله ومحمد رسول الله',
-          part1: 'الشهادتان هما باب الإسلام العظيم. معناهما: أن تشهد بقلبك ولسانك أنه لا معبود بحق إلا الله وحده، وأن محمداً ﷺ هو رسول الله وخاتم الأنبياء الذي أرسله الله رحمة للعالمين.',
-          clarityQuestion: (name: string) => `هل معنى الشهادتين واضح ومطمئن لقلبك يا ${name}؟`,
-          checkQuestion: 'ماذا يترتب على قولك (أشهد أن محمداً رسول الله) في حياتك اليومية؟',
-          checkOptions: [
-            'تصديقه فيما أخبر، وطاعته فيما أمر، وعبادة الله بما شرع',
-            'مجرد قول باللسان دون عمل بهديه',
-            'التوقف عن كل أنشطة الحياة'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، لكن الأصح هو: الشهادة تعني محبة النبي ﷺ وتصديقه واتباع سنته المباركة برفق وسماحة.`
-        },
-        {
-          title: 'الصلوات الخمس: لقاؤك اليومي مع الله',
-          part1: 'الصلاة هي هدية الله للمؤمن، خمس وقفات يومية تزيل الهموم وتمنح القلب سكينة. تبدأ بتكبيرة الإحرام وقراءة الفاتحة وتنتهي بالسلام، والدين يسر، فما عجزت عنه تؤديه بقدر استطاعتك.',
-          clarityQuestion: (name: string) => `هل تشعر بجمال هذه الهدية يا ${name}؟ وهل الفكرة واضحة؟`,
-          checkQuestion: 'إذا دخل وقت الصلاة ولم تحفظ سورة الفاتحة كاملة بعد، ماذا تفعل؟',
-          checkOptions: [
-            'تصلي وتذكر الله بما تيسر (سبحان الله، والحمد لله) حتى تحفظ الفاتحة بيسر',
-            'تترك الصلاة نهائياً',
-            'تنتظر أشهراً حتى تحفظ القرآن كله'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، والصواب في ديننا الحنيف: أن الدين يسر، فتصلي وتذكر الله بما تيسر حتى تتعلم الفاتحة تدريجياً دون مشقة.`
-        },
-        {
-          title: 'التعامل مع الأهل والمجتمع غير المسلم',
-          part1: 'الإسلام يأمرك بزيادة البر والإحسان لأهلك ووالديك بعد إسلامك، وليس مقاطعتهم. قال الله تعالى في الوالدين غير المسلمين: {وصاحبهما في الدنيا معروفاً}. فخلقك الحسن هو أصدق دعوة لهم.',
-          clarityQuestion: (name: string) => `واضح لك يا ${name} هذا الأدب الرفيع في التعامل مع الأهل؟`,
-          checkQuestion: 'كيف يوصينا الإسلام بالتعامل مع الوالدين والأقارب غير المسلمين؟',
-          checkOptions: [
-            'بالبر والإحسان والصلة والهدية وحسن المعاملة',
-            'بالقطيعة والغضب والمعاملة الجافة',
-            'بترك برهم'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، بل العكس تماماً: الإسلام يحث على مضاعفة الإحسان والبر للأهل لتكون سفيراً حسناً لدين الرحمة.`
-        }
-      ],
-      quizQuestions: [
-        {
-          q: 'ما هو الركن الأول والأساسي من أركان الإسلام؟',
-          options: ['شهادة أن لا إله إلا الله وأن محمداً رسول الله', 'صيام شهر رمضان', 'الحج لمن استطاع إليه سبيلاً'],
-          correct: 0
-        },
-        {
-          q: 'ما القاعدة الأساسية في تعلم أحكام الإسلام للمسلم الجديد؟',
-          options: ['التدرج واليسر وسماحة الشريعة', 'المشقة والتشديد على النفس', 'ترك التعلم'],
-          correct: 0
-        },
-        {
-          q: 'كيف تكون علاقة المسلم الجديد مع أسرته ومجتمعه؟',
-          options: ['علاقة بر ورحمة وإحسان وخلق رفيع', 'قطيعة وتنافر', 'عزلة تامة'],
-          correct: 0
-        }
-      ],
-      certSubtitleAr: 'مسار المسلم الجديد: تأسيس أركان الإسلام، تعلم الصلاة، وسماحة الدين',
-      certSubtitleEn: 'New Muslim Path: Foundations of Faith, Prayer & Islamic Living'
-    },
-    non_muslim: {
-      titleAr: 'مسار غير المسلم (باحث عن الحقيقة)',
-      titleEn: 'Truth Inquirer Path',
-      welcomeMsg: 'السلام عليكم، وأهلاً ومرحباً بك في مسار الباحث عن الحقيقة. يسعدنا جداً حضورك وحوارك الهادئ في مساحة آمنة ومحترمة. من أنت وما اسمك الكريم؟',
-      verifyQ: 'هل تزورنا اليوم للتعرف على الإسلام والبحث عن إجابات لتساؤلاتك بحرية وموضوعية؟',
-      verifyOptions: ['نعم، أبحث عن الحقيقة وأستكشف', 'نعم، لدي تساؤلات أود فهمها', 'أنا مسلم بالفعل'],
-      curriculumOverview: `أهلاً بك دوماً. مسارنا هنا يعتمد على العقلانية والمنطق والوضوح التام:
-• مفهوم الخالق الواحد وغايات الوجود الإنساني.
-• رسالة الإسلام ونبوة محمد ﷺ وبراهين القرآن الكريم.
-• العدالة وحقوق الإنسان والأخلاق في الرؤية الإسلامية.
-• الإجابة الصريحة عن الأسئلة والشبهات الشائعة.
-
-هل ترغب في البدء معنا في المحور الأول؟`,
-      units: [
-        {
-          title: 'مفهوم الخالق الواحد في الإسلام',
-          part1: 'الإسلام يؤكد أن هذا الكون البديع بنظامه الدقيق لم يأتِ صدفة، بل خلقه إله واحد قادر حكيم، ليس له ولد ولا شريك ولا مثيل، متصف بصفات الكمال والرحمة والعدل المطلق.',
-          clarityQuestion: (name: string) => `هل هذه الرؤية واضحة ومنطقية لعقلك يا ${name}؟`,
-          checkQuestion: 'ما الذي يميز مفهوم الإله في الإسلام عن بقية التصورات الفلسفية المعقدة؟',
-          checkOptions: [
-            'أنه إله واحد كامل منزه عن الشبيه والولد، قريب يجيب دعاء عباده مباشرة دون وسائط',
-            'أنه يحتاج إلى وسائط وشركاء لإدارة خلقه',
-            'أنه خلق الكون وتركه عبثاً دون هداية'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، وميزة الإسلام الكبرى هي التوحيد النقي الخالص: علاقة مباشرة بين الإنسان وخالقه دون صكوك ولا كهنوت.`
-        },
-        {
-          title: 'القرآن الكريم: رسالة معجزة ومحفوظة',
-          part1: 'القرآن الكريم هو كلام الله المنزل على نبيه محمد ﷺ، محفوظ بحروفه عبر 14 قرناً دون تبديل، يخاطب العقل ويدعو للتأمل والتفكر في الآفاق والأنفس، ويقدم منظومة حياة متكاملة.',
-          clarityQuestion: (name: string) => `واضح لك هذا المحور يا ${name}؟ أو لديك استفسار حوله؟`,
-          checkQuestion: 'ما هي الدعوة المتكررة التي يوجهها القرآن لقارئه في آياته الكريمة؟',
-          checkOptions: [
-            'التفكر العقلي، والتدبر في ملكوت السماوات والأرض، ونبذ التقليد الأعمى',
-            'إلغاء العقل وقبول كل شيء دون تفكير',
-            'التعصب دون دليل'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة حسنة يا ${name}، لكن القرآن يتميز بأنه أكثر كتاب يحث على التعقل: {أفلا يعقلون}، {أفلا يتدبرون}، وينبذ التقليد الأعمى.`
-        }
-      ],
-      quizQuestions: [
-        {
-          q: 'ما هو المبدأ الأساسي والجامع في عقيدة الإسلام؟',
-          options: ['وحدانية الخالق المطلقة والتوجه له بالعبادة دون شريك', 'تعدد الآلهة', 'إنكار الخالق'],
-          correct: 0
-        },
-        {
-          q: 'كيف يتعامل الإسلام مع العقل الإنساني في البحث عن الحقيقة؟',
-          options: ['يكرم العقل ويجعله مناط التكليف وأداة التفكر في الآفاق', 'يصادر العقل ويمنع التفكير', 'يدعو إلى الشك الدائم بلا وصول'],
-          correct: 0
-        }
-      ],
-      certSubtitleAr: 'مسار الباحث عن الحقيقة: استكشاف الإسلام بالعقل والبرهان والحرية الفكرية',
-      certSubtitleEn: 'Truth Inquirer Path: Rational Discovery of Islamic Monotheism & Truth'
-    },
-    daiyah: {
-      titleAr: 'مسار الداعية (تأهيل ومحاكاة)',
-      titleEn: 'Da\'iyah Training Path',
-      welcomeMsg: 'السلام عليكم ورحمة الله وبركاته. مرحباً بك يا حامل أمانة البلاغ. في مسار الداعية نسعى لصقل مهاراتك بالحكمة والموعظة الحسنة. من أنت وما اسمك الكريم؟',
-      verifyQ: 'هل تسعى لتطوير مهاراتك الحوارية والدعوية لنقل رسالة الإسلام بالحكمة؟',
-      verifyOptions: ['نعم، أهدف للتأهيل والتدريب الدعوي', 'نعم، أريد ممارسة المحاكاة', 'أريد التعلم فقط'],
-      curriculumOverview: `حياك الله وبارك في همتك! مسار الداعية يقدم لك تأهيلاً نوعياً:
-• أصول الدعوة بالحكمة والرفق والمنهج النبوي في مخاطبة العقول والقلوب.
-• مهارات إدارة النقاش وتفكيك الشبهات بالأدلة العقلية والنقلية.
-• محاكاة سيناريوهات حوارية تفاعلية مع أنماط مختلفة من السائلين.
-• فقه الأولويات والتحلي بأخلاق الداعية الصادق.
-
-هل أنت مستعد لنبدأ معاً في المحور الأول؟`,
-      units: [
-        {
-          title: 'المنهج النبوي: الحكمة والموعظة الحسنة والرفق',
-          part1: 'الأصل في الدعوة هو الرفق والرحمة، كما قال تعالى: {ادع إلى سبيل ربك بالحكمة والموعظة الحسنة وجادلهم بالتي هي أحسن}. فالداعية طبيب رحيم يريد نجاة الناس، وليس محامياً يبحث عن إفحام الخصم والانتصار للنفس.',
-          clarityQuestion: (name: string) => `هل هذا الضابط الأصيل حاضر في ذهنك يا ${name}؟`,
-          checkQuestion: 'إذا واجهت سفيهاً أو شخصاً يجادل بحدة وسخرية، فما هو الهدي النبوي الحكيم في التعامل معه؟',
-          checkOptions: [
-            'مخاطبته بالرفق والهدوء والإعراض عن السباب، وتبيان الحق دون انفعال',
-            'رد السباب بالسباب والانتصار للنفس',
-            'التراجع والانسحاب بشعور الهزيمة'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة طيبة يا ${name}، لكن القاعدة الدعوية: {وإذا خاطبهم الجاهلون قالوا سلاماً}، فالرفق ما كان في شيء إلا زانه، والهدوء يمتص الغضب ويظهر هيبة الحق.`
-        },
-        {
-          title: 'فقه الأولويات: البدء بالأهم فالمهم',
-          part1: 'حين بعث النبي ﷺ معاذاً إلى اليمن، قال له: «فليكن أول ما تدعوهم إليه أن يوحدوا الله، فإن هم أطاعوك لذلك فأعلمهم أن الله افترض عليهم خمس صلوات...». فالبداية بالتوحيد وأصول الإيمان قبل الفروع والتفاصيل.',
-          clarityQuestion: (name: string) => `واضح لك هذا الترتيب الدعوي المحكم يا ${name}؟`,
-          checkQuestion: 'لو سألك شخص غير مسلم عن حكم تحريم لحم الخنزير أو تفاصيل الحجاب قبل أن يؤمن بوجود الله ورسالة الإسلام، فبماذا تبدأ معه؟',
-          checkOptions: [
-            'التركيز على أصل الإيمان بوجود الخالق ورسالة النبي أولاً، لأن الفروع تبنى على الأصل',
-            'الدخول في نقاشات طبية وغذائية طويلة وترك التوحيد',
-            'إلزامه بالأحكام الفرعية فوراً'
-          ],
-          correctOptionIndex: 0,
-          correctionExplanation: (name: string) => `محاولة حسنة يا ${name}، والأصل الدعوي الراسخ: تثبيت الأساس أولاً وهو التوحيد والنبوة، فإذا آمن بالمرسل خضعت جوارحه لأوامره ونواهيه عن يقين.`
-        }
-      ],
-      quizQuestions: [
-        {
-          q: 'ما هو الهدف الأسمى للداعية في حواره مع الآخرين؟',
-          options: ['إيصال الحق برحمة وهداية القلوب ابتغاء وجه الله', 'إفحام الطرف الآخر والانتصار للذات', 'تحقيق الشهرة والمناظرات'],
-          correct: 0
-        },
-        {
-          q: 'ما هو الأصل في الأسلوب الدعوي كما أمر الله في سورة النحل؟',
-          options: ['الحكمة والموعظة الحسنة والجدال بالتي هي أحسن', 'الشدة والغلظة والتوبيخ', 'التنازل عن ثوابت الدين'],
-          correct: 0
-        }
-      ],
-      certSubtitleAr: 'مسار الداعية: تأهيل مهارات البلاغ بالحكمة ومحاكاة الحوار الحضاري',
-      certSubtitleEn: 'Da\'iyah Path: Wisdom-based Outreach & Civilized Dialogue Mastery'
-    }
-  };
-
-  const activeTrackMeta = TRACK_META[selectedTrack] || TRACK_META.muslim;
+  // Localized Track Metadata Definition with untouched Quranic Arabic verses
+  const activeTrackMeta = getTutorTrackMeta(selectedTrack, language);
 
   // Session State - read directly from props or localStorage
   const [currentStage, setCurrentStage] = useState<1 | 2 | 3 | 4>(() => {
@@ -412,7 +115,9 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
         role: 'tutor',
         text: activeTrackMeta.welcomeMsg,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        options: ['أنا اسمي محمد', 'أنا عبد الله', 'اسمي سارة', 'اسمي خالد']
+        options: isAr
+          ? ['أنا اسمي محمد', 'أنا عبد الله', 'اسمي سارة', 'اسمي خالد']
+          : ['My name is Sarah', 'My name is Michael', 'My name is David', 'My name is Aisha']
       }
     ]);
   };
@@ -579,9 +284,13 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
     if (name) {
       const p = parseLearnerPersona(ageStr, name);
       if (currentLessonContext) {
-        return `السلام عليكم ورحمة الله وبركاته ${p.titleCall}.\n\nحياك الله في «${currentLessonContext.stageTitle}» ضمن ${activeTrackMeta.titleAr}.\n\n${adaptCapsuleForAge(currentLessonContext.stageConcept, p, 1)}\n\nهل هذا المفهوم واضح وجلي لك يا ${name} حتى الآن؟`;
+        return isAr
+          ? `السلام عليكم ورحمة الله وبركاته ${p.titleCall}.\n\nحياك الله في «${currentLessonContext.stageTitle}» ضمن ${activeTrackMeta.titleAr}.\n\n${adaptCapsuleForAge(currentLessonContext.stageConcept, p, 1)}\n\nهل هذا المفهوم واضح وجلي لك يا ${name} حتى الآن؟`
+          : `Peace and blessings be upon you ${p.titleCall}.\n\nWelcome to "${currentLessonContext.stageTitle}" within ${activeTrackMeta.titleEn}.\n\n${adaptCapsuleForAge(currentLessonContext.stageConcept, p, 1)}\n\nIs this concept clear to you, ${name}, so far?`;
       }
-      return `السلام عليكم ورحمة الله وبركاته ${p.titleCall}.\n\nحياك الله في ${activeTrackMeta.titleAr}. يسعدني أن أكون رفيقك ومعلمك اليوم.\n\n${activeTrackMeta.verifyQ}`;
+      return isAr
+        ? `السلام عليكم ورحمة الله وبركاته ${p.titleCall}.\n\nحياك الله في ${activeTrackMeta.titleAr}. يسعدني أن أكون رفيقك ومعلمك اليوم.\n\n${activeTrackMeta.verifyQ}`
+        : `Peace and blessings be upon you ${p.titleCall}.\n\nWelcome to ${activeTrackMeta.titleEn}. I am delighted to be your mentor today.\n\n${activeTrackMeta.verifyQ}`;
     }
     return activeTrackMeta.welcomeMsg;
   };
@@ -592,7 +301,11 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
       role: 'tutor',
       text: getInitialWelcomeMessage(userName, userAge),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      options: userName ? activeTrackMeta.verifyOptions : ['أنا اسمي محمد', 'أنا عبد الله', 'اسمي سارة', 'اسمي خالد']
+      options: userName
+        ? activeTrackMeta.verifyOptions
+        : (isAr
+            ? ['أنا اسمي محمد', 'أنا عبد الله', 'اسمي سارة', 'اسمي خالد']
+            : ['My name is Sarah', 'My name is Michael', 'My name is David', 'My name is Aisha'])
     }
   ]);
 
@@ -954,7 +667,7 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   };
 
   const resetSession = (track: TrackId = selectedTrack) => {
-    const meta = TRACK_META[track] || TRACK_META.muslim;
+    const meta = getTutorTrackMeta(track, language);
     const currentName = learnerName || localStorage.getItem('eilm_user_name') || userName || '';
     const currentAge = learnerAge || localStorage.getItem('eilm_user_age') || userAge || '';
     
@@ -977,8 +690,162 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
     ]);
   };
 
+  const handlePrintVirtualCertificate = () => {
+    const certNum = `EILM-TUTOR-${selectedTrack.toUpperCase().slice(0, 3)}-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-7712`;
+    const certTitle = isAr ? 'شهادة إتمام مستوى افتراضية' : 'Virtual Completion Certificate';
+    const recipient = userName || (isAr ? 'المتعلم المجتهد' : 'Dedicated Learner');
+    const trackTitle = activeTrackMeta.title;
+    const dateStr = isAr ? new Date().toLocaleDateString('ar-SA') : new Date().toLocaleDateString('en-US');
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="${language}" dir="${isAr ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="utf-8" />
+  <title>${certTitle} - ${recipient}</title>
+  <style>
+    @page { size: landscape; margin: 8mm; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif;
+      background-color: #FAF9F5;
+      margin: 0;
+      padding: 16px;
+      color: #0F172A;
+      direction: ${isAr ? 'rtl' : 'ltr'};
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cert-frame {
+      border: 8px double #1E293B;
+      border-radius: 18px;
+      background: #FFFFFF;
+      padding: 28px 32px;
+      text-align: center;
+      position: relative;
+    }
+    .cert-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: #B45309;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cert-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #0F172A;
+      margin: 0 0 12px 0;
+    }
+    .cert-recipient-pre {
+      font-size: 13px;
+      color: #64748B;
+      margin-bottom: 4px;
+    }
+    .cert-name {
+      font-size: 28px;
+      font-weight: 900;
+      color: #92400E;
+      border-bottom: 2px solid #E2E8F0;
+      display: inline-block;
+      padding: 0 20px 6px 20px;
+      margin-bottom: 16px;
+    }
+    .cert-desc {
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto 18px auto;
+      color: #334155;
+    }
+    .cert-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #E2E8F0;
+    }
+    .badge {
+      padding: 4px 12px;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .id-box {
+      font-family: monospace;
+      font-size: 11px;
+      color: #475569;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="cert-frame">
+    <div class="cert-header">منصة عِلم | ILM • المعلم التفاعلي الذكي</div>
+    <h1 class="cert-title">${certTitle}</h1>
+    <div class="cert-recipient-pre">${isAr ? 'تُشهد منصة عِلم بالتعاون مع المعلم التفاعلي بأن المتعلم:' : 'ILM Platform in collaboration with the Interactive Tutor testifies that:'}</div>
+    <div class="cert-name">${recipient}</div>
+    <p class="cert-desc">
+      ${isAr 
+        ? `قد أتم بنجاح محاور «${trackTitle}» واجتاز التقييم الختامي الشامل بدرجة متميزة وفق معايير الموثوقية العلمية لمنصة عِلم.`
+        : `Has successfully completed the milestones of "${trackTitle}" and passed the final assessment with excellence.`}
+    </p>
+    <div class="cert-grid">
+      <div style="text-align: ${isAr ? 'right' : 'left'};">
+        <div style="font-size: 11px; color: #64748B;">${isAr ? 'تاريخ الإنجاز:' : 'Date:'}</div>
+        <div style="font-weight: 800; font-size: 12px;">${dateStr}</div>
+      </div>
+      <div>
+        <span class="badge">🛡️ ${isAr ? 'مجتاز ومعتمد' : 'Verified & Completed'}</span>
+        <div class="id-box" style="margin-top: 4px;">${certNum}</div>
+      </div>
+      <div style="text-align: ${isAr ? 'left' : 'right'};">
+        <div style="font-size: 11px; color: #64748B;">${isAr ? 'الجهة المانحة:' : 'Issuing Entity:'}</div>
+        <div style="font-weight: 800; font-size: 12px;">منصة عِلم | ILM Platform</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 300);
+    };
+  </script>
+</body>
+</html>`;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+    
+    const doc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (doc) {
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 2500);
+      }, 400);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+    <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 mobile-bottom-clearance">
       
       {/* Top Header & Breadcrumb */}
       {!embedded && (
@@ -1168,7 +1035,7 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
               >
                 {isTutor && (
                   <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex-shrink-0 flex items-center justify-center font-bold text-xs shadow-xs">
-                    م
+                    {isAr ? 'م' : 'AI'}
                   </div>
                 )}
 
@@ -1178,7 +1045,7 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                     : 'bg-amber-700 text-white rounded-tl-xs'
                 }`}>
                   <div className="text-xs font-semibold mb-1 opacity-70">
-                    {isTutor ? 'المعلم الذكي' : userName || 'أنت'}
+                    {isTutor ? (isAr ? 'المعلم الذكي' : isUr ? 'ذہین استاد' : 'AI Mentor') : userName || (isAr ? 'أنت' : isUr ? 'آپ' : 'You')}
                   </div>
                   
                   <div className="text-sm leading-relaxed">
@@ -1212,13 +1079,13 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
           {isTyping && (
             <div className="flex gap-3 items-center text-slate-400 text-xs">
               <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs">
-                م
+                {isAr ? 'م' : 'AI'}
               </div>
               <div className="bg-white border border-[#EAE3D6] px-4 py-2.5 rounded-full flex items-center gap-1.5 shadow-2xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-bounce"></span>
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-bounce [animation-delay:0.4s]"></span>
-                <span className="mr-1 text-slate-500 font-medium">المعلم يكتب...</span>
+                <span className="mr-1 text-slate-500 font-medium">{isAr ? 'المعلم يكتب...' : isUr ? 'استاد لکھ رہے ہیں...' : 'Mentor is typing...'}</span>
               </div>
             </div>
           )}
@@ -1236,41 +1103,45 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                 <div className="flex items-center gap-2">
                   <Award className="w-8 h-8 text-amber-600" />
                   <div>
-                    <h3 className="font-bold text-slate-900 text-lg">شهادة إتمام مستوى افتراضية</h3>
-                    <p className="text-xs text-amber-800 font-medium">{activeTrackMeta.certSubtitleAr}</p>
+                    <h3 className="font-bold text-slate-900 text-lg">{isAr ? 'شهادة إتمام مستوى افتراضية' : 'Virtual Completion Certificate'}</h3>
+                    <p className="text-xs text-amber-800 font-medium">{activeTrackMeta.certSubtitle}</p>
                   </div>
                 </div>
                 <span className="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold px-3 py-1 rounded-full">
-                  معتمد ومجتاز
+                  {isAr ? 'معتمد ومجتاز' : 'Verified & Completed'}
                 </span>
               </div>
 
               <div className="text-center py-4 space-y-2">
-                <p className="text-xs text-slate-500">تُشهد منصة عِلم بالتعاون مع المعلم التفاعلي بأن:</p>
+                <p className="text-xs text-slate-500">{isAr ? 'تُشهد منصة عِلم بالتعاون مع المعلم التفاعلي بأن:' : 'ILM Platform in collaboration with the Interactive Tutor testifies that:'}</p>
                 <h4 className="text-2xl font-bold text-slate-900 font-brand tracking-wide">
-                  {userName || 'المتعلم المجتهد'}
+                  {userName || (isAr ? 'المتعلم المجتهد' : 'Dedicated Learner')}
                 </h4>
                 <p className="text-xs text-slate-600 max-w-lg mx-auto leading-relaxed">
-                  قد أتم بنجاح محاور {activeTrackMeta.titleAr} واجتاز التقييم الختامي الشامل بدرجة متميزة.
+                  {isAr 
+                    ? `قد أتم بنجاح محاور ${activeTrackMeta.title} واجتاز التقييم الختامي الشامل بدرجة متميزة.`
+                    : `Has successfully completed the milestones of ${activeTrackMeta.title} and passed the final assessment with excellence.`}
                 </p>
                 <div className="pt-2 text-[11px] text-slate-400">
-                  تاريخ الإتمام: {new Date().toLocaleDateString('ar-SA')} | المعلم الحواري الذكي
+                  {isAr 
+                    ? `تاريخ الإتمام: ${new Date().toLocaleDateString('ar-SA')} | المعلم الحواري الذكي`
+                    : `Completion Date: ${new Date().toLocaleDateString('en-US')} | Intelligent Interactive Mentor`}
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-4 border-t border-amber-100">
                 <button
-                  onClick={() => window.print()}
+                  onClick={handlePrintVirtualCertificate}
                   className="flex items-center gap-1.5 text-xs bg-amber-700 hover:bg-amber-800 text-white font-semibold px-4 py-2 rounded-xl transition cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>طباعة الشهادة</span>
+                  <span>{isAr ? 'طباعة الشهادة' : 'Print Certificate'}</span>
                 </button>
                 <button
                   onClick={onBackToMap}
                   className="flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-xl transition cursor-pointer"
                 >
-                  <span>متابعة الخريطة والمراحل المتقدمة</span>
+                  <span>{isAr ? 'متابعة الخريطة والمراحل المتقدمة' : 'Continue to Journey Map'}</span>
                   <ArrowIcon className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -1329,12 +1200,12 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                 isListening
                   ? (language === 'ar' ? 'تحدث الآن، جاري تحويل صوتك لنص تلقائياً...' : 'Speak now, converting voice to text...')
                   : !userName
-                  ? 'اكتب اسمك الكريم هنا...'
+                  ? (language === 'ar' ? 'اكتب اسمك الكريم هنا...' : isUr ? 'اپنا نام یہاں لکھیں...' : 'Enter your name here...')
                   : !userAge
-                  ? 'اكتب عمرك هنا...'
+                  ? (language === 'ar' ? 'اكتب عمرك هنا...' : isUr ? 'اپنی عمر یہاں لکھیں...' : 'Enter your age here...')
                   : isCertified
-                  ? 'اكتب رسالتك أو استفسارك للمعلم...'
-                  : 'اكتب إجابتك أو تحدث بالصوت عبر الميكروفون...'
+                  ? (language === 'ar' ? 'اكتب رسالتك أو استفسارك للمعلم...' : 'Type your question or reflection...')
+                  : (language === 'ar' ? 'اكتب إجابتك أو تحدث بالصوت عبر الميكروفون...' : 'Type your answer or speak via microphone...')
               }
               className="flex-1 bg-[#FAF7F2] border border-[#EAE3D6] rounded-2xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-amber-600 focus:bg-white transition"
             />
@@ -1346,7 +1217,7 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                   ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-200'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
               }`}
-              title={isListening ? 'جارٍ الاستماع لصوتك... اضغط للإيقاف' : 'اضغط للتحدث بالصوت مباشرة (Web Speech API)'}
+              title={isListening ? (language === 'ar' ? 'جارٍ الاستماع لصوتك... اضغط للإيقاف' : 'Listening... click to stop') : (language === 'ar' ? 'اضغط للتحدث بالصوت مباشرة (Web Speech API)' : 'Click to speak via Web Speech API')}
             >
               {isListening ? <Mic className="w-5 h-5 text-white animate-bounce" /> : <Mic className="w-5 h-5" />}
             </button>
@@ -1354,14 +1225,14 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
               type="submit"
               disabled={!inputVal.trim() || isTyping}
               className="w-12 h-12 rounded-2xl bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-white flex items-center justify-center transition cursor-pointer shadow-xs shrink-0"
-              title="إرسال"
+              title={language === 'ar' ? 'إرسال' : 'Send'}
             >
               <Send className="w-5 h-5 rtl:rotate-180" />
             </button>
           </form>
           <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 px-1">
-            <span>مدعوم بالتعرف الصوتي المباشر Web Speech API • تأكيد الفهم قبل الانتقال</span>
-            <span>الدرر السنية ومجمع الملك فهد</span>
+            <span>{language === 'ar' ? 'مدعوم بالتعرف الصوتي المباشر Web Speech API • تأكيد الفهم قبل الانتقال' : 'Powered by Web Speech API • Active comprehension check before advancing'}</span>
+            <span>{language === 'ar' ? 'الدرر السنية ومجمع الملك فهد' : 'King Fahd Complex & Dorar.net'}</span>
           </div>
         </div>
 

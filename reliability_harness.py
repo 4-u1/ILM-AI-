@@ -103,7 +103,7 @@ def run_single_eval(item):
             
             if is_escalation or content_level == "D":
                 decision_type = "refusal_referral"
-            elif any(k in answer for k in ["لا أصل له", "موضوع", "لم يرد", "لا يوجد حديث", "تصحيح", "ضعيف", "مكذوب", "لا توجد", "114 سورة", "خطأ أو تحريف", "114", "✋"]):
+            elif any(k in answer for k in ["لا أصل له", "موضوع", "لم يرد", "لا يوجد حديث", "تنبيه وتصحيح", "حديث ضعيف", "إسناده ضعيف", "مكذوب", "114 سورة", "خطأ أو تحريف", "لا توجد سورة", "لا يوجد في القرآن", "✋"]):
                 decision_type = "refusal_correction"
             else:
                 decision_type = "cited_answer"

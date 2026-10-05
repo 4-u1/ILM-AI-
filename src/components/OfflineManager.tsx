@@ -154,15 +154,15 @@ export const OfflineManager: React.FC<OfflineManagerProps> = ({
       <div className="rounded-3xl bg-slate-900 p-6 sm:p-8 text-white shadow-xl space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-emerald-300 text-xs font-bold border border-white/15">
           <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
-          <span>{isAr ? 'تقنية العمل دون اتصال (Offline-First)' : 'Offline Storage & Field Cache'}</span>
+          <span>{isAr ? 'تثبيت سريع وتصفح دون اتصال' : 'PWA App Installation & Offline Browsing'}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-          {isAr ? 'حقيبة المسافر والداعية الميداني بلا إنترنت' : 'Offline Field Kit & Local Storage'}
+          {isAr ? 'حقيبة المحتوى الميسر للقراءة دون اتصال' : 'PWA Offline Content & Local Storage'}
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
           {isAr
-            ? 'احفظ المادة العلمية، والآيات، والأحاديث، والاختبارات التفاعلية على هاتفك مباشرة بضغطة زر. تُمكّنك المنصة من المذاكرة والدعوة داخل الطائرة، أو في الصحراء، أو في الأماكن النائية دون استهلاك بيانات وبأقصى سرعة.'
-            : 'Download lessons, verses, Hadiths, and interactive quizzes directly to your local device. Learn and guide offline in flights, deserts, and low-connectivity regions.'}
+            ? 'احفظ المادة العلمية، والآيات، والأحاديث، والاختبارات التفاعلية على هاتفك لتصفحها بلا اتصال بالإنترنت. يرجى العلم أن ميزة نقاش المعلم الحواري الذكي بالذكاء الاصطناعي (Gemini) تتطلب اتصالاً بالإنترنت لتوليد الردود حياً.'
+            : 'Save core curriculum lessons, verses, Hadiths, and interactive quizzes to your device for offline reading. Please note that active AI Mentor conversation requires an active internet connection to communicate with Gemini.'}
         </p>
       </div>
 

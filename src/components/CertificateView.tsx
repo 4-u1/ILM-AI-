@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { TrackId, Language } from '../types';
-import { Award, ShieldCheck, Printer, CheckCircle2, ArrowRight, ArrowLeft, Edit3, Calendar, Sparkles, Check, Download, Share2, Copy, ExternalLink, MessageCircle, X } from 'lucide-react';
+import { Award, ShieldCheck, Printer, CheckCircle2, ArrowRight, ArrowLeft, Edit3, Calendar, Sparkles, Check, Download, Share2, Copy, ExternalLink, MessageCircle, X, FileDown, Loader2 } from 'lucide-react';
+import { IlmBrandLogo } from './IlmBrandLogo';
+import { OptimizedImage } from './OptimizedImage';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface CertificateViewProps {
   trackId: TrackId;
@@ -99,6 +103,57 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
   };
 
   const certificateNumber = `EILM-${trackId.toUpperCase().slice(0, 3)}-${completionDate.replace(/-/g, '')}-9842`;
+
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  // 📄 Direct High-DPI Landscape PDF Export Engine (jsPDF + html2canvas)
+  const exportDirectPDF = async () => {
+    try {
+      setIsExportingPdf(true);
+      const certificateEl = document.getElementById('ilm-verified-certificate-doc');
+      if (!certificateEl) {
+        window.print();
+        return;
+      }
+
+      // High-resolution canvas rendering with exact background colors and styles
+      const canvas = await html2canvas(certificateEl, {
+        scale: 2.5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#FAF9F5',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Standard A4 Landscape dimensions: 297mm x 210mm
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4',
+        compress: true,
+      });
+
+      const pdfWidth = 297;
+      const pdfHeight = 210;
+      const margin = 8;
+      const printWidth = pdfWidth - (margin * 2);
+      const printHeight = (canvas.height * printWidth) / canvas.width;
+      const yPos = Math.max(margin, (pdfHeight - printHeight) / 2);
+
+      pdf.addImage(imgData, 'PNG', margin, yPos, printWidth, Math.min(printHeight, pdfHeight - (margin * 2)), undefined, 'FAST');
+      
+      const sanitizedName = studentName.trim().replace(/[\\/:*?"<>|]/g, '_') || 'Student';
+      const fileName = `EILM-Certificate-${sanitizedName}-${trackId}.pdf`;
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('Direct PDF export error, falling back to standalone print:', error);
+      handleDownloadDedicatedPdf();
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -311,12 +366,10 @@ ${window.location.origin}`;
       
       {/* Mobile Top Brand Header */}
       <div className="md:hidden flex items-center justify-between pb-4 border-b border-slate-200 print:hidden">
-        <div className="flex items-baseline gap-1.5">
-          <span className="font-brand text-3xl font-bold tracking-normal text-slate-900 select-none">
-            <span className="logo-word text-slate-950">علم</span>
-          </span>
-          <span className="text-slate-300 font-light text-lg select-none">|</span>
-          <span className="font-bold text-base tracking-wider text-slate-700 select-none font-sans uppercase">
+        <div className="flex items-center gap-2">
+          <IlmBrandLogo size="sm" showSubtitle={false} withAura={true} />
+          <span className="text-slate-300 font-light text-base select-none">|</span>
+          <span className="font-bold text-sm tracking-wider text-slate-700 select-none font-sans uppercase">
             ILM
           </span>
         </div>
@@ -363,24 +416,47 @@ ${window.location.origin}`;
             className="px-3.5 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer flex items-center gap-1.5 bg-white shadow-2xs"
           >
             <Edit3 className="w-3.5 h-3.5 text-slate-500" />
-            <span>{isAr ? 'تعديل اسمك على الشهادة' : 'Edit Certificate Name'}</span>
+            <span>{isAr ? 'تعديل الاسم' : 'Edit Name'}</span>
           </button>
 
+          {/* 📄 Direct PDF Export Button */}
           <button
-            onClick={handleDownloadDedicatedPdf}
-            className="px-3.5 py-1.5 rounded-xl border border-emerald-300 text-xs font-bold text-emerald-950 bg-emerald-50 hover:bg-emerald-100 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
-            title={isAr ? 'تنزيل ملف الشهادة المعتمد مباشرة' : 'Direct Download Certificate Document'}
+            onClick={exportDirectPDF}
+            disabled={isExportingPdf}
+            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md disabled:opacity-70"
+            title={isAr ? 'تصدير الشهادة كملف PDF عالي الدقة مباشرة' : 'Export certificate directly as high-res PDF'}
           >
-            <Download className="w-3.5 h-3.5 text-emerald-700" />
-            <span>{isAr ? 'تحميل كملف جاهز' : 'Download File'}</span>
+            {isExportingPdf ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-200" />
+                <span>{isAr ? 'جارِ تجهيز PDF...' : 'Generating PDF...'}</span>
+              </>
+            ) : (
+              <>
+                <FileDown className="w-3.5 h-3.5 text-amber-200" />
+                <span>{isAr ? 'تصدير PDF مباشر' : 'Export PDF'}</span>
+              </>
+            )}
           </button>
 
+          {/* 🖨️ Landscape Print Button */}
           <button
             onClick={handlePrint}
             className="px-4 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            title={isAr ? 'طباعة الشهادة بالنمط العرضي A4' : 'Print Certificate in Landscape A4'}
           >
             <Printer className="w-3.5 h-3.5 text-amber-400" />
-            <span>{isAr ? 'طباعة / تصدير PDF' : 'Print / Export PDF'}</span>
+            <span>{isAr ? 'طباعة بالعرض (A4)' : 'Print (A4)'}</span>
+          </button>
+
+          {/* 📥 Standalone File Fallback */}
+          <button
+            onClick={handleDownloadDedicatedPdf}
+            className="px-3.5 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            title={isAr ? 'تنزيل ملف ويب مستقل للشهادة' : 'Download standalone file'}
+          >
+            <Download className="w-3.5 h-3.5 text-slate-600" />
+            <span>{isAr ? 'ملف مستقل' : 'Standalone'}</span>
           </button>
         </div>
       </div>
@@ -434,12 +510,15 @@ ${window.location.origin}`;
       )}
 
       {/* LUXURIOUS CERTIFICATE DOCUMENT (EILM VISUAL IDENTITY) */}
-      <div className="certificate-sheet bg-[#FAF9F5] rounded-3xl p-4 sm:p-10 md:p-14 border-[10px] sm:border-[16px] border-[#1E293B] shadow-2xl relative overflow-hidden print:p-8 print:border-8 print:shadow-none">
+      <div 
+        id="ilm-verified-certificate-doc"
+        className="certificate-sheet bg-[#FAF9F5] rounded-3xl p-4 sm:p-10 md:p-14 border-[10px] sm:border-[16px] border-[#1E293B] shadow-2xl relative overflow-hidden print:p-8 print:border-8 print:shadow-none"
+      >
         
         {/* Subtle Watermark Background Pattern */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center select-none overflow-hidden">
           <span className="text-[28rem] font-serif font-bold text-slate-900 rotate-[-12deg]">
-            علم
+            عِـلـم
           </span>
         </div>
 
@@ -457,14 +536,8 @@ ${window.location.origin}`;
 
             {/* Top Logo & Platform Header */}
             <div className="text-center space-y-2 mb-8">
-              <div className="inline-flex items-baseline justify-center gap-2 mb-1">
-                <span className="font-brand text-5xl sm:text-6xl font-bold tracking-normal text-slate-900 select-none">
-                  <span className="logo-word text-slate-950">علم</span>
-                </span>
-                <span className="text-amber-500/60 font-light text-3xl sm:text-4xl select-none">|</span>
-                <span className="text-2xl sm:text-3xl font-black text-slate-800 tracking-wider font-sans uppercase">
-                  ILM
-                </span>
+              <div className="flex flex-col items-center justify-center mb-1">
+                <IlmBrandLogo size="lg" showSubtitle={true} withAura={true} />
               </div>
               
               <div className="flex items-center justify-center gap-2 text-[11px] sm:text-xs text-amber-900 font-semibold tracking-widest uppercase">
@@ -545,8 +618,13 @@ ${window.location.origin}`;
 
               {/* QR Verification Seal */}
               <div className="flex flex-col items-center justify-center order-last sm:order-none">
-                <div className="w-20 h-20 bg-linear-to-b from-slate-900 to-slate-950 rounded-2xl p-2 flex items-center justify-center text-white shadow-md border-2 border-amber-400/40">
-                  <div className="w-full h-full border border-dashed border-amber-300/40 rounded-xl flex flex-col items-center justify-center p-1">
+                <div className="w-20 h-20 bg-linear-to-b from-slate-900 to-slate-950 rounded-2xl p-2 flex items-center justify-center text-white shadow-md border-2 border-amber-400/40 relative overflow-hidden">
+                  <OptimizedImage
+                    src="/assets/certificate-seal.webp"
+                    alt="Verified Seal"
+                    className="absolute inset-0 opacity-25 pointer-events-none"
+                  />
+                  <div className="w-full h-full border border-dashed border-amber-300/40 rounded-xl flex flex-col items-center justify-center p-1 relative z-10">
                     <ShieldCheck className="w-6 h-6 text-amber-400 mb-0.5" />
                     <span className="text-[7px] font-mono text-amber-200 uppercase tracking-tighter">EILM VERIFIED</span>
                   </div>

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language } from '../types';
+import { getRatingsSummary } from '../utils/responseRatings';
 import { 
   BarChart3, 
   Users, 
@@ -10,7 +11,9 @@ import {
   TrendingUp, 
   Sparkles,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -21,6 +24,16 @@ interface AdminDashboardProps {
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onBack }) => {
   const isAr = language === 'ar';
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
+
+  const [ratings, setRatings] = useState(getRatingsSummary());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setRatings(getRatingsSummary());
+    };
+    window.addEventListener('eilm_ratings_updated', handleUpdate);
+    return () => window.removeEventListener('eilm_ratings_updated', handleUpdate);
+  }, []);
 
   const kpis = [
     {
@@ -82,9 +95,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onBack
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
           <span className="text-xs font-semibold text-slate-700">
-            {isAr ? 'تحديث البيانات المباشرة (Live Analytics)' : 'Live Analytics'}
+            {isAr ? 'محاكاة مؤشرات الأداء التجريبية (Demo KPIs Mode)' : 'Demo KPIs Mode'}
           </span>
         </div>
       </div>
@@ -202,6 +215,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onBack
                 </span>
               </div>
             ))}
+          </div>
+
+          {/* User Feedback Ratings Summary (Requirement 2.3) */}
+          <div className="pt-4 border-t border-slate-100 space-y-3">
+            <h4 className="text-xs font-bold text-slate-900">
+              {isAr ? 'تقييمات جودة إجابات المعلم الذكي (نموذج أولي محفوظ محلياً):' : 'AI Response Helpful Ratings (Local Prototype):'}
+            </h4>
+
+            <div className="grid grid-cols-2 gap-2 text-center text-xs">
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex flex-col items-center gap-1">
+                <ThumbsUp className="w-4 h-4 text-emerald-600" />
+                <span className="font-bold text-lg">{ratings.up}</span>
+                <span className="text-[10px] text-slate-500 font-semibold">{isAr ? 'مفيدة (👍)' : 'Helpful'}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-950 flex flex-col items-center gap-1">
+                <ThumbsDown className="w-4 h-4 text-rose-600" />
+                <span className="font-bold text-lg">{ratings.down}</span>
+                <span className="text-[10px] text-slate-500 font-semibold">{isAr ? 'غير مفيدة (👎)' : 'Unhelpful'}</span>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-slate-500 text-center font-medium">
+              {isAr 
+                ? `إجمالي المشاركات المقيمة: ${ratings.total} (نسبة الرضا: ${ratings.total > 0 ? Math.round((ratings.up / ratings.total) * 100) : 100}%)`
+                : `Total responses rated: ${ratings.total} (Satisfaction: ${ratings.total > 0 ? Math.round((ratings.up / ratings.total) * 100) : 100}%)`
+              }
+            </div>
+
+            <div className="text-[10px] text-slate-500 text-center font-medium bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+              {isAr 
+                ? 'تنبيه: التقييمات تُحفظ محلياً على جهاز المستخدم الحالي لأغراض العرض التوضيحي (الديمو). يتضمن المسار المستقبلي للمشروع مزامنة هذه البيانات مركزياً بقاعدة بيانات سحابية موحدة.'
+                : 'Note: Ratings are saved locally on this client for demo purposes. Centralized cloud DB sync is scheduled on the future project roadmap.'
+              }
+            </div>
           </div>
         </div>
 

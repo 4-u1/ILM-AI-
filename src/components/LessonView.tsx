@@ -42,11 +42,15 @@ import { loadDialoguePreferences } from '../utils/dialoguePreferences';
 import { InteractiveTutor } from './InteractiveTutor';
 import { playQuranVerse, stopQuranAudio, QURAN_RECITERS, QuranReciterId, getSavedReciter, saveReciter } from '../utils/quranAudio';
 import { FormattedMessage } from './FormattedMessage';
+import { LearnerNotepad } from './LearnerNotepad';
 import { StageCongratulationModal } from './StageCongratulationModal';
 import { StageSelfAssessmentModal } from './StageSelfAssessmentModal';
 import { DialoguePreferencesModal } from './DialoguePreferencesModal';
 import { getFavoriteAyahs, saveFavoriteAyahs, FavoriteAyahItem } from '../data/quranData';
 import { AILoadingSpinner } from './AILoadingSpinner';
+import { AudioNarratorPlayer } from './AudioNarratorPlayer';
+import { saveResponseRating, getMessageRating } from '../utils/responseRatings';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
 interface LessonViewProps {
   stage: LessonStage;
@@ -187,6 +191,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
   });
 
   const [isStageCompleted, setIsStageCompleted] = useState<boolean>(() => isAlreadyCompleted);
+  const [forceUpdate, setForceUpdate] = useState<number>(0);
 
   // Active audio recitation playback state for Quranic verses & Reciter Selection
   const [playingVerseKey, setPlayingVerseKey] = useState<string | null>(null);
@@ -325,71 +330,101 @@ export const LessonView: React.FC<LessonViewProps> = ({
     }
   };
 
-  // Split stage concept explanation into bite-sized micro-learning chunks (30-50 words each)
-  const rawParagraphs = stage.conceptExplanation
+  const stageExplanation = isAr
     ? stage.conceptExplanation
+    : (stage.conceptExplanationEn || stage.conceptExplanation);
+
+  const stageSubtitle = isAr
+    ? stage.subtitle
+    : (stage.subtitleEn || stage.subtitle);
+
+  // Split stage concept explanation into bite-sized micro-learning chunks (30-50 words each)
+  const rawParagraphs = stageExplanation
+    ? stageExplanation
         .split(/\n\s*\n|\n(?=[0-9]+\.|\-|\•)/g)
         .map(p => p.trim())
         .filter(p => p.length > 0)
-    : [stage.subtitle];
+    : [stageSubtitle];
 
   // If rawParagraphs is very short, also split by single newline
   const contentChunks = rawParagraphs.length > 1
     ? rawParagraphs
-    : (stage.conceptExplanation
-        ? stage.conceptExplanation.split('\n').map(l => l.trim()).filter(l => l.length > 15)
-        : [stage.subtitle]);
+    : (stageExplanation
+        ? stageExplanation.split('\n').map(l => l.trim()).filter(l => l.length > 15)
+        : [stageSubtitle]);
 
   // Ensure at least 3 progressive chunks per lesson
-  const chunk1Text = contentChunks[0] || stage.subtitle;
-  const chunk2Text = contentChunks[1] || (stage.keyTerms && stage.keyTerms.length > 0 ? `المصطلح المحوري: ${stage.keyTerms[0].ar} — ${stage.keyTerms[0].approvedStandard}` : 'تأصيل هذا المفهوم يعتمد على النقل الصحيح والعقل الصريح.');
-  const chunk3Text = contentChunks[2] || (stage.reflectionPrompt || 'تطبيق هذا المفهوم في الحياة اليومية يثمر طمأنينة القلب واستقامة السلوك والأخلاق والتعامل بالعدل والإحسان.');
+  const chunk1Text = contentChunks[0] || stageSubtitle;
+  const chunk2Text = contentChunks[1] || (stage.keyTerms && stage.keyTerms.length > 0 ? (isAr ? `المصطلح المحوري: ${stage.keyTerms[0].ar} — ${stage.keyTerms[0].approvedStandard}` : `Core Concept: ${stage.keyTerms[0].ar} — ${stage.keyTerms[0].approvedStandard}`) : (isAr ? 'تأصيل هذا المفهوم يعتمد على النقل الصحيح والعقل الصريح.' : 'This concept is firmly rooted in authentic revelation and sound reason.'));
+  const chunk3Text = contentChunks[2] || (stage.reflectionPrompt || (isAr ? 'تطبيق هذا المفهوم في الحياة اليومية يثمر طمأنينة القلب واستقامة السلوك والأخلاق والتعامل بالعدل والإحسان.' : 'Living this concept daily brings inner tranquility, upright character, and dealing with all people with justice and compassion.'));
 
   const chunks = [
     {
-      title: 'المفهوم التأسيسي',
+      title: isAr ? 'المفهوم التأسيسي' : isUr ? 'بنیادی تصور' : 'Foundational Concept',
       text: chunk1Text,
       question: stage.quiz && stage.quiz.length > 0 
-        ? stage.quiz[0].question 
-        : `بناءً على هذه الفقرة يا ${userName}، ما هو جوهر ما تعلمناه للتو؟`,
+        ? (isAr ? stage.quiz[0].question : (stage.quiz[0].questionEn || stage.quiz[0].question))
+        : (isAr ? `بناءً على هذه الفقرة يا ${userName}، ما هو جوهر ما تعلمناه للتو؟` : `Based on this section, ${userName}, what is the essence of what we just learned?`),
       options: stage.quiz && stage.quiz.length > 0 
-        ? stage.quiz[0].options 
-        : [
-            'العمل به وتطبيقه بيقين وإخلاص لله وحده',
-            'مجرد حفظ كلمات دون فهم ولا تطبيق',
-            'إهمال العلم والعمل'
-          ],
+        ? (isAr ? stage.quiz[0].options : (stage.quiz[0].optionsEn || stage.quiz[0].options))
+        : (isAr 
+            ? [
+                'العمل به وتطبيقه بيقين وإخلاص لله وحده',
+                'مجرد حفظ كلمات دون فهم ولا تطبيق',
+                'إهمال العلم والعمل'
+              ]
+            : [
+                'Acting upon it with sincerity and devotion to God alone',
+                'Merely memorizing words without understanding or practice',
+                'Neglecting both knowledge and action'
+              ]),
       correctAnswer: stage.quiz && stage.quiz.length > 0 
-        ? stage.quiz[0].options[stage.quiz[0].correctIndex]
-        : 'العمل به وتطبيقه بيقين وإخلاص لله وحده'
+        ? (isAr ? stage.quiz[0].options[stage.quiz[0].correctIndex] : ((stage.quiz[0].optionsEn && stage.quiz[0].optionsEn[stage.quiz[0].correctIndex]) || stage.quiz[0].options[stage.quiz[0].correctIndex]))
+        : (isAr ? 'العمل به وتطبيقه بيقين وإخلاص لله وحده' : 'Acting upon it with sincerity and devotion to God alone')
     },
     {
-      title: 'التأصيل والدليل الشرعي',
+      title: isAr ? 'التأصيل والدليل الشرعي' : isUr ? 'شرعی استدلال' : 'Scriptural Proof & Rooting',
       text: chunk2Text,
       question: stage.quiz && stage.quiz.length > 1 
-        ? stage.quiz[1].question 
-        : `ما هي الفائدة الإيمانية والعملية العظمى التي تستنبطها من هذا التأصيل يا ${userName}؟`,
+        ? (isAr ? stage.quiz[1].question : (stage.quiz[1].questionEn || stage.quiz[1].question))
+        : (isAr ? `ما هي الفائدة الإيمانية والعملية العظمى التي تستنبطها من هذا التأصيل يا ${userName}؟` : `What major faith and practical benefit do you derive from this foundation, ${userName}?`),
       options: stage.quiz && stage.quiz.length > 1 
-        ? stage.quiz[1].options 
-        : [
-            'ترسيخ اليقين بأن الشريعة رحمة وعدل وإفراد للخالق بالعبادة',
-            'مجرد نص تاريخي لا يرتبط بواقعنا المعاصر',
-            'التشديد والتعقيد'
-          ],
+        ? (isAr ? stage.quiz[1].options : (stage.quiz[1].optionsEn || stage.quiz[1].options))
+        : (isAr 
+            ? [
+                'ترسيخ اليقين بأن الشريعة رحمة وعدل وإفراد للخالق بالعبادة',
+                'مجرد نص تاريخي لا يرتبط بواقعنا المعاصر',
+                'التشديد والتعقيد'
+              ]
+            : [
+                'Affirming certainty that the Shariah is mercy, justice, and monotheism',
+                'Merely a historical text unrelated to modern living',
+                'Complication and severity'
+              ]),
       correctAnswer: stage.quiz && stage.quiz.length > 1 
-        ? stage.quiz[1].options[stage.quiz[1].correctIndex]
-        : 'ترسيخ اليقين بأن الشريعة رحمة وعدل وإفراد للخالق بالعبادة'
+        ? (isAr ? stage.quiz[1].options[stage.quiz[1].correctIndex] : ((stage.quiz[1].optionsEn && stage.quiz[1].optionsEn[stage.quiz[1].correctIndex]) || stage.quiz[1].options[stage.quiz[1].correctIndex]))
+        : (isAr ? 'ترسيخ اليقين بأن الشريعة رحمة وعدل وإفراد للخالق بالعبادة' : 'Affirming certainty that the Shariah is mercy, justice, and monotheism')
     },
     {
-      title: 'التطبيق العملي المعاصر',
+      title: isAr ? 'التطبيق العملي المعاصر' : isUr ? 'عملی تطبیق' : 'Practical Living Application',
       text: chunk3Text,
-      question: `كيف تثمر هذه المعرفة في واقعك وسلوكك اليومي يا ${userName}؟`,
-      options: [
-        'أطبقه بالصدق والإخلاص وحسن المعاملة والأمانة وبر الوالدين',
-        'مجرد معلومات نظرية لا أطبقها في يومي',
-        'الجدال والتعصب دون عمل'
-      ],
-      correctAnswer: 'أطبقه بالصدق والإخلاص وحسن المعاملة والأمانة وبر الوالدين'
+      question: isAr 
+        ? `كيف تثمر هذه المعرفة في واقعك وسلوكك اليومي يا ${userName}؟`
+        : `How does this knowledge bear fruit in your daily life, ${userName}?`,
+      options: isAr
+        ? [
+            'أطبقه بالصدق والإخلاص وحسن المعاملة والأمانة وبر الوالدين',
+            'مجرد معلومات نظرية لا أطبقها في يومي',
+            'الجدال والتعصب دون عمل'
+          ]
+        : [
+            'Applying it with honesty, sincerity, good character, and honoring parents',
+            'Merely theoretical ideas with no practical daily impact',
+            'Arguing and partisanship without action'
+          ],
+      correctAnswer: isAr 
+        ? 'أطبقه بالصدق والإخلاص وحسن المعاملة والأمانة وبر الوالدين'
+        : 'Applying it with honesty, sincerity, good character, and honoring parents'
     }
   ];
 
@@ -398,7 +433,11 @@ export const LessonView: React.FC<LessonViewProps> = ({
   // Initial welcome message starting strictly with "السلام عليكم" + persona call
   const buildInitialGreeting = (name: string, ageStr: string): MessageItem => {
     const p = parseLearnerPersona(ageStr, name);
-    const greetingText = `السلام عليكم ورحمة الله وبركاته ${p.titleCall}.\n\nحياك الله في المحطة (${stage.stageNumber}): «${stage.title}».\n\nيسعدني أن أكون رفيقك ومعلمك اليوم. سنعرض المحتوى في أجزاء صغيرة (Chunks)، وسأطرح عليك بعد كل جزء سؤالاً تنشيطياً، ولن يفتح زر الانتقال للجزء التالي إلا بعد التأكد من صحة إجابتك.\n\nدعنا نبدأ بالجزء الأول (1 / ${chunks.length}):\n\n${adaptCapsuleForAge(chunk1Text, p, 1, stage.title)}\n\n${chunks[0].question}`;
+    const greetingText = isAr
+      ? `السلام عليكم ورحمة الله وبركاته ${p.titleCall}.\n\nحياك الله في المحطة (${stage.stageNumber}): «${stage.title}».\n\nيسعدني أن أكون رفيقك ومعلمك اليوم. سنعرض المحتوى في أجزاء صغيرة (Chunks)، وسأطرح عليك بعد كل جزء سؤالاً تنشيطياً، ولن يفتح زر الانتقال للجزء التالي إلا بعد التأكد من صحة إجابتك.\n\nدعنا نبدأ بالجزء الأول (1 / ${chunks.length}):\n\n${adaptCapsuleForAge(chunk1Text, p, 1, stage.title)}\n\n${chunks[0].question}`
+      : isUr
+      ? `السلام علیکم ورحمۃ اللہ وبرکاتہ ${p.titleCall}۔\n\nمرحلہ (${stage.stageNumber}): «${stage.title}» میں خوش آمدید۔\n\nآئیے پہلے حصے سے آغاز کرتے ہیں (1 / ${chunks.length}):\n\n${adaptCapsuleForAge(chunk1Text, p, 1, stage.title)}\n\n${chunks[0].question}`
+      : `Peace and blessings be upon you ${p.titleCall}.\n\nWelcome to Station (${stage.stageNumber}): "${stage.titleEn || stage.title}".\n\nI am honored to be your companion and tutor today. We will explore the lesson in bite-sized chunks with check-in questions along the way.\n\nLet's begin with Part 1 (1 / ${chunks.length}):\n\n${adaptCapsuleForAge(chunk1Text, p, 1, stage.titleEn || stage.title)}\n\n${chunks[0].question}`;
     return {
       id: 'msg-greeting',
       role: 'tutor',
@@ -616,14 +655,22 @@ export const LessonView: React.FC<LessonViewProps> = ({
 
       let chunkPresentation = '';
       if (nextChunkIdx === 1) {
-        chunkPresentation = persona.bracket === 'child'
-          ? `أحسنت ${p.titleCall}! 🌟 ننتقل الآن إلى الجزء الثاني (${nextChunkIdx + 1} / ${chunks.length}) بعنوان «${nextChunkObj.title}»:\n\n${nextChunkObj.text}\n\n${nextChunkObj.question}`
-          : `بارك الله فيك ${p.titleCall} ✨\n\nننتقل الآن للجزء التالي (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${nextChunkObj.text}\n\n${nextChunkObj.question}`;
+        chunkPresentation = isAr
+          ? (persona.bracket === 'child'
+              ? `أحسنت ${p.titleCall}! 🌟 ننتقل الآن إلى الجزء الثاني (${nextChunkIdx + 1} / ${chunks.length}) بعنوان «${nextChunkObj.title}»:\n\n${nextChunkObj.text}\n\n${nextChunkObj.question}`
+              : `بارك الله فيك ${p.titleCall} ✨\n\nننتقل الآن للجزء التالي (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${nextChunkObj.text}\n\n${nextChunkObj.question}`)
+          : isUr
+          ? `شاباش ${p.titleCall}! 🌟 اب ہم دوسرے حصے کی طرف بڑھتے ہیں (${nextChunkIdx + 1} / ${chunks.length}): «${nextChunkObj.title}»:\n\n${nextChunkObj.text}\n\n${nextChunkObj.question}`
+          : `Well done ${p.titleCall}! 🌟 Moving to Part 2 (${nextChunkIdx + 1} / ${chunks.length}) - "${nextChunkObj.title}":\n\n${nextChunkObj.text}\n\n${nextChunkObj.question}`;
       } else {
-        const adaptedPractical = adaptCapsuleForAge(nextChunkObj.text, p, 3, stage.title);
-        chunkPresentation = persona.bracket === 'child'
-          ? `ما شاء الله عليك ${p.titleCall}! 🎉 ننتقل للجزء الأخير (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${adaptedPractical}\n\n${nextChunkObj.question}`
-          : `أحسنت ${p.titleCall}! 👏 ننتقل للفقرة الأخيرة (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${adaptedPractical}\n\n${nextChunkObj.question}`;
+        const adaptedPractical = adaptCapsuleForAge(nextChunkObj.text, p, 3, isAr ? stage.title : (stage.titleEn || stage.title));
+        chunkPresentation = isAr
+          ? (persona.bracket === 'child'
+              ? `ما شاء الله عليك ${p.titleCall}! 🎉 ننتقل للجزء الأخير (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${adaptedPractical}\n\n${nextChunkObj.question}`
+              : `أحسنت ${p.titleCall}! 👏 ننتقل للفقرة الأخيرة (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${adaptedPractical}\n\n${nextChunkObj.question}`)
+          : isUr
+          ? `ما شاء اللہ ${p.titleCall}! 🎉 آخری حصے کی طرف پیش قدمی (${nextChunkIdx + 1} / ${chunks.length}) - «${nextChunkObj.title}»:\n\n${adaptedPractical}\n\n${nextChunkObj.question}`
+          : `Excellent ${p.titleCall}! 👏 Moving to the final part (${nextChunkIdx + 1} / ${chunks.length}) - "${nextChunkObj.title}":\n\n${adaptedPractical}\n\n${nextChunkObj.question}`;
       }
 
       if (nextChunkIdx === 1 && capsule2Scripture) {
@@ -631,7 +678,9 @@ export const LessonView: React.FC<LessonViewProps> = ({
           chunkPresentation,
           nextChunkObj.options,
           capsule2Scripture,
-          `المصدر المعتمد: ${capsule2Scripture.reference} (${capsule2Scripture.source.title})`
+          isAr 
+            ? `المصدر المعتمد: ${capsule2Scripture.reference} (${capsule2Scripture.source.title})`
+            : `Verified Source: ${capsule2Scripture.reference} (${capsule2Scripture.source.title})`
         );
       } else {
         addTutorTurn(chunkPresentation, nextChunkObj.options);
@@ -643,13 +692,18 @@ export const LessonView: React.FC<LessonViewProps> = ({
       onCompleteStage(stage.id);
       setIsAssessmentOpen(true);
 
-      const completionCelebration = persona.bracket === 'child'
-        ? `ألف مبارك ${persona.titleCall}! 🌟🏆 لقد اجتزت جميع أجزاء محطة «${stage.title}» وأجبت عن الأسئلة التنشيطية بتفوق!\n\nتم فتح «التقييم الذاتي لقياس الاستيعاب» للتأكد من رسوخ المفاهيم ونيل أوسمة الإنجاز!`
-        : `مبارك ${persona.titleCall}! لقد أتممت دراسة المحطة (${stage.stageNumber}): «${stage.title}» بجميع أجزائها (Chunks) بنجاح وتفوق 🎉🎓\n\nتفضل الآن بخوض «التقييم الذاتي لقياس الاستيعاب» للتأكد من ثبات المعلومات وتلقي التوجيهات الإضافية.`;
+      const stageName = isAr ? stage.title : (stage.titleEn || stage.title);
+      const completionCelebration = isAr
+        ? (persona.bracket === 'child'
+            ? `ألف مبارك ${persona.titleCall}! 🌟🏆 لقد اجتزت جميع أجزاء محطة «${stage.title}» وأجبت عن الأسئلة التنشيطية بتفوق!\n\nتم فتح «التقييم الذاتي لقياس الاستيعاب» للتأكد من رسوخ المفاهيم ونيل أوسمة الإنجاز!`
+            : `مبارك ${persona.titleCall}! لقد أتممت دراسة المحطة (${stage.stageNumber}): «${stage.title}» بجميع أجزائها (Chunks) بنجاح وتفوق 🎉🎓\n\nتفضل الآن بخوض «التقييم الذاتي لقياس الاستيعاب» للتأكد من ثبات المعلومات وتلقي التوجيهات الإضافية.`)
+        : `Congratulations ${persona.titleCall}! 🌟🏆 You have successfully completed Station (${stage.stageNumber}): "${stageName}" with distinction!\n\nSelf-assessment is now unlocked to reinforce your understanding and earn achievement badges!`;
 
       addTutorTurn(
         completionCelebration,
-        ['بدء التقييم الذاتي 💡', 'العودة لخريطة الرحلة 🗺️', 'مشاركة إنجاز المحطة 🏆']
+        isAr 
+          ? ['بدء التقييم الذاتي 💡', 'العودة لخريطة الرحلة 🗺️', 'مشاركة إنجاز المحطة 🏆']
+          : ['Start Self-Assessment 💡', 'Back to Journey Map 🗺️', 'Share Achievement 🏆']
       );
     }
   };
@@ -711,7 +765,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
   };
 
   return (
-    <div className="py-4 sm:py-8 px-4 sm:px-6 max-w-3xl mx-auto animate-in fade-in duration-300">
+    <div className="py-4 sm:py-8 px-3 sm:px-6 max-w-3xl mx-auto animate-in fade-in duration-300 mobile-bottom-clearance">
       
       {/* Top Header Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[#EAE3D6]">
@@ -1258,6 +1312,52 @@ export const LessonView: React.FC<LessonViewProps> = ({
                     </div>
                   )}
 
+                  {/* Audio Narrator Player for Tutor Explanations */}
+                  {isTutor && (
+                    <div className="mt-3">
+                      <AudioNarratorPlayer textToRead={m.text} language={language} />
+                    </div>
+                  )}
+
+                  {/* Interactive Thumbs Up & Thumbs Down Rating (Requirement 2.3) */}
+                  {isTutor && (
+                    <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-2 text-xs text-slate-500">
+                      <span>{isAr ? 'هل هذه الإجابة مفيدة؟' : 'Was this helpful?'}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          saveResponseRating(m.id, 'up');
+                          setForceUpdate((prev) => prev + 1);
+                        }}
+                        className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center gap-1.5 ${
+                          getMessageRating(m.id) === 'up'
+                            ? 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold'
+                            : 'bg-white hover:bg-slate-100 border-slate-200 hover:text-slate-900'
+                        }`}
+                        aria-label={isAr ? 'تقييم إيجابي مفيد' : 'Thumbs up'}
+                      >
+                        <ThumbsUp className="w-3.5 h-3.5" />
+                        <span>{isAr ? 'نعم' : 'Yes'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          saveResponseRating(m.id, 'down');
+                          setForceUpdate((prev) => prev + 1);
+                        }}
+                        className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center gap-1.5 ${
+                          getMessageRating(m.id) === 'down'
+                            ? 'bg-rose-100 text-rose-800 border-rose-300 font-bold'
+                            : 'bg-white hover:bg-slate-100 border-slate-200 hover:text-rose-700'
+                        }`}
+                        aria-label={isAr ? 'تقييم سلبي غير مفيد' : 'Thumbs down'}
+                      >
+                        <ThumbsDown className="w-3.5 h-3.5" />
+                        <span>{isAr ? 'لا' : 'No'}</span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* Interactive Options (Buttons) */}
                   {m.options && m.options.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap gap-2">
@@ -1416,6 +1516,15 @@ export const LessonView: React.FC<LessonViewProps> = ({
         </div>
 
       </div>
+
+      {/* 📝 Learner's Notepad & Reflection Hub (مفكرة المتعلم لحفظ الفوائد والتدبرات لكل محطة) */}
+      <LearnerNotepad
+        stageId={stage.id}
+        stageTitle={stage.title}
+        stageNumber={stage.stageNumber}
+        language={language}
+        defaultExpanded={false}
+      />
       </>
       )}
 

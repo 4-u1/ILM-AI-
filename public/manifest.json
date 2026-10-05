@@ -1,0 +1,41 @@
+{
+  "id": "/",
+  "name": "منصة عِلم | ILM - رحلة معرفية موثوقة للتعريف بالإسلام",
+  "short_name": "عِلم | ILM",
+  "description": "رحلة معرفية موثوقة تفاعلية للتعريف بالإسلام وتعليم العلوم الشرعية بالذكاء الاصطناعي وفق الحزمة العلمية المعتمدة",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "background_color": "#FAF7F2",
+  "theme_color": "#78350F",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar",
+  "categories": ["education", "lifestyle", "books"]
+}

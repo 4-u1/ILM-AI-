@@ -54,6 +54,40 @@ export const OfficialFatwaTicketModal: React.FC<OfficialFatwaTicketModalProps> =
     }
   };
 
+  const handleDownload = () => {
+    const fileContent = `========================================================
+منصة عِلم | ILM - وثيقة إحالة إفتائية استرشادية (المستوى د)
+========================================================
+رمز التذكرة الاسترشادي: ${ticketCode}
+تاريخ الإحالة: ${new Date().toLocaleString('ar-SA')}
+تصنيف المسألة: ${category}
+
+[السؤال المستلم من السائل]:
+«${userQuestion}»
+
+[ملاحظة سياج الحماية الشرعي]:
+بناءً على وثيقة حوكمة المحتوى الشرعي لمنصة عِلم ومطابقتها لمعايير تحدي باذل 2026م، يمتنع النظام آلياً وبشكل حازم عن إصدار أي فتوى أو ترجيح في مسائل الأحوال الشخصية والخلافات الأسرية.
+
+[القنوات الرسمية الموصى بها للإرسال اليدوي]:
+1. البوابة الإلكترونية للرئاسة العامة للبحوث العلمية والإفتاء:
+https://www.alifta.gov.sa
+2. الرقم المجاني الموحد لخدمة الإفتاء بالمملكة:
+8002451000
+
+تنبيه هام: تُرسل هذه التذكرة يدوياً بواسطة المستخدم عبر القنوات المذكورة أعلاه لضمان الحصول على الفتوى الشرعية المعتمدة من الجهات المؤهلة بالمملكة العربية السعودية ولا يتم إرسالها آلياً.
+========================================================`;
+
+    const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ILM-Fatwa-Referral-${ticketCode}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in"
@@ -72,14 +106,14 @@ export const OfficialFatwaTicketModal: React.FC<OfficialFatwaTicketModalProps> =
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm sm:text-base font-bold text-white font-serif">
-                  {isAr ? 'بطاقة إحالة إفتائية رسمية مشفرة' : 'Official Encrypted Fatwa Referral Ticket'}
+                  {isAr ? 'نموذج بطاقة إحالة إفتائية استرشادية' : 'Sample Fatwa Referral Ticket Guide'}
                 </h3>
                 <span className="px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-300 border border-red-500/30 font-mono font-bold">
                   Level D
                 </span>
               </div>
               <p className="text-[11px] text-amber-200/80">
-                {isAr ? 'بروتوكول سياج الحماية الشرعي لمنع الفتوى الآلية' : 'Autonomous Fatwa Zero-Tolerance Guardrail'}
+                {isAr ? 'بروتوكول سياج الحماية لتفادي الفتاوى الشخصية' : 'Guardrail Protocol to Avoid Personal Fatwas'}
               </p>
             </div>
           </div>
@@ -99,15 +133,15 @@ export const OfficialFatwaTicketModal: React.FC<OfficialFatwaTicketModalProps> =
             <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
             <p className="text-xs text-amber-950 leading-relaxed font-medium">
               {isAr
-                ? 'وفقاً لـ «المستوى د» من وثيقة حوكمة الذكاء الاصطناعي الشرعي المعتمدة، يمتنع النظام تماماً وبشكل حاسم عن إصدار أي ترجيح أو فتوى في مسائل الطلاق، المواريث، الفتن، والأحوال الشخصية، ويُصدر بطاقة إحالة مشفرة للهيئات الرسمية المختصة.'
-                : 'Under Level D Governance, the system strictly refuses automated opinions regarding divorce, inheritance, and personal disputes, providing an official referral ticket to certified authorities.'}
+                ? 'وفقاً لـ «المستوى د» من وثيقة حوكمة المحتوى الشرعي، يمتنع النظام عن الفتوى في المسائل الفردية أو إصدار ترجيحات آلية مستقلة في مسائل الطلاق والمواريث والأحوال الشخصية، ويُصدر نموذج تذكرة إحالة يدوية لتسهيل تدوين مسألتك ونقلها للرئاسة العامة للإفتاء بالمملكة.'
+                : 'Under Level D Content Governance, the system avoids issuing automated religious decrees (Fatwas) on personal disputes, divorce, or estate distribution, offering a manual ticket draft to facilitate your manual inquiry submission to certified authorities.'}
             </p>
           </div>
 
           {/* Ticket Details Box */}
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 font-mono text-xs">
             <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-              <span className="text-slate-500">{isAr ? 'رمز التذكرة المشفر:' : 'Ticket Ref:'}</span>
+              <span className="text-slate-500">{isAr ? 'معرّف التذكرة الاسترشادي:' : 'Guidance Ticket Ref:'}</span>
               <span className="font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">
                 {ticketCode}
               </span>
@@ -189,32 +223,49 @@ export const OfficialFatwaTicketModal: React.FC<OfficialFatwaTicketModalProps> =
                 <span>{isAr ? 'اتصال مباشر' : 'Call'}</span>
               </a>
             </div>
+            
+            {/* Honest Technical disclosure */}
+            <div className="text-[10px] text-slate-500 font-medium text-center bg-slate-50 p-2 rounded-xl border border-slate-200">
+              ⚠️ {isAr 
+                ? 'ملاحظة: تُرسل التذكرة يدوياً عبر القنوات الرسمية أعلاه للرئاسة العامة للإفتاء. المنصة لا تقدم أي ربط برامجي مباشر مع جهات الإفتاء التزاماً بالأمانة العلمية.'
+                : 'Note: Tickets must be sent manually to the official presidencies. No direct API integration is claimed for complete scholarly honesty.'
+              }
+            </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-2 pt-2">
             <button
               type="button"
               onClick={handleCopy}
-              className="flex-1 py-3 px-4 rounded-xl border border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+              className="flex-1 py-3 px-3 rounded-xl border border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
             >
               {copied ? (
                 <>
                   <Check className="w-4 h-4 text-emerald-600" />
-                  <span className="text-emerald-700">{isAr ? 'تم نسخ بيانات التذكرة!' : 'Ticket Copied!'}</span>
+                  <span className="text-emerald-700 text-[11px]">{isAr ? 'تم نسخ التذكرة!' : 'Copied!'}</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4 text-slate-600" />
-                  <span>{isAr ? 'نسخ بيانات الإحالة' : 'Copy Ticket'}</span>
+                  <Copy className="w-3.5 h-3.5 text-slate-600" />
+                  <span className="text-[11px]">{isAr ? 'نسخ بيانات الإحالة' : 'Copy'}</span>
                 </>
               )}
             </button>
 
             <button
               type="button"
+              onClick={handleDownload}
+              className="flex-1 py-3 px-3 rounded-xl border border-emerald-200 hover:border-emerald-300 bg-emerald-50 text-emerald-950 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <FileText className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="text-[11px]">{isAr ? 'تصدير التذكرة (TXT)' : 'Export (TXT)'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={onClose}
-              className="py-3 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition cursor-pointer"
+              className="py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer"
             >
               {isAr ? 'إغلاق' : 'Close'}
             </button>

@@ -155,7 +155,115 @@ export const IlmJuniorHub: React.FC<IlmJuniorHubProps> = ({
   };
 
   const handlePrintFamilyReport = () => {
-    window.print();
+    const htmlContent = `<!DOCTYPE html>
+<html lang="${language}" dir="${isAr ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="utf-8" />
+  <title>${isAr ? 'تقرير إنجاز واحة عِلم للناشئة' : 'ILM Junior Achievement Report'}</title>
+  <style>
+    @page { size: landscape; margin: 10mm; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif;
+      background-color: #FFFBEB;
+      margin: 0;
+      padding: 20px;
+      color: #78350F;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      direction: ${isAr ? 'rtl' : 'ltr'};
+    }
+    .report-frame {
+      border: 6px solid #F59E0B;
+      border-radius: 20px;
+      background: #FFFFFF;
+      padding: 28px 36px;
+      text-align: center;
+    }
+    .report-title { font-size: 26px; font-weight: 900; color: #B45309; margin-bottom: 8px; }
+    .stars-badge {
+      display: inline-block;
+      background: #FEF3C7;
+      color: #92400E;
+      border: 2px solid #FCD34D;
+      padding: 8px 24px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 18px;
+      margin: 12px 0 20px 0;
+    }
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+      text-align: start;
+    }
+    .report-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .box-title { font-weight: 800; font-size: 14px; color: #B45309; margin-bottom: 6px; }
+    .box-desc { font-size: 12px; color: #92400E; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="report-frame">
+    <div style="font-size: 12px; font-weight: 800; color: #D97706; letter-spacing: 2px;">منصة عِلم • واحة الناشئة والأسرة المسلمة</div>
+    <h1 class="report-title">${isAr ? '🌟 تقرير الإنجاز والهمة الإيمانية 🌟' : '🌟 Faith & Knowledge Achievement Report 🌟'}</h1>
+    <div class="stars-badge">⭐ ${earnedStars} ${isAr ? 'نجمة إيمانية مكتسبة' : 'Faith Stars Earned'}</div>
+    <div class="report-grid">
+      <div class="report-box">
+        <div class="box-title">🕌 ${isAr ? 'أركان الإسلام والإيمان' : 'Pillars of Faith'}</div>
+        <div class="box-desc">${isAr ? 'تم استيعاب المفاهيم الأساسية وحفظ الأذكار المقررة بأسلوب تفاعلي ممتع.' : 'Core pillars learned through interactive engaging stories.'}</div>
+      </div>
+      <div class="report-box">
+        <div class="box-title">📖 ${isAr ? 'قصص الأنبياء والقرآن' : 'Stories of Prophets'}</div>
+        <div class="box-desc">${isAr ? 'استلهام القيم والأخلاق الحميدة من سيرة الأنبياء عليهم السلام.' : 'Extracting timeless morals and noble ethics from prophetic biographies.'}</div>
+      </div>
+      <div class="report-box">
+        <div class="box-title">🛡️ ${isAr ? 'سياج الأمان الأسري' : 'Family Safe Shield'}</div>
+        <div class="box-desc">${isAr ? 'محتوى موثوق 100% مستند لمجمع الملك فهد وموسوعة الدرر السنية.' : '100% verified content for children adhering to authentic sources.'}</div>
+      </div>
+    </div>
+    <div style="margin-top: 24px; padding-top: 14px; border-top: 1px solid #FDE68A; display: flex; justify-content: space-between; font-size: 12px; color: #92400E;">
+      <span>${isAr ? 'التاريخ:' : 'Date:'} ${new Date().toLocaleDateString(isAr ? 'ar-SA' : 'en-US')}</span>
+      <span style="font-weight: 800;">منصة عِلم | ILM Platform</span>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 300);
+    };
+  </script>
+</body>
+</html>`;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+    
+    const doc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (doc) {
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 2500);
+      }, 400);
+    }
   };
 
   return (

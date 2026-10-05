@@ -307,7 +307,7 @@ export function getQuranpediaEmbedUrl(surah: number, ayah: number): string {
 /**
  * Rich fallback generator for all 12 services when operating offline
  */
-function getLocalFallbackForService(surah: number, ayah: number, serviceId: QuranpediaServiceId): any {
+export function getLocalFallbackForService(surah: number, ayah: number, serviceId: QuranpediaServiceId): any {
   switch (serviceId) {
     case 'tafsir':
       return [

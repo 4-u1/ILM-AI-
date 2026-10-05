@@ -183,7 +183,121 @@ export const FieldDaiyahHub: React.FC<FieldDaiyahHubProps> = ({
   };
 
   const handlePrintCard = () => {
-    window.print();
+    const isRtlLang = selectedLanguage === 'ar' || (selectedLanguage as string) === 'ur';
+    const htmlContent = `<!DOCTYPE html>
+<html lang="${selectedLanguage}" dir="${isRtlLang ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="utf-8" />
+  <title>بطاقة دعوية - ${activeContent.headline}</title>
+  <style>
+    @page { size: landscape; margin: 10mm; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', sans-serif;
+      background-color: #064E3B;
+      margin: 0;
+      padding: 24px;
+      color: #FFFFFF;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .card-frame {
+      border: 3px solid #34D399;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #064E3B 0%, #022C22 100%);
+      padding: 30px 36px;
+      color: #FFFFFF;
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.4);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+    .card-logo {
+      font-weight: 900;
+      font-size: 16px;
+      color: #6EE7B7;
+    }
+    .headline {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+    }
+    .proof-box {
+      background: rgba(6, 78, 59, 0.6);
+      border: 1px solid #10B981;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #A7F3D0;
+      margin-bottom: 16px;
+    }
+    .argument {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #E2E8F0;
+      margin-bottom: 16px;
+    }
+    .footer {
+      border-top: 1px solid rgba(52, 211, 153, 0.4);
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #6EE7B7;
+    }
+  </style>
+</head>
+<body>
+  <div class="card-frame">
+    <div class="card-top">
+      <div class="card-logo">منصة عِلم | ILM Outreach Kit</div>
+      <div>${currentCard.badgeEmoji}</div>
+    </div>
+    <div class="headline">${activeContent.headline}</div>
+    <div class="proof-box">${activeContent.coreProof}</div>
+    <div class="argument">💡 ${activeContent.rationalArgument}</div>
+    <div class="footer">
+      <span>${activeContent.callToAction}</span>
+      <span>مجمع الملك فهد وموسوعة الدرر السنية ✦</span>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 300);
+    };
+  </script>
+</body>
+</html>`;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+    
+    const doc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (doc) {
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 2500);
+      }, 400);
+    }
   };
 
   return (

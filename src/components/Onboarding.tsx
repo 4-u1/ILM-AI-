@@ -15,6 +15,7 @@ import {
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
+import { IlmBrandLogo } from './IlmBrandLogo';
 
 interface OnboardingProps {
   isOpen: boolean;
@@ -162,9 +163,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
         {/* Top Header Decorative Strip */}
         <div className="bg-linear-to-r from-slate-900 via-slate-800 to-amber-900 px-6 py-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2.5">
-            <span className="font-brand text-2xl font-bold tracking-normal select-none">
-              <span className="logo-word text-white">علم</span>
-            </span>
+            <IlmBrandLogo size="xs" showSubtitle={false} withAura={false} textColor="text-white" kasrahColor="#93c5fd" />
             <span className="text-xs text-amber-200/90 font-medium border-s border-white/20 ps-2.5">
               {isAr ? 'دليل الانطلاق والتعريف' : 'Platform Walkthrough'}
             </span>
