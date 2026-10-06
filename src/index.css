@@ -33,6 +33,17 @@
   padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* Safe area horizontal padding for mobile viewports with notch / curved edges */
+.safe-area-px {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+
+/* Safe area top padding */
+.safe-area-pt {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+
 /* Bottom clearance class to ensure content and inputs are never obscured by BottomNav on mobile */
 .mobile-bottom-clearance {
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));

@@ -6,6 +6,7 @@ import { loadSurahAyahs, FullSurahData } from '../utils/quranLoader';
 import { playQuranVerse, stopQuranAudio, QURAN_RECITERS, QuranReciterId, getSavedReciter, saveReciter } from '../utils/quranAudio';
 import { QuranpediaModal } from './QuranpediaModal';
 import { playTapSound } from '../utils/platformSounds';
+import { useReadingDarkMode } from '../utils/readingMode';
 import {
   BookOpen,
   Search,
@@ -21,7 +22,9 @@ import {
   ChevronRight,
   ChevronLeft,
   Sparkles,
-  Maximize2
+  Maximize2,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 interface CompactQuranModalProps {
@@ -53,6 +56,9 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
   const [playingAyahKey, setPlayingAyahKey] = useState<string | null>(null);
   const [selectedReciter, setSelectedReciter] = useState<QuranReciterId>(() => getSavedReciter());
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // Dedicated Eye-Comfort Dark Reading Mode
+  const { isDark, toggle: toggleDarkMode } = useReadingDarkMode();
 
   // Sync initial surah
   useEffect(() => {
@@ -151,12 +157,24 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ duration: 0.2 }}
-          className="w-full max-w-4xl h-[90vh] max-h-[820px] bg-[#FCFAF6] rounded-3xl border border-amber-300/80 shadow-2xl flex flex-col overflow-hidden text-slate-900"
+          className={`w-full max-w-4xl h-[90vh] max-h-[820px] rounded-3xl border shadow-2xl flex flex-col overflow-hidden transition-colors duration-300 ${
+            isDark 
+              ? 'bg-[#101419] border-amber-900/40 text-[#E2E8F0]' 
+              : 'bg-[#FCFAF6] border-amber-300/80 text-slate-900'
+          }`}
         >
           {/* Header Bar */}
-          <div className="p-4 sm:px-6 py-3.5 bg-linear-to-r from-amber-900 via-slate-900 to-amber-950 text-white flex items-center justify-between gap-3 shrink-0 border-b border-amber-500/20">
+          <div className={`p-4 sm:px-6 py-3.5 text-white flex items-center justify-between gap-3 shrink-0 border-b transition-colors duration-300 ${
+            isDark
+              ? 'bg-gradient-to-r from-slate-950 via-[#131A22] to-slate-950 border-amber-900/30'
+              : 'bg-linear-to-r from-amber-900 via-slate-900 to-amber-950 border-amber-500/20'
+          }`}>
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-xs">
+              <div className={`w-9 h-9 rounded-2xl flex items-center justify-center shadow-xs ${
+                isDark
+                  ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300'
+                  : 'bg-amber-500/20 border border-amber-400/40 text-amber-300'
+              }`}>
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
@@ -176,6 +194,26 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Dedicated Dark Reading Mode Toggle */}
+              <button
+                type="button"
+                onClick={() => {
+                  playTapSound();
+                  toggleDarkMode();
+                }}
+                className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-3xs ${
+                  isDark
+                    ? 'bg-amber-400/15 border-amber-400/30 text-amber-300 hover:bg-amber-400/25'
+                    : 'bg-white/10 hover:bg-white/20 border-white/15 text-amber-100'
+                }`}
+                title={isDark ? 'التبديل إلى الوضع النهاري' : 'التبديل إلى وضع القراءة الليلي المريح للعين'}
+              >
+                {isDark ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-amber-200" />}
+                <span className="hidden sm:inline text-xs">
+                  {isDark ? 'الوضع النهاري' : 'وضع القراءة الليلي 🌙'}
+                </span>
+              </button>
+
               {onOpenFullPage && (
                 <button
                   onClick={() => {
@@ -208,19 +246,27 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
           <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
             
             {/* Column 1: Surah Selector List (md:col-span-4) */}
-            <div className="md:col-span-4 border-b md:border-b-0 md:border-l md:border-[#EAE3D6] bg-[#F7F3EB] p-3 flex flex-col gap-2 overflow-hidden">
+            <div className={`md:col-span-4 border-b md:border-b-0 md:border-l p-3 flex flex-col gap-2 overflow-hidden transition-colors duration-300 ${
+              isDark 
+                ? 'bg-[#141B22] border-[#222E3C]' 
+                : 'bg-[#F7F3EB] border-[#EAE3D6]'
+            }`}>
               
               {/* Search Box */}
               <div className="relative shrink-0">
-                <Search className={`w-3.5 h-3.5 text-slate-400 absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-3' : 'left-3'}`} />
+                <Search className={`w-3.5 h-3.5 absolute top-1/2 -translate-y-1/2 ${
+                  isDark ? 'text-slate-500' : 'text-slate-400'
+                } ${isRtl ? 'right-3' : 'left-3'}`} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={isAr ? 'بحث في الـ 114 سورة...' : 'Search 114 surahs...'}
-                  className={`w-full py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500 ${
-                    isRtl ? 'pr-8 pl-6' : 'pl-8 pr-6'
-                  }`}
+                  className={`w-full py-1.5 rounded-xl border text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 ${
+                    isDark
+                      ? 'bg-[#1A232D] border-[#2B3A4C] text-[#E2E8F0] placeholder-[#64748B]'
+                      : 'bg-white border-slate-200 text-slate-800 placeholder-slate-400'
+                  } ${isRtl ? 'pr-8 pl-6' : 'pl-8 pr-6'}`}
                 />
                 {searchQuery && (
                   <button onClick={() => setSearchQuery('')} className={`absolute top-1/2 -translate-y-1/2 text-slate-400 ${isRtl ? 'left-2' : 'right-2'}`}>
@@ -242,22 +288,30 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                       }}
                       className={`w-full p-2.5 rounded-xl border text-start flex items-center justify-between gap-2 transition cursor-pointer ${
                         isSelected
-                          ? 'bg-amber-100/90 border-amber-400 text-amber-950 font-bold shadow-2xs'
-                          : 'bg-white hover:bg-slate-50 border-slate-200/70 text-slate-700'
+                          ? (isDark 
+                              ? 'bg-amber-950/60 border-amber-600/50 text-amber-200 font-bold shadow-2xs' 
+                              : 'bg-amber-100/90 border-amber-400 text-amber-950 font-bold shadow-2xs')
+                          : (isDark 
+                              ? 'bg-[#17202A] hover:bg-[#1E2835] border-[#24303E] text-[#CBD5E1]' 
+                              : 'bg-white hover:bg-slate-50 border-slate-200/70 text-slate-700')
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         <span className={`w-6 h-6 rounded-lg text-[11px] font-bold flex items-center justify-center shrink-0 ${
-                          isSelected ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-600'
+                          isSelected 
+                            ? 'bg-amber-700 text-white' 
+                            : (isDark ? 'bg-[#222E3C] text-slate-300' : 'bg-slate-100 text-slate-600')
                         }`}>
                           {surah.number}
                         </span>
                         <div>
                           <span className="text-xs font-serif block">سورة {surah.nameAr}</span>
-                          <span className="text-[10px] text-slate-400 block">{surah.nameEn}</span>
+                          <span className={`text-[10px] block ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{surah.nameEn}</span>
                         </div>
                       </div>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                        isDark ? 'bg-[#222E3C] text-slate-300' : 'bg-slate-100 text-slate-600'
+                      }`}>
                         {surah.ayahCount} {isAr ? 'آية' : 'ayahs'}
                       </span>
                     </button>
@@ -267,37 +321,51 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
             </div>
 
             {/* Column 2: Surah Reader & Audio (md:col-span-8) */}
-            <div className="md:col-span-8 bg-white p-4 sm:p-6 flex flex-col overflow-hidden">
+            <div className={`md:col-span-8 p-4 sm:p-6 flex flex-col overflow-hidden transition-colors duration-300 ${
+              isDark ? 'bg-[#101419]' : 'bg-white'
+            }`}>
               
               {/* Surah Header Card */}
-              <div className="pb-3 mb-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className={`pb-3 mb-3 border-b flex flex-wrap items-center justify-between gap-3 shrink-0 ${
+                isDark ? 'border-[#222F3E]' : 'border-slate-100'
+              }`}>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                      isDark ? 'bg-amber-950/70 border border-amber-800/40 text-amber-300' : 'bg-amber-100 text-amber-900'
+                    }`}>
                       {isAr ? `السورة رقم ${activeMeta.number}` : `Surah #${activeMeta.number}`}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                      isDark ? 'bg-[#1D2733] text-slate-300' : 'bg-slate-100 text-slate-700'
+                    }`}>
                       {activeMeta.revelationType}
                     </span>
-                    <span className="text-xs text-slate-500">
+                    <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       {isAr ? `الجزء ${activeMeta.juz} • صفحة ${activeMeta.page}` : `Juz ${activeMeta.juz} • Page ${activeMeta.page}`}
                     </span>
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold font-serif text-slate-900 mt-1">
+                  <h2 className={`text-xl sm:text-2xl font-bold font-serif mt-1 ${
+                    isDark ? 'text-[#F5EAD4]' : 'text-slate-900'
+                  }`}>
                     سورة {activeMeta.nameAr} ({activeMeta.nameEn})
                   </h2>
                 </div>
 
                 {/* Reciter Toggle */}
-                <div className="flex items-center gap-1.5 bg-[#F6F1EA] p-1 rounded-xl border border-[#EAE3D6] text-[11px]">
-                  <Volume2 className="w-3.5 h-3.5 text-amber-700" />
+                <div className={`flex items-center gap-1.5 p-1 rounded-xl border text-[11px] ${
+                  isDark ? 'bg-[#161F2A] border-[#253446]' : 'bg-[#F6F1EA] border-[#EAE3D6]'
+                }`}>
+                  <Volume2 className="w-3.5 h-3.5 text-amber-500" />
                   <button
                     onClick={() => {
                       setSelectedReciter('hudhaify');
                       saveReciter('hudhaify');
                     }}
                     className={`px-2 py-0.5 rounded-lg font-bold transition cursor-pointer ${
-                      selectedReciter === 'hudhaify' ? 'bg-amber-700 text-white' : 'text-slate-600 hover:text-slate-950'
+                      selectedReciter === 'hudhaify' 
+                        ? 'bg-amber-700 text-white' 
+                        : (isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-950')
                     }`}
                   >
                     الحذيفي
@@ -308,7 +376,9 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                       saveReciter('husary');
                     }}
                     className={`px-2 py-0.5 rounded-lg font-bold transition cursor-pointer ${
-                      selectedReciter === 'husary' ? 'bg-amber-700 text-white' : 'text-slate-600 hover:text-slate-950'
+                      selectedReciter === 'husary' 
+                        ? 'bg-amber-700 text-white' 
+                        : (isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-950')
                     }`}
                   >
                     الحصري
@@ -317,8 +387,12 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
               </div>
 
               {/* Theme Note */}
-              <div className="p-2.5 rounded-xl bg-[#FAF7F2] border border-[#EAE3D6] text-[11px] text-slate-700 mb-3 shrink-0">
-                <span className="font-bold text-amber-900 font-serif">💡 مقصد السورة: </span>
+              <div className={`p-2.5 rounded-xl border text-[11px] mb-3 shrink-0 ${
+                isDark 
+                  ? 'bg-[#161F2A] border-[#253446] text-[#CBD5E1]' 
+                  : 'bg-[#FAF7F2] border-[#EAE3D6] text-slate-700'
+              }`}>
+                <span className="font-bold text-amber-500 font-serif">💡 مقصد السورة: </span>
                 <span>{isAr ? activeMeta.themeSummaryAr : activeMeta.themeSummaryEn}</span>
               </div>
 
@@ -327,7 +401,7 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                 {isLoadingSurah ? (
                   <div className="py-16 text-center space-y-3">
                     <div className="w-8 h-8 border-3 border-amber-300 border-t-amber-700 rounded-full animate-spin mx-auto" />
-                    <p className="text-xs text-amber-950 font-bold font-sans">
+                    <p className={`text-xs font-bold font-sans ${isDark ? 'text-amber-200' : 'text-amber-950'}`}>
                       {isAr ? 'جاري استحضار النص القرآني المعتمد والتلاوة...' : 'Loading verified Uthmani text...'}
                     </p>
                   </div>
@@ -335,7 +409,7 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                   <>
                     {surahData.bismillah && (
                       <div className="text-center py-2 select-none">
-                        <span className="font-serif text-xl font-bold text-slate-900 block">
+                        <span className={`font-serif text-xl font-bold block ${isDark ? 'text-[#F5EAD4]' : 'text-slate-900'}`}>
                           بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                         </span>
                       </div>
@@ -349,29 +423,39 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                       return (
                         <div
                           key={ayah.numberInSurah}
-                          className={`p-3 rounded-2xl border transition-all ${
+                          className={`p-3 sm:p-3.5 rounded-2xl border transition-all ${
                             isPlaying
-                              ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-300'
-                              : 'bg-white hover:bg-slate-50/70 border-slate-100'
+                              ? (isDark ? 'bg-[#1C2532] border-amber-500/60 ring-2 ring-amber-500/30' : 'bg-amber-50 border-amber-400 ring-2 ring-amber-300')
+                              : (isDark ? 'bg-[#151D26] hover:bg-[#1A2430] border-[#202C3B]' : 'bg-white hover:bg-slate-50/70 border-slate-100')
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
-                            <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-900 text-xs font-bold flex items-center justify-center shrink-0 mt-1 select-none">
+                            <span className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 mt-1 select-none ${
+                              isDark ? 'bg-amber-950/80 border border-amber-800/50 text-amber-300' : 'bg-amber-100 text-amber-900'
+                            }`}>
                               {ayah.numberInSurah}
                             </span>
 
                             <div className="flex-1">
-                              <p className="font-serif text-lg sm:text-xl font-bold leading-loose text-slate-950 text-start select-none">
+                              <p className={`font-serif text-lg sm:text-xl font-bold leading-loose text-start select-none ${
+                                isDark ? 'text-[#F5EAD4]' : 'text-slate-950'
+                              }`}>
                                 {ayah.arabicText}
                               </p>
                               {ayah.translationEn && (
-                                <p className="text-[11px] text-slate-500 font-sans mt-1 text-start leading-relaxed">
+                                <p className={`text-[11px] font-sans mt-1 text-start leading-relaxed ${
+                                  isDark ? 'text-[#94A3B8]' : 'text-slate-500'
+                                }`}>
                                   {ayah.translationEn}
                                 </p>
                               )}
                               {ayah.tafseerAr && (
-                                <div className="mt-1.5 p-2 rounded-xl bg-amber-50/60 border border-amber-100 text-[10px] text-amber-950 leading-relaxed text-start">
-                                  <span className="font-bold text-amber-900">التفسير الميسر: </span>
+                                <div className={`mt-2 p-2.5 rounded-xl border text-[11px] leading-relaxed text-start ${
+                                  isDark 
+                                    ? 'bg-[#19222E] border-[#263445] text-[#CBD5E1]' 
+                                    : 'bg-amber-50/60 border-amber-100 text-amber-950'
+                                }`}>
+                                  <span className="font-bold text-amber-500">التفسير الميسر: </span>
                                   {ayah.tafseerAr}
                                 </div>
                               )}
@@ -382,11 +466,13 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                               <button
                                 onClick={() => handlePlayAyah(ayah.arabicText, activeMeta.number, ayah.numberInSurah)}
                                 className={`p-1.5 rounded-lg transition cursor-pointer ${
-                                  isPlaying ? 'bg-amber-700 text-white' : 'bg-slate-100 hover:bg-amber-100 text-slate-700'
+                                  isPlaying 
+                                    ? 'bg-amber-700 text-white' 
+                                    : (isDark ? 'bg-[#1E2835] hover:bg-amber-900/40 text-slate-300' : 'bg-slate-100 hover:bg-amber-100 text-slate-700')
                                 }`}
                                 title={isPlaying ? 'إيقاف' : 'استماع'}
                               >
-                                {isPlaying ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-amber-700" />}
+                                {isPlaying ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-amber-500" />}
                               </button>
 
                               <button
@@ -400,7 +486,9 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                                     arabicText: ayah.arabicText,
                                   })
                                 }
-                                className="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition cursor-pointer"
+                                className={`p-1.5 rounded-lg border transition cursor-pointer ${
+                                  isDark ? 'bg-teal-950/40 hover:bg-teal-900/50 text-teal-300 border-teal-800/40' : 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
+                                }`}
                                 title="قرآن بيديا"
                               >
                                 <BookOpen className="w-3.5 h-3.5" />
@@ -410,10 +498,12 @@ export const CompactQuranModal: React.FC<CompactQuranModalProps> = ({
                                 onClick={() =>
                                   handleCopyAyah(ayah.arabicText, `سورة ${activeMeta.nameAr}: ${ayah.numberInSurah}`, ayahKey)
                                 }
-                                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 border border-slate-200 transition cursor-pointer"
+                                className={`p-1.5 rounded-lg border transition cursor-pointer ${
+                                  isDark ? 'bg-[#1C2633] hover:bg-[#233040] text-slate-400 hover:text-white border-[#273545]' : 'bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 border border-slate-200'
+                                }`}
                                 title="نسخ"
                               >
-                                {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                                {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                               </button>
                             </div>
                           </div>

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES, UI_TRANSLATIONS } from '../data/translations';
 import { IlmBrandLogo } from './IlmBrandLogo';
+import { PWAInstallButton } from './PWAInstallButton';
 
 export type AppTabType = 'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements' | 'ambassadors' | 'copilot' | 'thirtyDays' | 'offlineKit' | 'signLanguage' | 'ilmJunior' | 'culturalEtiquette' | 'scholasticSearch' | 'fieldDaiyah' | 'dhikr' | 'quran' | 'favorites';
 
@@ -219,7 +220,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     <>
       {/* 📱 Ergonomic Mobile Bottom Nav Bar */}
       <nav 
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-lg border-t border-[#EAE3D6] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] px-3 py-1 safe-area-pb"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-lg border-t border-[#EAE3D6] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] px-3 py-1 safe-area-pb safe-area-px"
         role="navigation"
         aria-label="Mobile Navigation"
       >
@@ -311,7 +312,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           onClick={() => setShowMoreDrawer(false)}
         >
           <div 
-            className="bg-[#FAF7F2] w-full max-w-lg rounded-t-[32px] shadow-2xl border-t border-x border-[#EAE3D6] overflow-hidden flex flex-col max-h-[85vh] animate-sheet-up pb-6 safe-area-pb"
+            className="bg-[#FAF7F2] w-full max-w-lg rounded-t-[32px] shadow-2xl border-t border-x border-[#EAE3D6] overflow-hidden flex flex-col max-h-[85vh] animate-sheet-up pb-6 safe-area-pb safe-area-px"
             onClick={(e) => e.stopPropagation()}
             dir={isAr || isUr ? 'rtl' : 'ltr'}
           >
@@ -357,7 +358,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             </div>
 
             {/* Hub Grid Content */}
-            <div className="p-4 space-y-2.5 overflow-y-auto mobile-scroll-touch flex-1">
+            <div className="p-4 space-y-3 overflow-y-auto mobile-scroll-touch flex-1">
+              {/* 📲 PWA App Installation Card in Main Mobile Hub */}
+              <div className="pb-1">
+                <PWAInstallButton
+                  language={language}
+                  variant="menuItem"
+                />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {moreFeatures.map((feat) => {
                   const Icon = feat.icon;

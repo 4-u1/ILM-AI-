@@ -386,7 +386,7 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
 
   if (!isVisible) {
     return (
-      <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-30 print:hidden transition-all duration-300">
+      <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px)+10px)] right-3 sm:bottom-6 sm:right-6 z-45 print:hidden transition-all duration-300">
         <button
           onClick={() => {
             if (onOpenGuide) {
@@ -397,13 +397,13 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
               onContinueLearning(nextStage);
             }
           }}
-          className="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-gradient-to-r from-white via-[#FCFAF5] to-[#F7F2E6] text-slate-950 text-xs sm:text-sm font-black hover:from-amber-50 hover:to-white shadow-xl shadow-amber-900/10 hover:shadow-2xl hover:scale-105 active:scale-95 cursor-pointer transition-all border-2 border-[#D4AF37]/70 hover:border-[#D4AF37] ring-4 ring-amber-500/15"
+          className="group flex items-center gap-2 px-3.5 py-2 sm:px-5 sm:py-3 rounded-full bg-white text-slate-950 text-xs sm:text-sm font-black hover:bg-amber-50 shadow-2xl shadow-amber-950/20 hover:scale-105 active:scale-95 cursor-pointer transition-all border-2 border-amber-400 ring-4 ring-amber-500/15 whitespace-nowrap"
           title={isAr ? 'مُرشِد عِلم الذكي | دليلك وموجهك التفاعلي في المنصة' : 'ILM Intelligent Guide'}
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-100 to-emerald-100 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs group-hover:rotate-12 transition-transform">
-            <Compass className="w-3.5 h-3.5 text-amber-800" />
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-amber-100 to-emerald-100 border border-amber-300 flex items-center justify-center shrink-0 shadow-2xs group-hover:rotate-12 transition-transform">
+            <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-800" />
           </div>
-          <span className="tracking-wide font-serif text-slate-900">
+          <span className="tracking-wide font-serif text-slate-900 font-bold text-xs sm:text-sm">
             {isAr ? 'مُرشِد عِلم الذكي' : isUr ? 'مرشد عِلم' : language === 'fr' ? 'Guide ILM' : language === 'es' ? 'Guía ILM' : language === 'id' ? 'Panduan ILM' : 'ILM Guide'}
           </span>
           <div className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-200 animate-pulse shrink-0" />
@@ -414,7 +414,7 @@ export const StudyReminderNotification: React.FC<StudyReminderNotificationProps>
 
   return (
     <div 
-      className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-lg z-50 print:hidden animate-in fade-in slide-in-from-bottom-5 duration-300"
+      className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px)+12px)] sm:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-lg z-50 print:hidden animate-in fade-in slide-in-from-bottom-5 duration-300"
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       <div className="bg-white/98 backdrop-blur-md border-2 border-amber-400/90 rounded-3xl p-5 shadow-2xl space-y-4 relative overflow-hidden text-slate-900">

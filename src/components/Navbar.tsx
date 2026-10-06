@@ -71,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur border-b border-[#EAE3D6] w-full flex flex-col">
       {/* Top Cultural Date & Identity Bar - visible on all screens */}
       <div className="w-full border-b border-[#EAE3D6]/70 bg-[#F6F1EA]/90 py-0.5 px-2.5 sm:px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-[11px]">
+        <div className="max-w-6xl mx-auto flex items-center justify-center sm:justify-between text-[11px]">
           <IslamicDateDisplay language={language} variant="navbar" />
           <div className="hidden sm:flex items-center gap-2.5 text-[10px] text-slate-500 font-medium">
             {/* Online / Offline Status Badge */}
@@ -374,7 +374,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Mobile Top Cultural Header Bar */}
-      <div className="md:hidden flex items-center justify-between px-2.5 py-1.5 w-full bg-[#FAF7F2]/98 border-b border-[#EAE3D6] gap-1">
+      <div className="md:hidden flex items-center justify-between px-2.5 sm:px-3 py-1.5 w-full bg-[#FAF7F2]/98 border-b border-[#EAE3D6] gap-1 safe-area-px overflow-hidden">
         {/* Brand Logo */}
         <button
           onClick={() => {
@@ -391,7 +391,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         {/* Right Controls Group - Mobile Action Bar */}
-        <div className="flex items-center gap-1 shrink-0 justify-end">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 justify-end">
           {/* Mobile Sheikh Naif Guide Button */}
           {onOpenGuide && (
             <button
@@ -411,8 +411,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             variant="compact"
           />
 
-          {/* Mobile PWA Install Button */}
-          <PWAInstallButton language={language} />
+          {/* Mobile PWA Install Button (Compact Icon) */}
+          <PWAInstallButton language={language} variant="compact" />
 
           {/* Senior Mode Toggle Icon */}
           {onToggleSeniorMode && (

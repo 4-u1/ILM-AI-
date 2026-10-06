@@ -469,6 +469,8 @@ export const LessonView: React.FC<LessonViewProps> = ({
   const [showSourceInfo, setShowSourceInfo] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isFirstMountRef = useRef(true);
 
   // Sync state to localStorage
   useEffect(() => {
@@ -488,8 +490,23 @@ export const LessonView: React.FC<LessonViewProps> = ({
     }
   }, [currentChunkIndex, currentStep, messages, isStageCompleted, storageKey]);
 
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior,
+      });
+    }
+  };
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      scrollToBottom('instant');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    scrollToBottom('smooth');
   }, [messages, isTyping]);
 
   const speakText = (text: string) => {
@@ -1185,7 +1202,10 @@ export const LessonView: React.FC<LessonViewProps> = ({
         </div>
 
         {/* Message Stream */}
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto max-h-[460px] space-y-4 bg-slate-50/40">
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 p-4 sm:p-6 overflow-y-auto max-h-[460px] space-y-4 bg-slate-50/40"
+        >
           {messages.map((m) => {
             const isTutor = m.role === 'tutor';
             return (

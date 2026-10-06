@@ -16,6 +16,7 @@ import {
   getSavedReciter, 
   saveReciter 
 } from '../utils/quranAudio';
+import { useReadingDarkMode } from '../utils/readingMode';
 import { QuranpediaModal } from './QuranpediaModal';
 import { 
   BookOpen, 
@@ -37,7 +38,9 @@ import {
   Heart,
   Trash2,
   Share2,
-  Copy
+  Copy,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 interface QuranBrowserProps {
@@ -57,6 +60,9 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
   const isUr = language === 'ur';
   const isRtl = isAr || isUr;
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight;
+
+  // Eye-comfort Dark Reading Mode
+  const { isDark, toggle: toggleDarkMode } = useReadingDarkMode();
 
   // View Mode: 'surahs' (browse/read) or 'favorites' (saved verses)
   const [activeTab, setActiveTab] = useState<'surahs' | 'favorites'>(initialTab);
@@ -326,13 +332,13 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
               </span>
             </div>
 
-            {/* Reciter Toggle */}
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+            {/* Reciter Toggle & Dark Reading Mode Toggle */}
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2 flex-wrap">
               <span className="text-[11px] text-amber-200 font-bold flex items-center gap-1">
                 <Volume2 className="w-3.5 h-3.5 text-amber-400" />
                 <span>{isAr ? 'القارئ:' : 'Reciter:'}</span>
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => handleSelectReciter('hudhaify')}
@@ -356,6 +362,21 @@ export const QuranBrowser: React.FC<QuranBrowserProps> = ({
                   title="الشيخ محمود خليل الحصري (المصحف المعلم)"
                 >
                   الحصري
+                </button>
+
+                {/* Dedicated Dark Reading Mode Button */}
+                <button
+                  type="button"
+                  onClick={toggleDarkMode}
+                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer flex items-center gap-1 border ${
+                    isDark
+                      ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 shadow-xs'
+                      : 'bg-white/10 hover:bg-white/20 text-slate-200 border-white/15'
+                  }`}
+                  title={isDark ? (isAr ? 'التبديل إلى الوضع النهاري' : 'Switch to Light Mode') : (isAr ? 'وضع القراءة الليلي المريح للعين 🌙' : 'Comfort Dark Mode 🌙')}
+                >
+                  {isDark ? <Sun className="w-3 h-3 text-amber-300" /> : <Moon className="w-3 h-3 text-amber-200" />}
+                  <span>{isDark ? (isAr ? 'النهاري' : 'Light') : (isAr ? 'القراءة الليلية 🌙' : 'Dark')}</span>
                 </button>
               </div>
             </div>

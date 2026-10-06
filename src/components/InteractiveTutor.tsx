@@ -18,7 +18,10 @@ import {
   ArrowUpRight,
   Mic,
   MicOff,
-  Sliders
+  Sliders,
+  ShieldCheck,
+  Phone,
+  FileText
 } from 'lucide-react';
 import { Language, TrackId, DialoguePreferences } from '../types';
 import { parseLearnerPersona, adaptCapsuleForAge, LearnerPersona } from '../utils/tutorPersona';
@@ -33,6 +36,7 @@ export interface InteractiveTutorProps {
   selectedTrack: TrackId;
   onBackToMap: () => void;
   onSwitchTrack?: (track: TrackId) => void;
+  onOpenFatwaTicket?: (userQuestion?: string, category?: any, ticketCode?: string) => void;
   embedded?: boolean;
   initialStageId?: string;
   onCompleteStage?: (stageId: string) => void;
@@ -54,6 +58,11 @@ interface Message {
   timestamp: string;
   options?: string[];
   isQuestion?: boolean;
+  fatwaTicket?: {
+    question: string;
+    category: 'طلاق وأحوال شخصية' | 'مواريث وتركات' | 'نزاعات مالية' | 'نوازل وقضايا عامة';
+    ticketCode: string;
+  };
 }
 
 export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
@@ -61,6 +70,7 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   selectedTrack,
   onBackToMap,
   onSwitchTrack,
+  onOpenFatwaTicket,
   embedded = false,
   initialStageId,
   onCompleteStage,
@@ -278,6 +288,8 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
   };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isFirstMountRef = useRef(true);
 
   // Build adaptive welcome message based on persona if name is already known
   const getInitialWelcomeMessage = (name: string, ageStr: string): string => {
@@ -326,12 +338,23 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
     resetSession(selectedTrack);
   }, [selectedTrack]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior,
+      });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      scrollToBottom('instant');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    scrollToBottom('smooth');
   }, [messages, isTyping]);
 
   const speakText = (text: string) => {
@@ -401,6 +424,45 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
     detectedAge?: string
   ) => {
     const clean = userText.toLowerCase().trim();
+
+    // -------------------------------------------------------------
+    // GUARDRAIL: Strict Hard Stop on Level D (Personal Fatwa / Dispute)
+    // -------------------------------------------------------------
+    const levelDPatterns = [
+      'طلاق', 'طالق', 'طلقت', 'مطلقة', 'مطلق', 'خلع', 'مخالعة', 
+      'ميراث', 'تركة', 'ورثة', 'تركات', 'تقسيم الميراث', 'مات وترك', 'توفي وترك',
+      'فسخ نكاح', 'رجعة', 'عدة المطلقة', 'عدة الأرملة', 'عقد نكاح باطل',
+      'نزاع مالي', 'تحاكم قضائي', 'دعوى قضائية', 'حكم القاضي', 'حد القذف', 'شبهة زنا'
+    ];
+    const isLevelD = levelDPatterns.some(pattern => clean.includes(pattern));
+
+    if (isLevelD) {
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      const code = `FATWA-REF-2026-${randomSuffix}`;
+      const cat = (clean.includes('ميراث') || clean.includes('تركة') || clean.includes('ورث')) 
+        ? 'مواريث وتركات' 
+        : (clean.includes('دين') || clean.includes('نزاع') || clean.includes('قرض'))
+        ? 'نزاعات مالية'
+        : 'طلاق وأحوال شخصية';
+
+      const reply = isAr
+        ? `⚠️ **تنبيه الحوكمة الشرعية (المستوى د - امتناع وإحالة رسمية):**\n\nأهلاً بك يا ${persona.titleCall}. بناءً على وثيقة حوكمة المحتوى الشرعي لمنصة «عِلم» ومعايير الأمان الفقهي، يمتنع الذكاء الاصطناعي منعاً باتاً عن إصدار أي فتوى أو ترجيح آلي في قضايا الطلاق والأحوال الشخصية، والمواريث والتركات، والنزاعات القضائية.\n\nحرصاً على أمانتكم، تم توليد **بطاقة إحالة إفتائية رسمية مشفرة** برقم استناد (${code}) لنقل مسألتكم مباشرة إلى الرئاسة العامة للبحوث العلمية والإفتاء بالمملكة العربية السعودية.`
+        : `⚠️ **Content Governance Notice (Level D - Official Referral):**\n\nUnder ILM platform governance, the system strictly refrains from issuing automated personal decrees on divorce, inheritance, or legal disputes. An official referral ticket (#${code}) has been generated for direct submission to certified authorities in KSA.`;
+
+      addTutorMessage(reply, [isAr ? 'فتح البطاقة الإفتائية 📋' : 'View Fatwa Ticket 📋', isAr ? 'متابعة مدارسة الدرس 📖' : 'Continue Lesson 📖'], false, {
+        question: userText,
+        category: cat,
+        ticketCode: code
+      });
+      return;
+    }
+
+    if (clean.includes('فتح البطاقة الإفتائية') || clean.includes('بطاقة الإفتاء') || clean.includes('fatwa ticket')) {
+      if (onOpenFatwaTicket) {
+        onOpenFatwaTicket();
+      }
+      return;
+    }
 
     const inquiryKeywords = [
       'ما حكم', 'ماحكم', 'حكم', 'هل يجوز', 'هل حرام', 'حلال', 'حرام', 'ما هو', 'ما هي', 'كيف', 'لماذا', 
@@ -651,7 +713,12 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
     }
   };
 
-  const addTutorMessage = (text: string, options?: string[], isQuestion?: boolean) => {
+  const addTutorMessage = (
+    text: string, 
+    options?: string[], 
+    isQuestion?: boolean,
+    fatwaTicket?: Message['fatwaTicket']
+  ) => {
     // Strictly enforce single-question rule
     const filteredText = enforceSingleQuestion(text);
     const tutorMsg: Message = {
@@ -660,7 +727,8 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
       text: filteredText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       options,
-      isQuestion
+      isQuestion,
+      fatwaTicket
     };
     setMessages(prev => [...prev, tutorMsg]);
     speakText(filteredText);
@@ -1025,7 +1093,10 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
         </div>
 
         {/* Chat Stream Area */}
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto max-h-[500px] space-y-4 bg-slate-50/40">
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 p-4 sm:p-6 overflow-y-auto max-h-[500px] space-y-4 bg-slate-50/40"
+        >
           {messages.map((m) => {
             const isTutor = m.role === 'tutor';
             return (
@@ -1051,6 +1122,60 @@ export const InteractiveTutor: React.FC<InteractiveTutorProps> = ({
                   <div className="text-sm leading-relaxed">
                     <FormattedMessage content={m.text} isUser={!isTutor} />
                   </div>
+
+                  {/* Embedded Level D Fatwa Referral Ticket Card */}
+                  {m.fatwaTicket && (
+                    <div className="mt-3.5 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-amber-950 text-white border border-amber-500/40 space-y-2.5 shadow-md">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
+                          <span className="text-xs font-bold text-amber-300 truncate">
+                            {isAr ? 'تم توليد بطاقة إحالة إفتائية رسمية' : 'Official Fatwa Ticket Generated'}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-mono bg-white/10 border border-white/15 px-2 py-0.5 rounded text-amber-200 shrink-0">
+                          {m.fatwaTicket.ticketCode}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                        {isAr
+                          ? 'المسألة مصنفة ضمن (المستوى د). يُحظر البت الآلي فيها، ويُتاح لك تصدير التذكرة موثقة أو الاتصال المباشر بمفتي الرئاسة العامة.'
+                          : 'Level D Fatwa Stop. Automated decree prohibited. You can view/export the ticket or call the official Ifta hotline.'}
+                      </p>
+                      <div className="pt-2 border-t border-white/15 flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (onOpenFatwaTicket) {
+                              onOpenFatwaTicket(m.fatwaTicket?.question, m.fatwaTicket?.category, m.fatwaTicket?.ticketCode);
+                            }
+                          }}
+                          className="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>{isAr ? 'فتح وتصدير البطاقة' : 'View & Export Ticket'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            try {
+                              navigator.clipboard?.writeText('8002451000');
+                            } catch {}
+                            try {
+                              window.location.href = 'tel:8002451000';
+                            } catch {
+                              window.open('tel:8002451000', '_self');
+                            }
+                          }}
+                          className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
+                          title={isAr ? 'اتصال مباشر أو نسخ الرقم' : 'Direct call or copy'}
+                        >
+                          <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                          <span dir="ltr">8002451000</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Suggestion Options / Interactive Buttons */}
                   {m.options && m.options.length > 0 && (

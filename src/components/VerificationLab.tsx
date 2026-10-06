@@ -14,7 +14,8 @@ import {
   ArrowLeft,
   Copy,
   Check,
-  Code
+  Code,
+  Phone
 } from 'lucide-react';
 import { FormattedMessage } from './FormattedMessage';
 import { OfficialFatwaTicketModal } from './OfficialFatwaTicketModal';
@@ -281,25 +282,39 @@ export const VerificationLab: React.FC<VerificationLabProps> = ({ language }) =>
                     ? 'امتثالاً للمعيار الشرعي الصارم، تم الامتناع عن الفتوى التلقائية وتحويل المسألة برقم استناد إلى المنصات المعتمدة للإفتاء في المملكة العربية السعودية مع توفير الاتصال المباشر بالمفتين المختصين.'
                     : 'In compliance with strict non-fatwa governance, this query is referred to officially accredited Ifta authorities in KSA with toll-free guidance.'}
                 </p>
-                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <span className="text-emerald-300 font-medium">
-                    {isAr ? 'الرقم المجاني الموحد للإفتاء: 8002451000' : 'Toll-free Ifta: 8002451000'}
-                  </span>
+                <div className="pt-3 border-t border-white/15 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setIsTicketModalOpen(true)}
-                      className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition flex items-center gap-1 cursor-pointer"
+                      onClick={() => {
+                        try {
+                          navigator.clipboard?.writeText('8002451000');
+                        } catch {}
+                        window.location.href = 'tel:8002451000';
+                      }}
+                      className="flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 font-medium font-mono cursor-pointer transition"
+                      title={isAr ? 'اضغط للاتصال أو النسخ' : 'Click to call or copy'}
                     >
-                      <span>{isAr ? 'عرض وتصدير البطاقة المشفرة' : 'View Encrypted Ticket'}</span>
+                      <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{isAr ? 'هاتف الإفتاء الموحد: 8002451000' : 'Toll-free Ifta: 8002451000'}</span>
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsTicketModalOpen(true)}
+                      className="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                      <span>{isAr ? 'عرض البطاقة المشفرة' : 'View Encrypted Ticket'}</span>
                     </button>
                     <a
-                      href="https://www.alifta.gov.sa"
+                      href="https://my.gov.sa"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center gap-1.5"
+                      className="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center justify-center gap-1.5 shadow-xs active:scale-98"
                     >
-                      <span>{isAr ? 'بوابة الإفتاء الرسمية' : 'Official Portal'}</span>
+                      <span>{isAr ? 'المنصة الوطنية (GOV.SA)' : 'National Portal (GOV.SA)'}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>

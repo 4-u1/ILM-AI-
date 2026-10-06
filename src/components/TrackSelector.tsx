@@ -70,13 +70,13 @@ const trackGuides = {
       "Deconstruct common misconceptions with calm, logical evidence."
     ],
     sectionsAr: [
-      "القسم الأول: كوكب الوجود والغاية من الحياة (أسئلة منطقية).",
-      "القسم الثاني: كوكب الوحي والرسالة الخاتمة (أدلة النبوة).",
-      "القسم الثالث: كوكب تفنيد الشبهات الكبرى بالحكمة والمجادلة الحسنة."
+      "القسم الأول: محور الوجود والغاية من الحياة (أسئلة منطقية).",
+      "القسم الثاني: محور الوحي والرسالة الخاتمة (أدلة النبوة).",
+      "القسم الثالث: محور تفنيد الشبهات الكبرى بالحكمة والمجادلة الحسنة."
     ],
     sectionsEn: [
-      "Section 1: The Orbit of Existence and Life Purpose.",
-      "Section 2: The Orbit of Revelation and the Final Message.",
+      "Section 1: The Domain of Existence and Life Purpose.",
+      "Section 2: The Domain of Revelation and the Final Message.",
       "Section 3: Deconstructing Common Misconceptions with Wisdom."
     ]
   },
@@ -94,12 +94,12 @@ const trackGuides = {
       "Learn essential daily supplications and build lasting rituals."
     ],
     sectionsAr: [
-      "القسم الأول: كوكب العقيدة والتوحيد وأركان الإيمان الستة.",
-      "القسم الثاني: كوكب فقه العبادات اليومية والوضوء والصلاة.",
-      "القسم الثالث: كوكب المعاملات والأخلاق النبوية الشريفة."
+      "القسم الأول: محور العقيدة والتوحيد وأركان الإيمان الستة.",
+      "القسم الثاني: محور فقه العبادات اليومية والوضوء والصلاة.",
+      "القسم الثالث: محور المعاملات والأخلاق النبوية الشريفة."
     ],
     sectionsEn: [
-      "Section 1: The Orbit of Creed, Monotheism, & the Six Pillars.",
+      "Section 1: Creed, Monotheism, & the Six Pillars of Faith.",
       "Section 2: Practical Jurisprudence of Purification & Prayer.",
       "Section 3: Prophetic Character & Everyday Etiquette."
     ]
@@ -118,9 +118,9 @@ const trackGuides = {
       "Build cognitive resilience & scientific immunity against doubts."
     ],
     sectionsAr: [
-      "القسم الأول: كوكب العبادات التفصيلي والسنن والآداب الشرعية.",
-      "القسم الثاني: كوكب السلوك والتزكية وتحصين الأخلاق.",
-      "القسم الثالث: كوكب العقيدة الصحيحة الواقية والرد الحاسم."
+      "القسم الأول: محور العبادات التفصيلي والسنن والآداب الشرعية.",
+      "القسم الثاني: محور السلوك والتزكية وتحصين الأخلاق.",
+      "القسم الثالث: محور العقيدة الصحيحة الواقية والرد الحاسم."
     ],
     sectionsEn: [
       "Section 1: Detailed Jurisprudence of Worship & Blessed Sunan.",
@@ -142,9 +142,9 @@ const trackGuides = {
       "Master the use of verified digital source registries."
     ],
     sectionsAr: [
-      "القسم الأول: كوكب أصول الدعوة ومناهج الحوار البناء.",
-      "القسم الثاني: كوكب منهجية الرد العلمي وفنون التفنيد والمناظرة.",
-      "القسم الثالث: كوكب مهارات التواصل المعاصر والإقناع والدعوة الرقمية."
+      "القسم الأول: محور أصول الدعوة ومناهج الحوار البناء.",
+      "القسم الثاني: محور منهجية الرد العلمي وفنون التفنيد والمناظرة.",
+      "القسم الثالث: محور مهارات التواصل المعاصر والإقناع والدعوة الرقمية."
     ],
     sectionsEn: [
       "Section 1: Foundations of Da'wah and Dialectic Etiquettes.",

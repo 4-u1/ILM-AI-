@@ -57,6 +57,11 @@ export default function App() {
     'tracks' | 'journey' | 'simulator' | 'lab' | 'sources' | 'dashboard' | 'certificate' | 'tutor' | 'achievements' | 'ambassadors' | 'copilot' | 'thirtyDays' | 'offlineKit' | 'signLanguage' | 'ilmJunior' | 'culturalEtiquette' | 'scholasticSearch' | 'fieldDaiyah' | 'dhikr' | 'quran' | 'favorites'
   >('tracks');
 
+  // Ensure window always starts at the top when changing tabs so the screen doesn't drop down
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentTab]);
+
   const [selectedTrack, setSelectedTrack] = useState<TrackId | null>('new_muslim');
   const [activeStage, setActiveStage] = useState<LessonStage | null>(null);
 
@@ -106,6 +111,20 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isFatwaOpen, setIsFatwaOpen] = useState(false);
+  const [fatwaData, setFatwaData] = useState<{
+    question?: string;
+    category?: 'طلاق وأحوال شخصية' | 'مواريث وتركات' | 'نزاعات مالية' | 'نوازل وقضايا عامة';
+    ticketCode?: string;
+  }>({});
+
+  const handleOpenFatwaTicket = (
+    question?: string, 
+    category?: 'طلاق وأحوال شخصية' | 'مواريث وتركات' | 'نزاعات مالية' | 'نوازل وقضايا عامة', 
+    ticketCode?: string
+  ) => {
+    setFatwaData({ question, category, ticketCode });
+    setIsFatwaOpen(true);
+  };
   const [isCompactQuranOpen, setIsCompactQuranOpen] = useState(false);
   const [compactQuranSurah, setCompactQuranSurah] = useState(1);
 
@@ -415,6 +434,7 @@ export default function App() {
                     setSelectedTrack(tr);
                     setCurrentTab('journey');
                   }}
+                  onOpenFatwaTicket={handleOpenFatwaTicket}
                 />
               )}
 
@@ -685,6 +705,9 @@ export default function App() {
         isOpen={isFatwaOpen}
         onClose={() => setIsFatwaOpen(false)}
         language={language}
+        userQuestion={fatwaData.question}
+        category={fatwaData.category}
+        ticketCode={fatwaData.ticketCode}
       />
 
       {/* Footer matching PDF Page 2 */}
