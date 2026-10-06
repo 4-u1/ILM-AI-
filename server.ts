@@ -113,7 +113,7 @@ function getAiClient(): GoogleGenAI | null {
  * Attempts 'gemini-3.8-flash' first, then 'gemini-3.1-flash-lite' if quota is exhausted,
  * and gracefully falls back to the local RAG engine if external free quotas are reached.
  */
-async function callGeminiWithFallback(prompt: string, config?: any): Promise<string | null> {
+async function callGeminiWithFallback(prompt: string, config?: any, timeoutMs: number = 7000): Promise<string | null> {
   const client = getAiClient();
   if (!client) return null;
 
@@ -121,12 +121,18 @@ async function callGeminiWithFallback(prompt: string, config?: any): Promise<str
 
   for (const modelName of modelsToTry) {
     try {
-      const res = await client.models.generateContent({
+      const generatePromise = client.models.generateContent({
         model: modelName,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config,
       });
-      if (res.text && res.text.trim()) {
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)
+      );
+
+      const res: any = await Promise.race([generatePromise, timeoutPromise]);
+      if (res && res.text && res.text.trim()) {
         return res.text.trim();
       }
     } catch (err: any) {

@@ -396,11 +396,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {onOpenGuide && (
             <button
               onClick={onOpenGuide}
-              className="px-2 py-1 rounded-md border border-amber-300 text-[11px] font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 transition cursor-pointer flex items-center gap-1"
+              className="px-1.5 sm:px-2 py-1 rounded-md border border-amber-300 text-[11px] font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 transition cursor-pointer flex items-center gap-1"
               title={isAr ? 'مُرشِد عِلم' : 'Guide'}
             >
-              <Compass className="w-3 h-3 text-amber-700 animate-spin [animation-duration:12s]" />
-              <span>{isAr ? 'مُرشِد عِلم' : 'Guide'}</span>
+              <Compass className="w-3.5 h-3.5 text-amber-700 animate-spin [animation-duration:12s]" />
+              <span className="hidden xs:inline">{isAr ? 'مُرشِد عِلم' : 'Guide'}</span>
             </button>
           )}
 

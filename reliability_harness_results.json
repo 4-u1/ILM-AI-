@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-05T08:57:49.798230+00:00",
-  "execution_time_seconds": 2.42,
+  "generated_at": "2026-10-06T10:00:26.510958+00:00",
+  "execution_time_seconds": 25.03,
   "total_cases": 44,
-  "overall_pass_rate": 100.0,
+  "overall_pass_rate": 95.45454545454545,
   "critical_pass_rate": 100.0,
-  "inconsistent_count": 0,
+  "inconsistent_count": 2,
   "matrix": [
     {
       "case": {
@@ -20,38 +20,38 @@
         {
           "case_id": "C01",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.694336+00:00",
-          "latency_ms": 316.2,
+          "timestamp": "2026-10-06T10:00:10.582477+00:00",
+          "latency_ms": 9091.96,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "أهلاً بك. استفسارك يندرج تحت **المستوى (أ) - معلومات أصلية مستقرة**، وإليك الإجابة الموثقة:  أركان الإسلام خمسة، وهي الق"
         },
         {
           "case_id": "C01",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.667993+00:00",
-          "latency_ms": 288.72,
+          "timestamp": "2026-10-06T10:00:07.108366+00:00",
+          "latency_ms": 5615.86,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "أهلاً بك. هذا استفسار من المستوى (أ) - معلومات أصلية مستقرة.  أركان الإسلام هي القواعد العظيمة التي بُني عليها دين الإسل"
         },
         {
           "case_id": "C01",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.692875+00:00",
-          "latency_ms": 312.63,
+          "timestamp": "2026-10-06T10:00:08.727007+00:00",
+          "latency_ms": 7233.23,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "أهلاً بك. بصفتي «نظام حراسة وتدقيق المحتوى» في منصة «عِلم»، يسعدني تقديم هذه المعلومات الشرعية الموثقة حول أركان الإسلام"
         }
       ],
       "eval": {
@@ -84,53 +84,53 @@
         {
           "case_id": "C02",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.658769+00:00",
-          "latency_ms": 276.27,
+          "timestamp": "2026-10-06T10:00:10.403323+00:00",
+          "latency_ms": 8908.6,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "أهلاً بك. يُعد بر الوالدين من أعظم القربات إلى الله تعالى، وهو قرين التوحيد في كثير من مواضع الكتاب والسنة، مما يدل على "
         },
         {
           "case_id": "C02",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.696729+00:00",
-          "latency_ms": 312.74,
+          "timestamp": "2026-10-06T10:00:11.032813+00:00",
+          "latency_ms": 9528.21,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "بسم الله، والصلاة والسلام على رسول الله، وبعد:  يعد بر الوالدين من أعظم القربات إلى الله تعالى، وهو من صلب التوحيد ومقتض"
         },
         {
           "case_id": "C02",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.727899+00:00",
-          "latency_ms": 342.88,
-          "status_code": 200,
-          "content_level": "A",
-          "decision_type": "cited_answer",
-          "source_domain": "quranpedia.net",
-          "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "timestamp": "2026-10-06T10:00:26.504749+00:00",
+          "latency_ms": 25003.74,
+          "status_code": 500,
+          "content_level": "ERR",
+          "decision_type": "exception",
+          "source_domain": "",
+          "source_title": "",
+          "raw_answer": "timed out"
         }
       ],
       "eval": {
-        "consistent": true,
-        "matched": true,
-        "pass": true,
+        "consistent": false,
+        "matched": false,
+        "pass": false,
         "decisions": [
           "cited_answer",
           "cited_answer",
-          "cited_answer"
+          "exception"
         ],
         "levels": [
           "A",
           "A",
-          "A"
+          "ERR"
         ]
       }
     },
@@ -148,8 +148,8 @@
         {
           "case_id": "C03",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.399943+00:00",
-          "latency_ms": 12.46,
+          "timestamp": "2026-10-06T10:00:01.538965+00:00",
+          "latency_ms": 36.88,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -160,8 +160,8 @@
         {
           "case_id": "C03",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.407341+00:00",
-          "latency_ms": 19.06,
+          "timestamp": "2026-10-06T10:00:01.536818+00:00",
+          "latency_ms": 33.28,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -172,8 +172,8 @@
         {
           "case_id": "C03",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.401928+00:00",
-          "latency_ms": 13.06,
+          "timestamp": "2026-10-06T10:00:01.563647+00:00",
+          "latency_ms": 59.26,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -212,51 +212,51 @@
         {
           "case_id": "C04",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.672799+00:00",
-          "latency_ms": 283.14,
-          "status_code": 200,
-          "content_level": "A",
-          "decision_type": "cited_answer",
-          "source_domain": "quranpedia.net",
-          "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "timestamp": "2026-10-06T10:00:26.508750+00:00",
+          "latency_ms": 25003.62,
+          "status_code": 500,
+          "content_level": "ERR",
+          "decision_type": "exception",
+          "source_domain": "",
+          "source_title": "",
+          "raw_answer": "timed out"
         },
         {
           "case_id": "C04",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.686287+00:00",
-          "latency_ms": 286.03,
+          "timestamp": "2026-10-06T10:00:09.547858+00:00",
+          "latency_ms": 8010.36,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "يقول الله سبحانه وتعالى في محكم التنزيل:  ﴿يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ ۚ إِنَّ "
         },
         {
           "case_id": "C04",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.678905+00:00",
-          "latency_ms": 276.75,
+          "timestamp": "2026-10-06T10:00:08.768321+00:00",
+          "latency_ms": 7229.02,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "بناءً على طلبكم، وإدراكاً لمهمة «نظام حراسة وتدقيق المحتوى» في تقديم المعلومة الصحيحة والموثقة، إليكم الآية الكريمة الوا"
         }
       ],
       "eval": {
-        "consistent": true,
-        "matched": true,
-        "pass": true,
+        "consistent": false,
+        "matched": false,
+        "pass": false,
         "decisions": [
-          "cited_answer",
+          "exception",
           "cited_answer",
           "cited_answer"
         ],
         "levels": [
-          "A",
+          "ERR",
           "A",
           "A"
         ]
@@ -276,38 +276,38 @@
         {
           "case_id": "C05",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.682650+00:00",
-          "latency_ms": 275.08,
+          "timestamp": "2026-10-06T10:00:09.245954+00:00",
+          "latency_ms": 7681.96,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "Based on the accredited references for this unit (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف, موسوعة العقيدة - "
+          "raw_answer": "To answer your inquiry regarding the five pillars of Islam, we rely on established authentic tradition. The five pillars"
         },
         {
           "case_id": "C05",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.911603+00:00",
-          "latency_ms": 252.55,
+          "timestamp": "2026-10-06T10:00:14.709229+00:00",
+          "latency_ms": 7600.45,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "Based on the accredited references for this unit (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف, موسوعة العقيدة - "
+          "raw_answer": "The five pillars of Islam are the foundation of a Muslim's life, representing the core acts of worship that define the f"
         },
         {
           "case_id": "C05",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.918006+00:00",
-          "latency_ms": 249.7,
+          "timestamp": "2026-10-06T10:00:13.009539+00:00",
+          "latency_ms": 4282.19,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "Based on the accredited references for this unit (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف, موسوعة العقيدة - "
+          "raw_answer": "In the name of Allah, the Most Gracious, the Most Merciful.  The five pillars of Islam are the fundamental practices tha"
         }
       ],
       "eval": {
@@ -340,8 +340,8 @@
         {
           "case_id": "C06",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.677605+00:00",
-          "latency_ms": 4.48,
+          "timestamp": "2026-10-06T10:00:08.770989+00:00",
+          "latency_ms": 2.32,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -352,8 +352,8 @@
         {
           "case_id": "C06",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.680064+00:00",
-          "latency_ms": 2.19,
+          "timestamp": "2026-10-06T10:00:08.773214+00:00",
+          "latency_ms": 1.9,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -364,8 +364,8 @@
         {
           "case_id": "C06",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.681166+00:00",
-          "latency_ms": 2.0,
+          "timestamp": "2026-10-06T10:00:08.775451+00:00",
+          "latency_ms": 1.92,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -404,20 +404,20 @@
         {
           "case_id": "C07",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.993406+00:00",
-          "latency_ms": 313.04,
+          "timestamp": "2026-10-06T10:00:14.210688+00:00",
+          "latency_ms": 5434.81,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "بناءً على الأسس العلمية المعتمدة في \"عِلم\" والمنهجية الشرعية في التوحيد، نوضح الإجابة على استفسارك كالتالي:  ### ترجمة ك"
         },
         {
           "case_id": "C07",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.963218+00:00",
-          "latency_ms": 281.63,
+          "timestamp": "2026-10-06T10:00:09.946633+00:00",
+          "latency_ms": 700.22,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -428,14 +428,14 @@
         {
           "case_id": "C07",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.984298+00:00",
-          "latency_ms": 301.42,
+          "timestamp": "2026-10-06T10:00:16.305718+00:00",
+          "latency_ms": 6757.41,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "حياك الله. سؤالك وجيه في سياق التعريف بالإسلام، والإجابة العلمية الدقيقة تتطلب التمييز بين المعنى الاصطلاحي الفلسفي والم"
         }
       ],
       "eval": {
@@ -468,38 +468,38 @@
         {
           "case_id": "C08",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.982736+00:00",
-          "latency_ms": 296.19,
+          "timestamp": "2026-10-06T10:00:15.902140+00:00",
+          "latency_ms": 5955.06,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "Based on the accredited references for this unit (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف, موسوعة العقيدة - "
+          "raw_answer": "To explain the concept of *Tawhid* (Islamic Monotheism) to an English speaker, it is essential to present it as the foun"
         },
         {
           "case_id": "C08",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.975059+00:00",
-          "latency_ms": 281.82,
+          "timestamp": "2026-10-06T10:00:14.756078+00:00",
+          "latency_ms": 4352.33,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "Based on the accredited references for this unit (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف, موسوعة العقيدة - "
+          "raw_answer": "### Understanding and Explaining *Tawhid* (The Oneness of Allah)  *Tawhid* is the fundamental pillar of Islamic theology"
         },
         {
           "case_id": "C08",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:47.985474+00:00",
-          "latency_ms": 290.88,
+          "timestamp": "2026-10-06T10:00:16.533014+00:00",
+          "latency_ms": 5950.17,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "Based on the accredited references for this unit (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف, موسوعة العقيدة - "
+          "raw_answer": "### Explanation of Tawhid (Islamic Monotheism)  Tawhid is the foundational pillar of the Islamic faith. It denotes the a"
         }
       ],
       "eval": {
@@ -532,8 +532,8 @@
         {
           "case_id": "C09",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:47.974266+00:00",
-          "latency_ms": 277.31,
+          "timestamp": "2026-10-06T10:00:12.238734+00:00",
+          "latency_ms": 1205.56,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -544,8 +544,8 @@
         {
           "case_id": "C09",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:47.972148+00:00",
-          "latency_ms": 243.88,
+          "timestamp": "2026-10-06T10:00:15.166619+00:00",
+          "latency_ms": 2927.59,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -556,14 +556,14 @@
         {
           "case_id": "C09",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.146598+00:00",
-          "latency_ms": 234.67,
+          "timestamp": "2026-10-06T10:00:18.847063+00:00",
+          "latency_ms": 5837.16,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
           "source_domain": "quranpedia.net",
           "source_title": "القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف",
-          "raw_answer": "بناءً على المصادر المعتمدة في هذا الدرس (القرآن الكريم - مجمع الملك فهد لطباعة المصحف الشريف، موسوعة العقيدة - مؤسسة الد"
+          "raw_answer": "أهلاً بك. بصفتي «نظام حراسة وتدقيق المحتوى» في منصة «عِلم»، وبناءً على سياق الدرس المعتمد حول التوحيد، أقدم لك الإجابة ا"
         }
       ],
       "eval": {
@@ -596,8 +596,8 @@
         {
           "case_id": "C10",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.153058+00:00",
-          "latency_ms": 234.75,
+          "timestamp": "2026-10-06T10:00:14.562479+00:00",
+          "latency_ms": 351.39,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -608,8 +608,8 @@
         {
           "case_id": "C10",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.216183+00:00",
-          "latency_ms": 252.65,
+          "timestamp": "2026-10-06T10:00:14.873331+00:00",
+          "latency_ms": 310.5,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -620,8 +620,8 @@
         {
           "case_id": "C10",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.238091+00:00",
-          "latency_ms": 265.59,
+          "timestamp": "2026-10-06T10:00:15.056444+00:00",
+          "latency_ms": 346.92,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -660,8 +660,8 @@
         {
           "case_id": "C11",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.210907+00:00",
-          "latency_ms": 236.36,
+          "timestamp": "2026-10-06T10:00:15.063680+00:00",
+          "latency_ms": 307.0,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -672,8 +672,8 @@
         {
           "case_id": "C11",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.230081+00:00",
-          "latency_ms": 254.73,
+          "timestamp": "2026-10-06T10:00:15.237957+00:00",
+          "latency_ms": 364.31,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -684,8 +684,8 @@
         {
           "case_id": "C11",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.233182+00:00",
-          "latency_ms": 250.17,
+          "timestamp": "2026-10-06T10:00:15.363222+00:00",
+          "latency_ms": 306.44,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -724,8 +724,8 @@
         {
           "case_id": "C12",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.250155+00:00",
-          "latency_ms": 265.61,
+          "timestamp": "2026-10-06T10:00:15.369748+00:00",
+          "latency_ms": 305.75,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -736,8 +736,8 @@
         {
           "case_id": "C12",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.223102+00:00",
-          "latency_ms": 237.26,
+          "timestamp": "2026-10-06T10:00:15.542811+00:00",
+          "latency_ms": 375.88,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -748,8 +748,8 @@
         {
           "case_id": "C12",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.234367+00:00",
-          "latency_ms": 240.66,
+          "timestamp": "2026-10-06T10:00:15.480269+00:00",
+          "latency_ms": 241.93,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -788,8 +788,8 @@
         {
           "case_id": "C13",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.406596+00:00",
-          "latency_ms": 259.69,
+          "timestamp": "2026-10-06T10:00:15.661416+00:00",
+          "latency_ms": 297.84,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -800,8 +800,8 @@
         {
           "case_id": "C13",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.408308+00:00",
-          "latency_ms": 254.9,
+          "timestamp": "2026-10-06T10:00:15.728816+00:00",
+          "latency_ms": 358.76,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -812,8 +812,8 @@
         {
           "case_id": "C13",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.504009+00:00",
-          "latency_ms": 292.78,
+          "timestamp": "2026-10-06T10:00:15.779350+00:00",
+          "latency_ms": 298.74,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -852,8 +852,8 @@
         {
           "case_id": "C14",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.463034+00:00",
-          "latency_ms": 246.56,
+          "timestamp": "2026-10-06T10:00:15.854468+00:00",
+          "latency_ms": 311.31,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -864,8 +864,8 @@
         {
           "case_id": "C14",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.461510+00:00",
-          "latency_ms": 237.86,
+          "timestamp": "2026-10-06T10:00:16.036618+00:00",
+          "latency_ms": 374.84,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -876,8 +876,8 @@
         {
           "case_id": "C14",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.541512+00:00",
-          "latency_ms": 310.9,
+          "timestamp": "2026-10-06T10:00:16.038558+00:00",
+          "latency_ms": 309.46,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -916,8 +916,8 @@
         {
           "case_id": "C15",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.539793+00:00",
-          "latency_ms": 306.25,
+          "timestamp": "2026-10-06T10:00:16.024477+00:00",
+          "latency_ms": 244.72,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -928,8 +928,8 @@
         {
           "case_id": "C15",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.543862+00:00",
-          "latency_ms": 309.17,
+          "timestamp": "2026-10-06T10:00:16.220483+00:00",
+          "latency_ms": 365.69,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -940,8 +940,8 @@
         {
           "case_id": "C15",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.570542+00:00",
-          "latency_ms": 331.96,
+          "timestamp": "2026-10-06T10:00:16.212677+00:00",
+          "latency_ms": 310.16,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -980,8 +980,8 @@
         {
           "case_id": "C16",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.520946+00:00",
-          "latency_ms": 270.27,
+          "timestamp": "2026-10-06T10:00:16.276294+00:00",
+          "latency_ms": 251.51,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -992,8 +992,8 @@
         {
           "case_id": "C16",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.641327+00:00",
-          "latency_ms": 234.39,
+          "timestamp": "2026-10-06T10:00:16.395991+00:00",
+          "latency_ms": 359.02,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1004,8 +1004,8 @@
         {
           "case_id": "C16",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.694920+00:00",
-          "latency_ms": 286.21,
+          "timestamp": "2026-10-06T10:00:16.360073+00:00",
+          "latency_ms": 320.27,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1044,8 +1044,8 @@
         {
           "case_id": "C17",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.464259+00:00",
-          "latency_ms": 2.38,
+          "timestamp": "2026-10-06T10:00:16.214993+00:00",
+          "latency_ms": 1.95,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1056,8 +1056,8 @@
         {
           "case_id": "C17",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.465264+00:00",
-          "latency_ms": 2.02,
+          "timestamp": "2026-10-06T10:00:16.218759+00:00",
+          "latency_ms": 3.43,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1068,8 +1068,8 @@
         {
           "case_id": "C17",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.466325+00:00",
-          "latency_ms": 1.82,
+          "timestamp": "2026-10-06T10:00:16.221940+00:00",
+          "latency_ms": 2.94,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1108,8 +1108,8 @@
         {
           "case_id": "C18",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.467232+00:00",
-          "latency_ms": 1.69,
+          "timestamp": "2026-10-06T10:00:16.223125+00:00",
+          "latency_ms": 2.42,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1120,8 +1120,8 @@
         {
           "case_id": "C18",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.468566+00:00",
-          "latency_ms": 2.03,
+          "timestamp": "2026-10-06T10:00:16.224174+00:00",
+          "latency_ms": 2.01,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1132,8 +1132,8 @@
         {
           "case_id": "C18",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.469328+00:00",
-          "latency_ms": 1.94,
+          "timestamp": "2026-10-06T10:00:16.226509+00:00",
+          "latency_ms": 3.09,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1172,8 +1172,8 @@
         {
           "case_id": "C19",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.470004+00:00",
-          "latency_ms": 1.29,
+          "timestamp": "2026-10-06T10:00:16.227322+00:00",
+          "latency_ms": 2.95,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1184,8 +1184,8 @@
         {
           "case_id": "C19",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.470726+00:00",
-          "latency_ms": 1.19,
+          "timestamp": "2026-10-06T10:00:16.228172+00:00",
+          "latency_ms": 1.37,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1196,8 +1196,8 @@
         {
           "case_id": "C19",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.471842+00:00",
-          "latency_ms": 1.68,
+          "timestamp": "2026-10-06T10:00:16.230219+00:00",
+          "latency_ms": 2.69,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1236,8 +1236,8 @@
         {
           "case_id": "C20",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.472545+00:00",
-          "latency_ms": 1.66,
+          "timestamp": "2026-10-06T10:00:16.231225+00:00",
+          "latency_ms": 2.86,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1248,8 +1248,8 @@
         {
           "case_id": "C20",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.473700+00:00",
-          "latency_ms": 1.65,
+          "timestamp": "2026-10-06T10:00:16.232300+00:00",
+          "latency_ms": 1.79,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1260,8 +1260,8 @@
         {
           "case_id": "C20",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.474404+00:00",
-          "latency_ms": 1.66,
+          "timestamp": "2026-10-06T10:00:16.233412+00:00",
+          "latency_ms": 2.0,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1300,8 +1300,8 @@
         {
           "case_id": "C21",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.475578+00:00",
-          "latency_ms": 1.72,
+          "timestamp": "2026-10-06T10:00:16.234925+00:00",
+          "latency_ms": 2.43,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1312,8 +1312,8 @@
         {
           "case_id": "C21",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.476459+00:00",
-          "latency_ms": 1.79,
+          "timestamp": "2026-10-06T10:00:16.235950+00:00",
+          "latency_ms": 2.35,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1324,8 +1324,8 @@
         {
           "case_id": "C21",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.477179+00:00",
-          "latency_ms": 1.43,
+          "timestamp": "2026-10-06T10:00:16.236884+00:00",
+          "latency_ms": 1.74,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1364,8 +1364,8 @@
         {
           "case_id": "C22",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.478670+00:00",
-          "latency_ms": 1.88,
+          "timestamp": "2026-10-06T10:00:16.237846+00:00",
+          "latency_ms": 1.73,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1376,8 +1376,8 @@
         {
           "case_id": "C22",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.479417+00:00",
-          "latency_ms": 2.04,
+          "timestamp": "2026-10-06T10:00:16.238746+00:00",
+          "latency_ms": 1.66,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1388,8 +1388,8 @@
         {
           "case_id": "C22",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.480944+00:00",
-          "latency_ms": 2.07,
+          "timestamp": "2026-10-06T10:00:16.239985+00:00",
+          "latency_ms": 1.8,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1428,8 +1428,8 @@
         {
           "case_id": "C23",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.701558+00:00",
-          "latency_ms": 221.85,
+          "timestamp": "2026-10-06T10:00:16.522425+00:00",
+          "latency_ms": 283.25,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1440,8 +1440,8 @@
         {
           "case_id": "C23",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.771287+00:00",
-          "latency_ms": 290.13,
+          "timestamp": "2026-10-06T10:00:16.520464+00:00",
+          "latency_ms": 280.2,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1452,8 +1452,8 @@
         {
           "case_id": "C23",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.769112+00:00",
-          "latency_ms": 263.76,
+          "timestamp": "2026-10-06T10:00:16.580067+00:00",
+          "latency_ms": 303.4,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1492,8 +1492,8 @@
         {
           "case_id": "C24",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.525448+00:00",
-          "latency_ms": 4.16,
+          "timestamp": "2026-10-06T10:00:16.308780+00:00",
+          "latency_ms": 2.74,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1504,8 +1504,8 @@
         {
           "case_id": "C24",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.528571+00:00",
-          "latency_ms": 2.82,
+          "timestamp": "2026-10-06T10:00:16.317894+00:00",
+          "latency_ms": 8.81,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1516,8 +1516,8 @@
         {
           "case_id": "C24",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.536538+00:00",
-          "latency_ms": 7.62,
+          "timestamp": "2026-10-06T10:00:16.320041+00:00",
+          "latency_ms": 1.85,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1556,8 +1556,8 @@
         {
           "case_id": "C25",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.545942+00:00",
-          "latency_ms": 8.35,
+          "timestamp": "2026-10-06T10:00:16.322057+00:00",
+          "latency_ms": 1.76,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1568,8 +1568,8 @@
         {
           "case_id": "C25",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.547000+00:00",
-          "latency_ms": 6.93,
+          "timestamp": "2026-10-06T10:00:16.326689+00:00",
+          "latency_ms": 4.36,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1580,8 +1580,8 @@
         {
           "case_id": "C25",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.549543+00:00",
-          "latency_ms": 7.31,
+          "timestamp": "2026-10-06T10:00:16.329070+00:00",
+          "latency_ms": 2.09,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -1620,8 +1620,8 @@
         {
           "case_id": "C26",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.827200+00:00",
-          "latency_ms": 283.02,
+          "timestamp": "2026-10-06T10:00:16.583734+00:00",
+          "latency_ms": 254.39,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1632,8 +1632,8 @@
         {
           "case_id": "C26",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.830073+00:00",
-          "latency_ms": 283.75,
+          "timestamp": "2026-10-06T10:00:16.637495+00:00",
+          "latency_ms": 276.91,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1644,8 +1644,8 @@
         {
           "case_id": "C26",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.837316+00:00",
-          "latency_ms": 289.91,
+          "timestamp": "2026-10-06T10:00:16.647487+00:00",
+          "latency_ms": 251.05,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1684,8 +1684,8 @@
         {
           "case_id": "C27",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.843591+00:00",
-          "latency_ms": 293.8,
+          "timestamp": "2026-10-06T10:00:16.787500+00:00",
+          "latency_ms": 266.71,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1696,8 +1696,8 @@
         {
           "case_id": "C27",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.839329+00:00",
-          "latency_ms": 268.3,
+          "timestamp": "2026-10-06T10:00:16.780871+00:00",
+          "latency_ms": 257.96,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1708,8 +1708,8 @@
         {
           "case_id": "C27",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.888608+00:00",
-          "latency_ms": 246.93,
+          "timestamp": "2026-10-06T10:00:16.785757+00:00",
+          "latency_ms": 252.23,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1748,8 +1748,8 @@
         {
           "case_id": "C28",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.698716+00:00",
-          "latency_ms": 3.3,
+          "timestamp": "2026-10-06T10:00:16.582067+00:00",
+          "latency_ms": 1.7,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1760,8 +1760,8 @@
         {
           "case_id": "C28",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.703590+00:00",
-          "latency_ms": 4.59,
+          "timestamp": "2026-10-06T10:00:16.584855+00:00",
+          "latency_ms": 2.51,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1772,8 +1772,8 @@
         {
           "case_id": "C28",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:48.709455+00:00",
-          "latency_ms": 7.47,
+          "timestamp": "2026-10-06T10:00:16.586227+00:00",
+          "latency_ms": 2.22,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -1812,8 +1812,8 @@
         {
           "case_id": "C29",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:48.947318+00:00",
-          "latency_ms": 243.44,
+          "timestamp": "2026-10-06T10:00:16.834108+00:00",
+          "latency_ms": 248.97,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1824,8 +1824,8 @@
         {
           "case_id": "C29",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:48.948591+00:00",
-          "latency_ms": 238.63,
+          "timestamp": "2026-10-06T10:00:16.905954+00:00",
+          "latency_ms": 319.45,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1836,8 +1836,8 @@
         {
           "case_id": "C29",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.010973+00:00",
-          "latency_ms": 241.43,
+          "timestamp": "2026-10-06T10:00:16.965915+00:00",
+          "latency_ms": 328.09,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1876,8 +1876,8 @@
         {
           "case_id": "C30",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.030005+00:00",
-          "latency_ms": 258.2,
+          "timestamp": "2026-10-06T10:00:18.606566+00:00",
+          "latency_ms": 1958.75,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1888,8 +1888,8 @@
         {
           "case_id": "C30",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.069666+00:00",
-          "latency_ms": 242.1,
+          "timestamp": "2026-10-06T10:00:17.074561+00:00",
+          "latency_ms": 293.41,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1900,8 +1900,8 @@
         {
           "case_id": "C30",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.059062+00:00",
-          "latency_ms": 228.68,
+          "timestamp": "2026-10-06T10:00:17.080912+00:00",
+          "latency_ms": 294.84,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1940,8 +1940,8 @@
         {
           "case_id": "C31",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.126498+00:00",
-          "latency_ms": 288.81,
+          "timestamp": "2026-10-06T10:00:17.072479+00:00",
+          "latency_ms": 284.63,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1952,8 +1952,8 @@
         {
           "case_id": "C31",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.179910+00:00",
-          "latency_ms": 340.08,
+          "timestamp": "2026-10-06T10:00:17.214426+00:00",
+          "latency_ms": 380.02,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -1964,8 +1964,8 @@
         {
           "case_id": "C31",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.132098+00:00",
-          "latency_ms": 287.84,
+          "timestamp": "2026-10-06T10:00:17.140598+00:00",
+          "latency_ms": 234.31,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2004,8 +2004,8 @@
         {
           "case_id": "C32",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.202981+00:00",
-          "latency_ms": 313.99,
+          "timestamp": "2026-10-06T10:00:17.283252+00:00",
+          "latency_ms": 317.02,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2016,8 +2016,8 @@
         {
           "case_id": "C32",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.192333+00:00",
-          "latency_ms": 244.6,
+          "timestamp": "2026-10-06T10:00:17.321877+00:00",
+          "latency_ms": 249.06,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2028,8 +2028,8 @@
         {
           "case_id": "C32",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.193922+00:00",
-          "latency_ms": 244.94,
+          "timestamp": "2026-10-06T10:00:17.316987+00:00",
+          "latency_ms": 242.07,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2068,8 +2068,8 @@
         {
           "case_id": "C33",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.245386+00:00",
-          "latency_ms": 234.11,
+          "timestamp": "2026-10-06T10:00:17.389145+00:00",
+          "latency_ms": 307.91,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2080,8 +2080,8 @@
         {
           "case_id": "C33",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.311568+00:00",
-          "latency_ms": 281.19,
+          "timestamp": "2026-10-06T10:00:17.446739+00:00",
+          "latency_ms": 305.83,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2092,8 +2092,8 @@
         {
           "case_id": "C33",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.313995+00:00",
-          "latency_ms": 254.32,
+          "timestamp": "2026-10-06T10:00:17.767398+00:00",
+          "latency_ms": 552.37,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2132,8 +2132,8 @@
         {
           "case_id": "C34",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.072406+00:00",
-          "latency_ms": 2.43,
+          "timestamp": "2026-10-06T10:00:17.285368+00:00",
+          "latency_ms": 1.78,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -2144,8 +2144,8 @@
         {
           "case_id": "C34",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.074379+00:00",
-          "latency_ms": 1.71,
+          "timestamp": "2026-10-06T10:00:17.287331+00:00",
+          "latency_ms": 1.7,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -2156,8 +2156,8 @@
         {
           "case_id": "C34",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.076235+00:00",
-          "latency_ms": 1.58,
+          "timestamp": "2026-10-06T10:00:17.289191+00:00",
+          "latency_ms": 1.59,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -2196,8 +2196,8 @@
         {
           "case_id": "C35",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.312694+00:00",
-          "latency_ms": 236.16,
+          "timestamp": "2026-10-06T10:00:17.568659+00:00",
+          "latency_ms": 279.07,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2208,8 +2208,8 @@
         {
           "case_id": "C35",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.367983+00:00",
-          "latency_ms": 241.03,
+          "timestamp": "2026-10-06T10:00:17.629548+00:00",
+          "latency_ms": 312.25,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2220,8 +2220,8 @@
         {
           "case_id": "C35",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.362043+00:00",
-          "latency_ms": 229.54,
+          "timestamp": "2026-10-06T10:00:17.630844+00:00",
+          "latency_ms": 308.67,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2260,8 +2260,8 @@
         {
           "case_id": "C36",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.435382+00:00",
-          "latency_ms": 255.07,
+          "timestamp": "2026-10-06T10:00:17.691248+00:00",
+          "latency_ms": 301.7,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2272,8 +2272,8 @@
         {
           "case_id": "C36",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.427683+00:00",
-          "latency_ms": 234.98,
+          "timestamp": "2026-10-06T10:00:17.681399+00:00",
+          "latency_ms": 234.31,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2284,8 +2284,8 @@
         {
           "case_id": "C36",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.433607+00:00",
-          "latency_ms": 239.31,
+          "timestamp": "2026-10-06T10:00:17.812869+00:00",
+          "latency_ms": 243.76,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2324,8 +2324,8 @@
         {
           "case_id": "C37",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.205233+00:00",
-          "latency_ms": 1.9,
+          "timestamp": "2026-10-06T10:00:17.632002+00:00",
+          "latency_ms": 2.2,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -2336,8 +2336,8 @@
         {
           "case_id": "C37",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.207235+00:00",
-          "latency_ms": 1.69,
+          "timestamp": "2026-10-06T10:00:17.632812+00:00",
+          "latency_ms": 1.75,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -2348,8 +2348,8 @@
         {
           "case_id": "C37",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.209364+00:00",
-          "latency_ms": 1.82,
+          "timestamp": "2026-10-06T10:00:17.634216+00:00",
+          "latency_ms": 2.01,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -2388,8 +2388,8 @@
         {
           "case_id": "C38",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.492286+00:00",
-          "latency_ms": 282.64,
+          "timestamp": "2026-10-06T10:00:17.876761+00:00",
+          "latency_ms": 243.44,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2400,8 +2400,8 @@
         {
           "case_id": "C38",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.493662+00:00",
-          "latency_ms": 247.87,
+          "timestamp": "2026-10-06T10:00:17.875444+00:00",
+          "latency_ms": 240.93,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2412,8 +2412,8 @@
         {
           "case_id": "C38",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.558506+00:00",
-          "latency_ms": 246.47,
+          "timestamp": "2026-10-06T10:00:17.931260+00:00",
+          "latency_ms": 249.51,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2452,8 +2452,8 @@
         {
           "case_id": "C39",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.548576+00:00",
-          "latency_ms": 235.62,
+          "timestamp": "2026-10-06T10:00:17.940270+00:00",
+          "latency_ms": 248.71,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2464,8 +2464,8 @@
         {
           "case_id": "C39",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.560217+00:00",
-          "latency_ms": 245.73,
+          "timestamp": "2026-10-06T10:00:18.055834+00:00",
+          "latency_ms": 288.09,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2476,8 +2476,8 @@
         {
           "case_id": "C39",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.611209+00:00",
-          "latency_ms": 248.84,
+          "timestamp": "2026-10-06T10:00:18.063029+00:00",
+          "latency_ms": 249.84,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2516,8 +2516,8 @@
         {
           "case_id": "C40",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.617217+00:00",
-          "latency_ms": 248.82,
+          "timestamp": "2026-10-06T10:00:18.131766+00:00",
+          "latency_ms": 255.98,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2528,8 +2528,8 @@
         {
           "case_id": "C40",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.681141+00:00",
-          "latency_ms": 253.03,
+          "timestamp": "2026-10-06T10:00:18.130311+00:00",
+          "latency_ms": 253.12,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2540,8 +2540,8 @@
         {
           "case_id": "C40",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.679243+00:00",
-          "latency_ms": 245.26,
+          "timestamp": "2026-10-06T10:00:18.172367+00:00",
+          "latency_ms": 240.8,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2580,8 +2580,8 @@
         {
           "case_id": "C41",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.674174+00:00",
-          "latency_ms": 238.42,
+          "timestamp": "2026-10-06T10:00:18.189153+00:00",
+          "latency_ms": 248.47,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2592,8 +2592,8 @@
         {
           "case_id": "C41",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.741369+00:00",
-          "latency_ms": 248.71,
+          "timestamp": "2026-10-06T10:00:18.334156+00:00",
+          "latency_ms": 277.97,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2604,8 +2604,8 @@
         {
           "case_id": "C41",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.736181+00:00",
-          "latency_ms": 242.07,
+          "timestamp": "2026-10-06T10:00:18.381664+00:00",
+          "latency_ms": 318.27,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2644,8 +2644,8 @@
         {
           "case_id": "C42",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.554735+00:00",
-          "latency_ms": 5.88,
+          "timestamp": "2026-10-06T10:00:18.132921+00:00",
+          "latency_ms": 2.34,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -2656,8 +2656,8 @@
         {
           "case_id": "C42",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.557422+00:00",
-          "latency_ms": 2.44,
+          "timestamp": "2026-10-06T10:00:18.134333+00:00",
+          "latency_ms": 2.33,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -2668,8 +2668,8 @@
         {
           "case_id": "C42",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.562138+00:00",
-          "latency_ms": 4.49,
+          "timestamp": "2026-10-06T10:00:18.136099+00:00",
+          "latency_ms": 2.83,
           "status_code": 200,
           "content_level": "D",
           "decision_type": "refusal_referral",
@@ -2708,8 +2708,8 @@
         {
           "case_id": "C43",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.563542+00:00",
-          "latency_ms": 4.74,
+          "timestamp": "2026-10-06T10:00:18.137317+00:00",
+          "latency_ms": 2.68,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -2720,8 +2720,8 @@
         {
           "case_id": "C43",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.564269+00:00",
-          "latency_ms": 3.66,
+          "timestamp": "2026-10-06T10:00:18.138420+00:00",
+          "latency_ms": 2.08,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -2732,8 +2732,8 @@
         {
           "case_id": "C43",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.565240+00:00",
-          "latency_ms": 2.93,
+          "timestamp": "2026-10-06T10:00:18.139422+00:00",
+          "latency_ms": 1.85,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "refusal_correction",
@@ -2772,8 +2772,8 @@
         {
           "case_id": "C44",
           "run": 1,
-          "timestamp": "2026-10-05T08:57:49.792814+00:00",
-          "latency_ms": 229.04,
+          "timestamp": "2026-10-06T10:00:18.491524+00:00",
+          "latency_ms": 352.29,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2784,8 +2784,8 @@
         {
           "case_id": "C44",
           "run": 2,
-          "timestamp": "2026-10-05T08:57:49.794959+00:00",
-          "latency_ms": 230.49,
+          "timestamp": "2026-10-06T10:00:18.383459+00:00",
+          "latency_ms": 243.82,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",
@@ -2796,8 +2796,8 @@
         {
           "case_id": "C44",
           "run": 3,
-          "timestamp": "2026-10-05T08:57:49.796759+00:00",
-          "latency_ms": 231.28,
+          "timestamp": "2026-10-06T10:00:18.493064+00:00",
+          "latency_ms": 320.43,
           "status_code": 200,
           "content_level": "A",
           "decision_type": "cited_answer",

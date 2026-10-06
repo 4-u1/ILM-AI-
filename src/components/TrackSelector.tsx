@@ -369,20 +369,20 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
         {/* Main Slider Display Area */}
         <div className="relative flex items-center justify-center min-h-[360px] md:min-h-[320px]">
           
-          {/* Arrow Left Button */}
+          {/* Arrow Previous Button */}
           <button
             onClick={handlePrev}
-            className="absolute -right-2 sm:-right-4 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-[#FDFBF7] border-2 border-[#D4AF37]/60 text-amber-900 hover:text-white hover:bg-gradient-to-br hover:from-amber-600 hover:to-amber-800 hover:border-amber-700 hover:shadow-lg hover:shadow-amber-600/25 shadow-md transition-all duration-300 cursor-pointer flex items-center justify-center active:scale-90 shrink-0"
+            className="absolute -right-1 sm:-right-4 z-20 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-[#FDFBF7] border-2 border-[#D4AF37]/60 text-amber-900 hover:text-white hover:bg-gradient-to-br hover:from-amber-600 hover:to-amber-800 hover:border-amber-700 hover:shadow-lg hover:shadow-amber-600/25 shadow-md transition-all duration-300 cursor-pointer flex items-center justify-center active:scale-90 shrink-0"
             title={isAr ? 'المسار السابق' : 'Previous Track'}
           >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+            <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
           </button>
 
           {/* Core Focus Sliding Card */}
           <div 
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
-            className="w-full mx-7 sm:mx-0 max-w-lg bg-gradient-to-br from-white via-[#FCFAF5] to-[#F6F0E5] border-3 border-[#D4AF37]/50 rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 scale-100 group animate-fadeIn luxury-card-glow touch-pan-y"
+            className="w-full max-w-lg mx-auto bg-gradient-to-br from-white via-[#FCFAF5] to-[#F6F0E5] border-3 border-[#D4AF37]/50 rounded-[28px] sm:rounded-[32px] p-4.5 sm:p-8 shadow-xl relative overflow-hidden flex flex-col justify-between transition-all duration-500 scale-100 group animate-fadeIn luxury-card-glow touch-pan-y"
           >
             
             {/* 💡 Modern Professional Radial Light-Reveal Sheen Overlay */}
@@ -465,13 +465,13 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
             </div>
           </div>
 
-          {/* Arrow Right Button */}
+          {/* Arrow Next Button */}
           <button
             onClick={handleNext}
-            className="absolute -left-2 sm:-left-4 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-[#FDFBF7] border-2 border-[#D4AF37]/60 text-amber-900 hover:text-white hover:bg-gradient-to-br hover:from-amber-600 hover:to-amber-800 hover:border-amber-700 hover:shadow-lg hover:shadow-amber-600/25 shadow-md transition-all duration-300 cursor-pointer flex items-center justify-center active:scale-90 shrink-0"
+            className="absolute -left-1 sm:-left-4 z-20 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-[#FDFBF7] border-2 border-[#D4AF37]/60 text-amber-900 hover:text-white hover:bg-gradient-to-br hover:from-amber-600 hover:to-amber-800 hover:border-amber-700 hover:shadow-lg hover:shadow-amber-600/25 shadow-md transition-all duration-300 cursor-pointer flex items-center justify-center active:scale-90 shrink-0"
             title={isAr ? 'المسار التالي' : 'Next Track'}
           >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+            <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
           </button>
         </div>
 

@@ -76,11 +76,18 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
           aria-haspopup="true"
           aria-expanded={isOpen}
         >
-          <div className="flex items-center gap-1.5">
-            <Globe className="w-3.5 h-3.5 text-amber-700" />
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <Globe className={`${variant === 'compact' ? 'hidden sm:inline w-3.5 h-3.5' : 'w-3.5 h-3.5'} text-amber-700`} />
             <span className="text-sm leading-none">{currentLang.flag}</span>
             <span className="font-bold tracking-tight text-slate-900 text-xs">
-              {currentLang.nativeLabel}
+              {variant === 'compact' ? (
+                <>
+                  <span className="hidden sm:inline">{currentLang.nativeLabel}</span>
+                  <span className="sm:hidden">{currentLang.code.toUpperCase()}</span>
+                </>
+              ) : (
+                currentLang.nativeLabel
+              )}
             </span>
           </div>
           <ChevronDown

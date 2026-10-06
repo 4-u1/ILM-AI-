@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { Download, Smartphone, X, Check } from 'lucide-react';
 import { Language } from '../types';
@@ -60,15 +61,15 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
           <span className="truncate">{isAr ? 'تثبيت التطبيق' : isUr ? 'آئی فون انسٹال' : 'Install App'}</span>
         </button>
 
-        {showIOSGuide && (
+        {showIOSGuide && typeof document !== 'undefined' && createPortal(
           <div 
             onClick={() => setShowIOSGuide(false)}
-            className="fixed inset-0 z-60 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in cursor-pointer overflow-y-auto" 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-3 sm:p-4 animate-in fade-in cursor-pointer overflow-y-auto" 
             dir={isAr || isUr ? 'rtl' : 'ltr'}
           >
             <div 
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm max-h-[88vh] overflow-y-auto my-auto rounded-3xl bg-[#FAF7F2] border border-amber-200 p-4 sm:p-6 shadow-2xl text-slate-900 space-y-3 sm:space-y-4 cursor-default"
+              className="w-full max-w-sm max-h-[88vh] overflow-y-auto my-auto rounded-3xl bg-[#FAF7F2] border-2 border-amber-300 p-5 sm:p-6 shadow-2xl text-slate-900 space-y-3 sm:space-y-4 cursor-default relative z-[101]"
             >
               <div className="flex items-center justify-between pb-2 border-b border-amber-200/60">
                 <h3 className="text-base font-bold text-amber-950 font-serif flex items-center gap-2">
@@ -76,8 +77,9 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
                   <span>{isAr ? 'تثبيت تطبيق عِلم على iOS' : 'Install ILM on iPhone / iPad'}</span>
                 </h3>
                 <button
+                  type="button"
                   onClick={() => setShowIOSGuide(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -115,13 +117,15 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
               </div>
 
               <button
+                type="button"
                 onClick={() => setShowIOSGuide(false)}
-                className="w-full py-2.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition shadow-xs"
+                className="w-full py-2.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 {isAr ? 'فهمت، حسناً' : 'Got it'}
               </button>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </>
     );

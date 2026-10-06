@@ -172,10 +172,10 @@ export const IslamicDateDisplay: React.FC<IslamicDateDisplayProps> = ({
             )}
           </div>
 
-          <span className="text-slate-300 font-light select-none">|</span>
+          <span className="hidden sm:inline text-slate-300 font-light select-none">|</span>
 
-          {/* Gregorian date section */}
-          <div className="flex items-center gap-1.5 text-slate-600 font-normal">
+          {/* Gregorian date section - hidden on mobile for clean fit, shown on tablet/desktop */}
+          <div className="hidden sm:flex items-center gap-1.5 text-slate-600 font-normal">
             <Calendar className="w-3 h-3 text-slate-400" />
             <span className="text-[11px]">{gregStr}</span>
           </div>

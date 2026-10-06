@@ -589,6 +589,7 @@ export default function App() {
         <WelcomeScreen
           language={language}
           onSelectLanguage={(lang) => setLanguage(lang)}
+          onClose={() => setIsWelcomeOpen(false)}
           onStart={() => {
             try {
               localStorage.setItem('eilm_welcome_seen', 'true');

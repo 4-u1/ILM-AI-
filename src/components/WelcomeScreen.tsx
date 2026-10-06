@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Globe,
   Loader2,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { IslamicDateDisplay } from './IslamicDateDisplay';
 import { LanguageDropdown } from './LanguageDropdown';
@@ -21,6 +22,7 @@ import { IlmBrandLogo } from './IlmBrandLogo';
 interface WelcomeScreenProps {
   language: Language;
   onStart: () => void;
+  onClose?: () => void;
   onSelectLanguage?: (lang: Language) => void;
 }
 
@@ -120,6 +122,7 @@ const WELCOME_CONTENT: Record<Language, {
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   language,
   onStart,
+  onClose,
   onSelectLanguage,
 }) => {
   const isAr = language === 'ar';
@@ -238,14 +241,27 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <IslamicDateDisplay language={language} variant="compact" className="!bg-[#FAF6F0] !border-[#E3D9C9] text-slate-800 scale-90 sm:scale-100 origin-right sm:origin-center py-1 sm:py-1.5" />
           </div>
 
-          {onSelectLanguage && (
-            <LanguageDropdown
-              language={language}
-              onSelectLanguage={onSelectLanguage}
-              variant="navbar"
-              className="scale-90 sm:scale-100 origin-left sm:origin-center"
-            />
-          )}
+          <div className="flex items-center gap-2">
+            {onSelectLanguage && (
+              <LanguageDropdown
+                language={language}
+                onSelectLanguage={onSelectLanguage}
+                variant="navbar"
+                className="scale-90 sm:scale-100 origin-left sm:origin-center"
+              />
+            )}
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-xl bg-slate-200/60 hover:bg-slate-300 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                aria-label="إغلاق"
+                title="إغلاق"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content Body */}
